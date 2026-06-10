@@ -23,6 +23,7 @@ struct SpellListView: View {
     @State private var newSpellM = false
     @State private var newSpellMaterialDescription = ""
     @State private var newSpellDuree = ""
+    @State private var newSpellDureeSortComplete = "Instantanée"
     @State private var newSpellNiveau = 1
     @State private var newSpellClasses: Set<String> = []
     @State private var newSpellConcentration = false
@@ -289,6 +290,7 @@ struct SpellListView: View {
                         Section(header: Text("Paramètres")) {
                             TextField("Portée", text: $newSpellPortee)
                             TextField("Durée d'incantation", text: $newSpellDuree)
+                            TextField("Durée de l'effet", text: $newSpellDureeSortComplete)
                             Toggle("Concentration", isOn: $newSpellConcentration)
                         }
 
@@ -371,6 +373,7 @@ struct SpellListView: View {
                 componentM: newSpellM,
                 materialDescription: newSpellM ? newSpellMaterialDescription : "",
                 dureeIncantation: newSpellDuree.isEmpty ? "1 action" : newSpellDuree,
+                duree: newSpellDureeSortComplete,
                 niveau: newSpellNiveau,
                 classes: Array(newSpellClasses).sorted(),
                 concentration: newSpellConcentration,
@@ -408,6 +411,7 @@ struct SpellListView: View {
         newSpellM = false
         newSpellMaterialDescription = ""
         newSpellDuree = ""
+        newSpellDureeSortComplete = "Instantanée"
         newSpellNiveau = 1
         newSpellClasses = []
         newSpellConcentration = false
@@ -452,39 +456,6 @@ struct SpellDetailView: View {
                 }
             }
 
-            // --- Caractéristiques de lancement ---
-            Section(header: Text("Caractéristiques de Lancement")) {
-                if isEditing {
-                    TextField("Portée", text: $spell.portee)
-                    TextField("Durée d'incantation", text: $spell.dureeIncantation)
-                    Toggle("Concentration", isOn: $spell.concentration)
-                } else {
-                    LabeledContent("Portée", value: spell.portee)
-                    LabeledContent("Incantation", value: spell.dureeIncantation)
-                    LabeledContent("Concentration", value: spell.concentration ? "Oui" : "Non")
-                }
-            }
-
-            // --- Composantes ---
-            Section(header: Text("Composantes")) {
-                if isEditing {
-                    Toggle("Verbal (V)", isOn: $spell.componentV)
-                    Toggle("Somatique (S)", isOn: $spell.componentS)
-                    Toggle("Matériel (M)", isOn: $spell.componentM)
-
-                    if spell.componentM {
-                        TextField("Spécifiez le matériel", text: $spell.materialDescription)
-                            .transition(.opacity)
-                    }
-                } else {
-                    LabeledContent("Composantes", value: spell.formattedComponents)
-
-                    if spell.componentM && !spell.materialDescription.isEmpty {
-                        LabeledContent("Détail du matériel", value: spell.materialDescription)
-                    }
-                }
-            }
-
             // --- Classes ---
             Section(header: Text("Classes")) {
                 if isEditing {
@@ -508,6 +479,41 @@ struct SpellDetailView: View {
                     }
                 } else {
                     LabeledContent("Classes", value: spell.classesLabel)
+                }
+            }
+            
+            // --- Caractéristiques de lancement ---
+            Section(header: Text("Caractéristiques de Lancement")) {
+                if isEditing {
+                    TextField("Portée", text: $spell.portee)
+                    TextField("Temps d'incantation", text: $spell.dureeIncantation)
+                    TextField("Durée de l'effet", text: $spell.duree)  // NOUVEAU
+                    Toggle("Concentration", isOn: $spell.concentration)
+                } else {
+                    LabeledContent("Portée", value: spell.portee)
+                    LabeledContent("Temps d'incantation", value: spell.dureeIncantation)
+                    LabeledContent("Durée", value: spell.duree)  // NOUVEAU
+                    LabeledContent("Concentration", value: spell.concentration ? "Oui" : "Non")
+                }
+            }
+
+            // --- Composantes ---
+            Section(header: Text("Composantes")) {
+                if isEditing {
+                    Toggle("Verbal (V)", isOn: $spell.componentV)
+                    Toggle("Somatique (S)", isOn: $spell.componentS)
+                    Toggle("Matériel (M)", isOn: $spell.componentM)
+
+                    if spell.componentM {
+                        TextField("Spécifiez le matériel", text: $spell.materialDescription)
+                            .transition(.opacity)
+                    }
+                } else {
+                    LabeledContent("Composantes", value: spell.formattedComponents)
+
+                    if spell.componentM && !spell.materialDescription.isEmpty {
+                        LabeledContent("Détail du matériel", value: spell.materialDescription)
+                    }
                 }
             }
 

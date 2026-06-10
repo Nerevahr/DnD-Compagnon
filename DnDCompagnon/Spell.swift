@@ -19,6 +19,7 @@ final class Spell {
     var componentM: Bool
     var materialDescription: String
     var dureeIncantation: String
+    var duree: String            // Durée de l'effet du sort
 
     // ⚠️ AJOUT
     var niveau: Int              // 0 = tour de magie, 1-9 = niveau du sort
@@ -36,6 +37,7 @@ final class Spell {
         componentM: Bool,
         materialDescription: String = "",
         dureeIncantation: String,
+        duree: String = "Instantanée",
         niveau: Int = 1,
         classes: [String] = [],
         concentration: Bool = false,
@@ -50,6 +52,7 @@ final class Spell {
         self.componentM = componentM
         self.materialDescription = materialDescription
         self.dureeIncantation = dureeIncantation
+        self.duree = duree
         self.niveau = niveau
         self.classes = classes
         self.concentration = concentration
