@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @State private var isShowingSearch = false
+
     var body: some View {
         TabView {
             // Premier onglet : Liste des Personnages
@@ -21,6 +23,24 @@ struct ContentView: View {
                 .tabItem {
                     Label("Sorts", systemImage: "wand.and.stars")
                 }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            // Bouton de recherche flottant
+            Button {
+                isShowingSearch = true
+            } label: {
+                Image(systemName: "magnifyingglass")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .frame(width: 56, height: 56)
+                    .background(Color(UIColor.systemGray))
+                    .clipShape(Circle())
+                    .shadow(radius: 4)
+            }
+            .padding()
+        }
+        .sheet(isPresented: $isShowingSearch) {
+            SearchView()
         }
     }
 }

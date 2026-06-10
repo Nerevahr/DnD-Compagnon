@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 struct SpellListView: View {
     @Environment(\.modelContext) private var modelContext
@@ -35,6 +36,14 @@ struct SpellListView: View {
     @State private var filterEcoles: Set<String> = []
     @State private var filterConcentration: Bool? = nil // nil = pas de filtre, true/false = filtré
 
+    // Import JSON
+    @State private var isShowingImportPicker = false
+    @State private var isImporting = false
+    @State private var importErrorMessage: String?
+    @State private var showImportError = false
+    @State private var importSuccessCount = 0
+    @State private var showImportSuccess = false
+    
     let ecolesDeMagie = [
         "Abjuration", "Conjuration", "Divination", "Enchantement",
         "Évocation", "Illusion", "Nécromancie", "Transmutation"
@@ -152,8 +161,15 @@ struct SpellListView: View {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: { isShowingAddSheet = true }) {
-                        Label("Ajouter un sort", systemImage: "plus")
+                    Menu {
+                        Button(action: { isShowingAddSheet = true }) {
+                            Label("Ajouter manuellement", systemImage: "plus")
+                        }
+                        Button(action: { isShowingImportPicker = true }) {
+                            Label("Importer depuis JSON", systemImage: "arrow.down.doc")
+                        }
+                    } label: {
+                        Label("Ajouter", systemImage: "plus")
                     }
                 }
             }
@@ -354,12 +370,103 @@ struct SpellListView: View {
                     }
                 }
             }
+            .fileImporter(
+                isPresented: $isShowingImportPicker,
+                allowedContentTypes: [.json],
+                allowsMultipleSelection: false
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    if let url = urls.first {
+                        importSpells(from: url)
+                    }
+                case .failure(let error):
+                    importErrorMessage = error.localizedDescription
+                    showImportError = true
+                }
+            }
+            .alert("Importation réussie", isPresented: $showImportSuccess) {
+                Button("OK") { }
+            } message: {
+                Text("\(importSuccessCount) sort(s) importé(s) avec succès")
+            }
+            .alert("Erreur d'importation", isPresented: $showImportError) {
+                Button("OK") { }
+            } message: {
+                Text(importErrorMessage ?? "Une erreur inconnue s'est produite")
+            }
+            .overlay {
+                if isImporting {
+                    ZStack {
+                        Color.black.opacity(0.3)
+                            .ignoresSafeArea()
+                        ProgressView("Importation en cours...")
+                            .padding()
+                            .background(.background)
+                            .cornerRadius(10)
+                    }
+                }
+            }
         } detail: {
             Text("Sélectionnez un sort")
         }
     }
 
     // MARK: - Helpers
+    
+    private func importSpells(from url: URL) {
+        isImporting = true
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                // Vérifier l'accès au fichier
+                guard url.startAccessingSecurityScopedResource() else {
+                    DispatchQueue.main.async {
+                        importErrorMessage = "Impossible d'accéder au fichier"
+                        showImportError = true
+                        isImporting = false
+                    }
+                    return
+                }
+                
+                defer { url.stopAccessingSecurityScopedResource() }
+                
+                // Lire et décoder le JSON
+                let data = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                let spellsJSON = try decoder.decode([SpellJSON].self, from: data)
+                
+                // Insérer les sorts dans SwiftData
+                DispatchQueue.main.async {
+                    withAnimation {
+                        var successCount = 0
+                        for spellJSON in spellsJSON {
+                            let newSpell = spellJSON.toSpell()
+                            modelContext.insert(newSpell)
+                            successCount += 1
+                        }
+                        
+                        importSuccessCount = successCount
+                        showImportSuccess = true
+                        isImporting = false
+                    }
+                }
+                
+            } catch let decodingError as DecodingError {
+                DispatchQueue.main.async {
+                    importErrorMessage = "Erreur de format JSON : \(decodingError.localizedDescription)"
+                    showImportError = true
+                    isImporting = false
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    importErrorMessage = "Erreur lors de l'importation : \(error.localizedDescription)"
+                    showImportError = true
+                    isImporting = false
+                }
+            }
+        }
+    }
 
     private func addSpell() {
         withAnimation {

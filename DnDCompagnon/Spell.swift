@@ -86,3 +86,39 @@ extension Spell {
         "Ranger", "Roublard", "Sorcier", "Artificier"
     ]
 }
+
+// MARK: - Import JSON
+struct SpellJSON: Codable {
+    var name: String
+    var portee: String
+    var ecole: String
+    var componentV: Bool
+    var componentS: Bool
+    var componentM: Bool
+    var materialDescription: String?
+    var dureeIncantation: String
+    var duree: String
+    var niveau: Int
+    var classes: [String]
+    var concentration: Bool
+    var descriptionSort: String?
+    
+    func toSpell() -> Spell {
+        Spell(
+            timestamp: Date(),
+            name: name,
+            portee: portee,
+            ecole: ecole,
+            componentV: componentV,
+            componentS: componentS,
+            componentM: componentM,
+            materialDescription: materialDescription ?? "",
+            dureeIncantation: dureeIncantation,
+            duree: duree,
+            niveau: niveau,
+            classes: classes,
+            concentration: concentration,
+            descriptionSort: descriptionSort ?? ""
+        )
+    }
+}
