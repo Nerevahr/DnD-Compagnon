@@ -20,8 +20,6 @@ final class Spell {
     var materialDescription: String
     var dureeIncantation: String
     var duree: String            // Durée de l'effet du sort
-
-    // ⚠️ AJOUT
     var niveau: Int              // 0 = tour de magie, 1-9 = niveau du sort
     var classes: [String]        // Classes pouvant utiliser ce sort
     var concentration: Bool      // Nécessite la concentration

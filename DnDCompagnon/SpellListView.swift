@@ -10,6 +10,8 @@ import SwiftData
 import UniformTypeIdentifiers
 
 struct SpellListView: View {
+    var resourceSelector: AnyView? = nil
+
     @Environment(\.modelContext) private var modelContext
     @Query private var spells: [Spell]
 
@@ -106,7 +108,6 @@ struct SpellListView: View {
       }
 
     var body: some View {
-        NavigationSplitView {
             List {
                 ForEach(sortedLevels, id: \.self) { niveau in
                     Section(header: Text(niveauSectionHeader(niveau))) {
@@ -146,6 +147,16 @@ struct SpellListView: View {
             .navigationTitle("Sorts")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
+                    HStack {
+                        if let selector = resourceSelector {
+                            selector
+                        }
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    EditButton()
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { isShowingFilterSheet = true }) {
                         HStack(spacing: 4) {
                             Image(systemName: hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
@@ -156,9 +167,6 @@ struct SpellListView: View {
                             }
                         }
                     }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
                 }
                 ToolbarItem {
                     Menu {
@@ -407,9 +415,6 @@ struct SpellListView: View {
                     }
                 }
             }
-        } detail: {
-            Text("Sélectionnez un sort")
-        }
     }
 
     // MARK: - Helpers

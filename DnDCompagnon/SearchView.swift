@@ -13,6 +13,7 @@ struct SearchView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var characters: [Character]
     @Query private var spells: [Spell]
+    @Query private var items: [Item]
     
     @State private var searchText = ""
     
@@ -26,10 +27,14 @@ struct SearchView: View {
     private var filteredSpells: [Spell] {
         guard !searchText.isEmpty else { return [] }
         return spells.filter { spell in
-            spell.name.localizedCaseInsensitiveContains(searchText) ||
-            spell.descriptionSort.localizedCaseInsensitiveContains(searchText) ||
-            spell.ecole.localizedCaseInsensitiveContains(searchText) ||
-            spell.classes.contains { $0.localizedCaseInsensitiveContains(searchText) }
+            spell.name.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+    
+    private var filteredItems: [Item] {
+        guard !searchText.isEmpty else { return [] }
+        return items.filter { item in
+            item.name.localizedCaseInsensitiveContains(searchText)
         }
     }
     

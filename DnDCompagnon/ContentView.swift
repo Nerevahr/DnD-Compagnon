@@ -19,9 +19,10 @@ struct ContentView: View {
                     Label("Personnages", systemImage: "person.fill")
                 }
             
-            SpellListView()
+            // Deuxième onglet : Ressources (Sorts + Objets)
+            ResourcesView()
                 .tabItem {
-                    Label("Sorts", systemImage: "wand.and.stars")
+                    Label("Ressources", systemImage:"book.fill")
                 }
         }
         .overlay(alignment: .bottomTrailing) {
@@ -54,7 +55,7 @@ private struct PreviewHelper: View {
     
     init() {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        container = try! ModelContainer(for: Character.self, Spell.self, configurations: config)
+        container = try! ModelContainer(for: Character.self, Spell.self, Item.self,  DnDClass.self, configurations: config)
         SpellSeeder.seedIfNeeded(context: container.mainContext)
     }
     

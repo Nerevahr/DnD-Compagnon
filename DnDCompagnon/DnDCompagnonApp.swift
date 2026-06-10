@@ -15,10 +15,10 @@ struct DnDCompagnonApp: App {
     init() {
         do {
             let config = ModelConfiguration(
-                schema: Schema([Character.self, Spell.self]),
+                schema: Schema([Character.self, Spell.self, Item.self, DnDClass.self]),
                 isStoredInMemoryOnly: false
             )
-            container = try ModelContainer(for: Character.self, Spell.self, configurations: config)
+            container = try ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, configurations: config)
             
             // ⚠️ AJOUT : Charger les sorts de base si nécessaire
             SpellSeeder.seedIfNeeded(context: container.mainContext)
@@ -34,3 +34,4 @@ struct DnDCompagnonApp: App {
         .modelContainer(container)
     }
 }
+
