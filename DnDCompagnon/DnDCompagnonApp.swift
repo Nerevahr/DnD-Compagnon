@@ -10,24 +10,27 @@ import SwiftData
 
 @main
 struct DnDCompagnonApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Character.self,
-            Spell.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+    let container: ModelContainer
 
+    init() {
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let config = ModelConfiguration(
+                schema: Schema([Character.self, Spell.self]),
+                isStoredInMemoryOnly: false
+            )
+            container = try ModelContainer(for: Character.self, Spell.self, configurations: config)
+            
+            // ⚠️ AJOUT : Charger les sorts de base si nécessaire
+            SpellSeeder.seedIfNeeded(context: container.mainContext)
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            fatalError("Could not initialize ModelContainer: \(error)")
         }
-    }()
+    }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(container)
     }
 }

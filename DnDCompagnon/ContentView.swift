@@ -17,7 +17,6 @@ struct ContentView: View {
                     Label("Personnages", systemImage: "person.fill")
                 }
             
-            // Deuxième onglet : Liste des Sorts (Grille/Liste d'attente)
             SpellListView()
                 .tabItem {
                     Label("Sorts", systemImage: "wand.and.stars")
@@ -27,6 +26,20 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: [Character.self, Spell.self], inMemory: true)
+    PreviewHelper()
+}
+
+private struct PreviewHelper: View {
+    let container: ModelContainer
+    
+    init() {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        container = try! ModelContainer(for: Character.self, Spell.self, configurations: config)
+        SpellSeeder.seedIfNeeded(context: container.mainContext)
+    }
+    
+    var body: some View {
+        ContentView()
+            .modelContainer(container)
+    }
 }
