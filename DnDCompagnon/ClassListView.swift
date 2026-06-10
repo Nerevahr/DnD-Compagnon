@@ -38,7 +38,7 @@ struct ClassListView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 resourceSelector
             }
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .navigationBarLeading) {
                 EditButton()
             }
             ToolbarItem(placement: .navigationBarTrailing) {
