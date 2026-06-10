@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Item {
+final class Character {
     var timestamp: Date
     var text: String // Ajout de la propriété pour le texte
     
