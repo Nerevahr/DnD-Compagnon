@@ -20,7 +20,7 @@ struct SearchView: View {
     private var filteredCharacters: [Character] {
         guard !searchText.isEmpty else { return [] }
         return characters.filter { character in
-            character.text.localizedCaseInsensitiveContains(searchText)
+            character.name.localizedCaseInsensitiveContains(searchText)
         }
     }
     
@@ -47,7 +47,7 @@ struct SearchView: View {
                         ForEach(filteredCharacters) { character in
                             NavigationLink {
                                 VStack(alignment: .leading, spacing: 10) {
-                                    Text(character.text)
+                                    Text(character.name)
                                         .font(.title)
                                     Text("Créé le : \(character.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
                                         .foregroundColor(.gray)
@@ -55,7 +55,7 @@ struct SearchView: View {
                                 .padding()
                             } label: {
                                 VStack(alignment: .leading) {
-                                    Label(character.text, systemImage: "person.fill")
+                                    Label(character.name, systemImage: "person.fill")
                                         .font(.headline)
                                     Text(character.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
                                         .font(.caption)

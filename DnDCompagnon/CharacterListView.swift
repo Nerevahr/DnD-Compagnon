@@ -11,30 +11,38 @@ import SwiftData
 struct CharacterListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var characters: [Character]
+    @Query private var classes: [DnDClass]
 
-    @State private var isShowingAddAlert = false
-    @State private var newItemText = ""
+    @State private var isShowingCreateSheet = false
 
     var body: some View {
         NavigationSplitView {
             List {
                 ForEach(characters) { character in
                     NavigationLink {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(character.text)
-                                .font(.title)
-                            Text("Créé le : \(character.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
+                        CharacterDetailView(character: character)
                     } label: {
-                        VStack(alignment: .leading) {
-                            Text(character.text)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(character.name)
                                 .font(.headline)
-                            Text(character.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
+                            HStack {
+                                if let dndClass = character.dndClass {
+                                    Text(dndClass.name)
+                                        .font(.subheadline)
+                                        .foregroundColor(.blue)
+                                }
+                                if !character.race.isEmpty {
+                                    Text("• \(character.race)")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                                Spacer()
+                                Text("Niv. \(character.level)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         }
+                        .padding(.vertical, 4)
                     }
                 }
                 .onDelete(perform: deleteItems)
@@ -45,36 +53,20 @@ struct CharacterListView: View {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: { isShowingAddAlert = true }) {
-                        Label("Add Item", systemImage: "plus")
+                    Button(action: { isShowingCreateSheet = true }) {
+                        Label("Ajouter un personnage", systemImage: "plus")
                     }
                 }
             }
-            .alert("Nouvel Item", isPresented: $isShowingAddAlert) {
-                TextField("Entrez votre texte ici", text: $newItemText)
-                
-                Button("Annuler", role: .cancel) {
-                    newItemText = ""
+            .sheet(isPresented: $isShowingCreateSheet) {
+                CharacterCreationView(availableClasses: classes) { newCharacter in
+                    modelContext.insert(newCharacter)
+                    isShowingCreateSheet = false
                 }
-                
-                Button("Ajouter") {
-                    addItem(text: newItemText)
-                    newItemText = ""
-                }
-                .disabled(newItemText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                
-            } message: {
-                Text("Veuillez saisir le texte à enregistrer.")
             }
         } detail: {
             Text("Sélectionnez un personnage")
-        }
-    }
-
-    private func addItem(text: String) {
-        withAnimation {
-            let newItem = Character(timestamp: Date(), text: text)
-            modelContext.insert(newItem)
+                .foregroundColor(.gray)
         }
     }
 
