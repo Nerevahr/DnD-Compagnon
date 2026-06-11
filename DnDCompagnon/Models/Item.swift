@@ -17,10 +17,10 @@ final class Item {
     var imageData: Data?  // Stockage binaire de l'image
     
     init(
-        timestamp: Date,
+        timestamp: Date = Date(),
         name: String,
-        itemDescription: String,
-        type: ItemType,
+        itemDescription: String = "",
+        type: ItemType = .objet,
         imageData: Data? = nil
     ) {
         self.timestamp = timestamp
@@ -29,16 +29,4 @@ final class Item {
         self.type = type
         self.imageData = imageData
     }
-}
-
-// MARK: - Types d'objets
-enum ItemType: String, Codable, CaseIterable {
-    case objet = "Objet"
-    case equipement = "Équipement"
-    case armure = "Armure"
-    case arme = "Arme"
-    case bouclier = "Bouclier"
-    case consommable = "Consommable"
-    
-    static let allValues = ItemType.allCases.map { $0.rawValue }
 }

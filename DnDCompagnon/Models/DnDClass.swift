@@ -5,15 +5,8 @@
 //  Created by Mathieu Verpillat on 10/06/2026.
 //
 
-
 import Foundation
 import SwiftData
-
-// Structure pour représenter une aptitude de classe
-struct ClassAbility: Codable, Hashable {
-    var level: Int
-    var name: String
-}
 
 @Model
 final class DnDClass {
@@ -24,7 +17,7 @@ final class DnDClass {
     // Liste d'aptitudes avec niveau et nom
     var abilities: [ClassAbility]
     
-    // Statistiques maîtrisées (ex: "Force", "Constitution")
+    // Statistiques maîtrisées pour jets de sauvegarde (ex: "Force", "Constitution")
     var masteredStats: [String]
     
     // Caractéristique d'incantation (ex: "Intelligence", "Sagesse", "Charisme", ou vide si pas de magie)
@@ -50,10 +43,18 @@ final class DnDClass {
         self.spellcastingAbility = spellcastingAbility
         self.masteredSkills = masteredSkills
     }
-    
-    // Helper pour grouper les aptitudes par niveau
-    var abilitiesByLevel: [Int: [String]] {
+}
+
+// MARK: - Helpers
+
+extension DnDClass {
+    /// Helper pour grouper les aptitudes par niveau
+    var abilitiesByLevel: [Int: [ClassAbility]] {
         Dictionary(grouping: abilities, by: { $0.level })
-            .mapValues { $0.map { $0.name } }
+    }
+    
+    /// Retourne les noms des aptitudes pour un niveau donné
+    func abilityNames(at level: Int) -> [String] {
+        abilities.filter { $0.level == level }.map { $0.name }
     }
 }

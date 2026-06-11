@@ -22,6 +22,7 @@ struct DnDCompagnonApp: App {
             
             // ⚠️ AJOUT : Charger les sorts de base si nécessaire
             SpellSeeder.seedIfNeeded(context: container.mainContext)
+            ClassSeeder.seedIfNeeded(context: container.mainContext)
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")
         }

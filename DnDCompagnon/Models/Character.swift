@@ -1,0 +1,201 @@
+//
+//  Character.swift
+//  DnDCompagnon
+//
+//  Created by Mathieu Verpillat on 10/06/2026.
+//
+
+import Foundation
+import SwiftData
+
+@Model
+final class Character {
+    var timestamp: Date
+    var name: String
+    var level: Int
+    
+    // Relation vers la classe
+    var dndClass: DnDClass?
+    var race: String
+    var origin: String // origine
+    
+    // Stats de base (scores de caractéristiques)
+    var strength: Int
+    var dexterity: Int
+    var constitution: Int
+    var intelligence: Int
+    var wisdom: Int
+    var charisma: Int
+    
+    // Compétences maîtrisées par le personnage (liste des noms)
+    var proficientSkills: [String]
+    
+    // Sorts préparés (relation vers les sorts)
+    @Relationship(deleteRule: .nullify) var preparedSpells: [Spell]
+    
+    // MARK: - Computed Properties - Stats de base
+    
+    /// Modificateurs calculés
+    var strengthModifier: Int {
+        calculateModifier(for: strength)
+    }
+    
+    var dexterityModifier: Int {
+        calculateModifier(for: dexterity)
+    }
+    
+    var constitutionModifier: Int {
+        calculateModifier(for: constitution)
+    }
+    
+    var intelligenceModifier: Int {
+        calculateModifier(for: intelligence)
+    }
+    
+    var wisdomModifier: Int {
+        calculateModifier(for: wisdom)
+    }
+    
+    var charismaModifier: Int {
+        calculateModifier(for: charisma)
+    }
+    
+    // MARK: - Computed Properties - Combat & Défense
+    
+    /// Bonus de maîtrise basé sur le niveau
+    var proficiencyBonus: Int {
+        2 + (level - 1) / 4
+    }
+    
+    /// Classe d'Armure (CA)
+    /// Pour l'instant : 10 + modificateur de Dextérité
+    /// TODO: Ajouter les bonus d'armure, bouclier, sorts, etc.
+    var armorClass: Int {
+        10 + dexterityModifier
+    }
+    
+    /// Vitesse en pieds (1 case = 5 pieds)
+    /// Pour l'instant : 30 pieds par défaut (9m)
+    /// TODO: Gérer les modificateurs de race, sorts, etc.
+    var speed: Int {
+        30 // pieds
+    }
+    
+    /// Vitesse en mètres (pour affichage)
+    var speedInMeters: String {
+        "\(speed / 5 * 3 / 2)m" // Conversion approximative
+    }
+    
+    // MARK: - Computed Properties - Incantation
+    
+    /// DD des sorts (Difficulté)
+    /// Formule : 8 + bonus de maîtrise + modificateur de caractéristique d'incantation
+    var spellSaveDC: Int? {
+        guard let ability = dndClass?.spellcastingAbility,
+              !ability.isEmpty else { return nil }
+        return 8 + proficiencyBonus + getModifier(for: ability)
+    }
+    
+    /// Bonus d'attaque des sorts
+    /// Formule : bonus de maîtrise + modificateur de caractéristique d'incantation
+    var spellAttackBonus: Int? {
+        guard let ability = dndClass?.spellcastingAbility,
+              !ability.isEmpty else { return nil }
+        return proficiencyBonus + getModifier(for: ability)
+    }
+    
+    /// Bonus d'attaque des sorts formaté (+X)
+    var spellAttackBonusFormatted: String? {
+        guard let bonus = spellAttackBonus else { return nil }
+        return bonus >= 0 ? "+\(bonus)" : "\(bonus)"
+    }
+    
+    // MARK: - Points de vie
+    
+    /// Points de vie maximum
+    /// TODO: Implémenter le calcul basé sur la classe et le niveau
+    var maxHitPoints: Int {
+        // Formule basique : DV de classe au niveau 1 + (niveau - 1) * (moyenne DV + mod Constitution)
+        // Pour l'instant, valeur par défaut
+        return 10 + (level - 1) * (5 + constitutionModifier)
+    }
+    
+    // MARK: - Methods - Calculs
+    
+    /// Calcule le modificateur d'une caractéristique
+    /// Formule D&D 5e : (score - 10) / 2 (arrondi vers le bas)
+    private func calculateModifier(for score: Int) -> Int {
+        (score - 10) / 2
+    }
+    
+    /// Méthode pour calculer un jet de sauvegarde
+    func savingThrow(for stat: String) -> Int {
+        let modifier = getModifier(for: stat)
+        let isProficient = dndClass?.masteredStats.contains(stat) ?? false
+        return modifier + (isProficient ? proficiencyBonus : 0)
+    }
+    
+    /// Méthode pour calculer le modificateur d'une compétence
+    func skillModifier(for skill: DnDSkill) -> Int {
+        let statModifier = getModifier(for: skill.baseStat)
+        let isProficient = proficientSkills.contains(skill.name)
+        return statModifier + (isProficient ? proficiencyBonus : 0)
+    }
+    
+    /// Méthode pour obtenir le modificateur d'une stat par nom
+    func getModifier(for stat: String) -> Int {
+        switch stat {
+        case "Force": return strengthModifier
+        case "Dextérité": return dexterityModifier
+        case "Constitution": return constitutionModifier
+        case "Intelligence": return intelligenceModifier
+        case "Sagesse": return wisdomModifier
+        case "Charisme": return charismaModifier
+        default: return 0
+        }
+    }
+    
+    // MARK: - Initializer
+    
+    init(
+        timestamp: Date = Date(),
+        name: String,
+        level: Int = 1,
+        dndClass: DnDClass? = nil,
+        race: String = "",
+        origin: String = "",
+        strength: Int = 10,
+        dexterity: Int = 10,
+        constitution: Int = 10,
+        intelligence: Int = 10,
+        wisdom: Int = 10,
+        charisma: Int = 10,
+        proficientSkills: [String] = [],
+        preparedSpells: [Spell] = []
+    ) {
+        self.timestamp = timestamp
+        self.name = name
+        self.level = level
+        self.dndClass = dndClass
+        self.race = race
+        self.origin = origin
+        self.strength = strength
+        self.dexterity = dexterity
+        self.constitution = constitution
+        self.intelligence = intelligence
+        self.wisdom = wisdom
+        self.charisma = charisma
+        self.proficientSkills = proficientSkills
+        self.preparedSpells = preparedSpells
+    }
+}
+
+// MARK: - Static Data
+
+extension Character {
+    /// Liste de toutes les compétences disponibles en D&D 5e
+    static let allSkills: [DnDSkill] = DnDSkill.allSkills
+    
+    /// Noms des 6 caractéristiques principales
+    static let abilityScores = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
+}
