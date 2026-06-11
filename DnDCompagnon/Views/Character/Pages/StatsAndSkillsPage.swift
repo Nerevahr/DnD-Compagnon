@@ -34,21 +34,21 @@ struct StatsAndSkillsPage: View {
                     .background(Color.blue.opacity(0.1))
                     .cornerRadius(10)
                     
-                    // Vitesse
+                    // Initiative
                     VStack {
-                        Image(systemName: "figure.walk")
+                        Image(systemName: "bolt.fill")
                             .font(.title2)
-                            .foregroundColor(.green)
-                        Text("Vitesse")
+                            .foregroundColor(.yellow)
+                        Text("Initiative")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        Text(character.speedInMeters)
+                        Text(character.initiative >= 0 ? "+\(character.initiative)" : "\(character.initiative)")
                             .font(.title2)
                             .fontWeight(.bold)
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.green.opacity(0.1))
+                    .background(Color.yellow.opacity(0.1))
                     .cornerRadius(10)
                     
                     // Bonus de maîtrise
@@ -66,6 +66,60 @@ struct StatsAndSkillsPage: View {
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Color.purple.opacity(0.1))
+                    .cornerRadius(10)
+                }
+                
+                // Taille + Perception Passive
+                HStack(spacing: 12) {
+                    // Catégorie de taille
+                    VStack {
+                        Image(systemName: "ruler")
+                            .font(.title2)
+                            .foregroundColor(.orange)
+                        Text("Taille")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(character.size)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.orange.opacity(0.1))
+                    .cornerRadius(10)
+                    
+                    // Vitesse
+                    VStack {
+                        Image(systemName: "figure.walk")
+                            .font(.title2)
+                            .foregroundColor(.green)
+                        Text("Vitesse")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(character.speedInMeters)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green.opacity(0.1))
+                    .cornerRadius(10)
+                    
+                    // Perception Passive
+                    VStack {
+                        Image(systemName: "eye.fill")
+                            .font(.title2)
+                            .foregroundColor(.cyan)
+                        Text("Perception Passive")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("\(character.passivePerception)")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.cyan.opacity(0.1))
                     .cornerRadius(10)
                 }
                 

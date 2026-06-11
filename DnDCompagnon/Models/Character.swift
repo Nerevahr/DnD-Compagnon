@@ -18,6 +18,7 @@ final class Character {
     var dndClass: DnDClass?
     var race: String
     var origin: String // origine
+    var size: String // Catégorie de taille (Petit, Moyen, Grand, etc.)
     
     // Stats de base (scores de caractéristiques)
     var strength: Int
@@ -65,6 +66,17 @@ final class Character {
     /// Bonus de maîtrise basé sur le niveau
     var proficiencyBonus: Int {
         2 + (level - 1) / 4
+    }
+    
+    /// Initiative (modificateur de Dextérité)
+     var initiative: Int {
+         dexterityModifier
+     }
+     
+    // Perception passive (10 + modificateur de Sagesse + bonus de maîtrise si Perception est maîtrisée)
+    var passivePerception: Int {
+        let perceptionSkill = Character.allSkills.first { $0.name == "Perception" }!
+        return 10 + skillModifier(for: perceptionSkill)
     }
     
     /// Classe d'Armure (CA)
@@ -164,6 +176,7 @@ final class Character {
         dndClass: DnDClass? = nil,
         race: String = "",
         origin: String = "",
+        size: String = "Moyen",
         strength: Int = 10,
         dexterity: Int = 10,
         constitution: Int = 10,
@@ -179,6 +192,7 @@ final class Character {
         self.dndClass = dndClass
         self.race = race
         self.origin = origin
+        self.size = size
         self.strength = strength
         self.dexterity = dexterity
         self.constitution = constitution
