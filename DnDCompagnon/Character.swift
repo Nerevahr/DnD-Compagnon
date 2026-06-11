@@ -36,6 +36,9 @@ final class Character {
     // Compétences maîtrisées par le personnage (liste des noms)
     var proficientSkills: [String]
     
+    // Sorts préparés (relation vers les sorts)
+    @Relationship(deleteRule: .nullify) var preparedSpells: [Spell]
+    
     // Liste de toutes les compétences disponibles (static)
     static let allSkills: [DnDSkill] = [
         DnDSkill(name: "Acrobaties", baseStat: "Dextérité"),
@@ -123,7 +126,8 @@ final class Character {
         intelligence: Int = 10,
         wisdom: Int = 10,
         charisma: Int = 10,
-        proficientSkills: [String] = []
+        proficientSkills: [String] = [],
+        preparedSpells: [Spell] = []
     ) {
         self.timestamp = timestamp
         self.name = name
@@ -138,5 +142,6 @@ final class Character {
         self.wisdom = wisdom
         self.charisma = charisma
         self.proficientSkills = proficientSkills
+        self.preparedSpells = preparedSpells
     }
 }
