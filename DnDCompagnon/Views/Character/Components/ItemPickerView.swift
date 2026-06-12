@@ -5,6 +5,14 @@
 //  Created by Mathieu Verpillat on 12/06/2026.
 //
 
+
+//
+//  ItemPickerView.swift
+//  DnDCompagnon
+//
+//  Created by Mathieu Verpillat on 12/06/2026.
+//
+
 import SwiftUI
 
 /// Vue pour ajouter des items à l'inventaire

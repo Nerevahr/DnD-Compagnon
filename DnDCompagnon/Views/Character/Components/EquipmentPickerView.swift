@@ -6,24 +6,21 @@
 //
 
 import SwiftUI
-import SwiftData
 
-/// Vue pour sélectionner un équipement à équiper
+/// Vue pour équiper un item depuis l'inventaire
 struct EquipmentPickerView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @Query private var allItems: [Item]
     
     @Bindable var character: Character
     let equipmentType: ItemType
     let title: String
     
-    // Filtrer les items selon le type
-    private var filteredItems: [Item] {
-        allItems.filter { $0.type == equipmentType }
+    // Items du type demandé dans l'inventaire
+    private var availableItems: [Item] {
+        character.inventory.filter { $0.type == equipmentType }
     }
     
-    // Obtenir l'item actuellement équipé
+    // Item actuellement équipé
     private var currentEquippedItem: Item? {
         switch equipmentType {
         case .armure:
@@ -53,16 +50,16 @@ struct EquipmentPickerView: View {
                     }
                 }
                 
-                // Liste des items disponibles
+                // Items disponibles dans l'inventaire
                 Section {
-                    if filteredItems.isEmpty {
+                    if availableItems.isEmpty {
                         ContentUnavailableView(
-                            "Aucun \(equipmentType.rawValue.lowercased())",
+                            "Aucun \(equipmentType.rawValue.lowercased()) dans l'inventaire",
                             systemImage: getSystemImage(),
-                            description: Text("Ajoutez des items dans la liste des objets")
+                            description: Text("Ajoutez des objets à votre inventaire")
                         )
                     } else {
-                        ForEach(filteredItems) { item in
+                        ForEach(availableItems) { item in
                             Button {
                                 equipItem(item)
                                 dismiss()
@@ -73,7 +70,6 @@ struct EquipmentPickerView: View {
                                     
                                     Spacer()
                                     
-                                    // Indicateur si c'est l'item actuellement équipé
                                     if item == currentEquippedItem {
                                         Image(systemName: "checkmark")
                                             .foregroundColor(.blue)
@@ -83,7 +79,7 @@ struct EquipmentPickerView: View {
                         }
                     }
                 } header: {
-                    Text(equipmentType.rawValue + "s disponibles")
+                    Text("Dans votre inventaire")
                 }
             }
             .navigationTitle(title)
@@ -97,8 +93,6 @@ struct EquipmentPickerView: View {
             }
         }
     }
-    
-    // MARK: - Actions
     
     private func equipItem(_ item: Item) {
         switch equipmentType {

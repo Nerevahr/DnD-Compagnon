@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Vue pour afficher un emplacement d'équipement
+/// Vue pour afficher un emplacement d'équipement (lecture seule)
 struct EquipmentSlot: View {
     let icon: String
     let label: String
@@ -41,11 +41,6 @@ struct EquipmentSlot: View {
             }
             
             Spacer()
-            
-            // Bouton pour changer
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)

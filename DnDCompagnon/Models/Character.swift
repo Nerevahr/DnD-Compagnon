@@ -37,6 +37,13 @@ final class Character {
     
     // Sorts préparés (relation vers les sorts)
     @Relationship(deleteRule: .nullify) var preparedSpells: [Spell]
+
+    // Équipement équipé
+    @Relationship(deleteRule: .nullify) var equippedArmor: Item?
+    @Relationship(deleteRule: .nullify) var equippedWeapon: Item?
+    @Relationship(deleteRule: .nullify) var equippedShield: Item?
+    // Inventaire du personnage
+    @Relationship(deleteRule: .nullify) var inventory: [Item]
     
     // MARK: - Computed Properties - Stats de base
     
@@ -84,10 +91,42 @@ final class Character {
     }
     
     /// Classe d'Armure (CA)
-    /// Pour l'instant : 10 + modificateur de Dextérité
-    /// TODO: Ajouter les bonus d'armure, bouclier, sorts, etc.
+    /// Formule : selon la catégorie d'armure + bonus de bouclier
     var armorClass: Int {
-        10 + dexterityModifier
+        var ca: Int
+        
+        if let armor = equippedArmor,
+           let category = armor.armorCategory,
+           let baseCA = armor.baseArmorClass {
+            // Armure équipée
+            switch category {
+            case .vetement:
+                // Vêtement : 10 + Dex
+                ca = 10 + dexterityModifier
+                
+            case .legere:
+                // Armure légère : CA de base + Dex complet
+                ca = baseCA + dexterityModifier
+                
+            case .moyenne:
+                // Armure moyenne : CA de base + Dex (max +2)
+                ca = baseCA + min(dexterityModifier, 2)
+                
+            case .lourde:
+                // Armure lourde : CA fixe (pas de bonus Dex)
+                ca = baseCA
+            }
+        } else {
+            // Pas d'armure : 10 + Dex
+            ca = 10 + dexterityModifier
+        }
+        
+        // Bonus du bouclier (+2 CA)
+        if equippedShield != nil {
+            ca += 2
+        }
+        
+        return ca
     }
     
     /// Vitesse en pieds (1 case = 5 pieds)
@@ -189,6 +228,10 @@ final class Character {
         charisma: Int = 10,
         proficientSkills: [String] = [],
         preparedSpells: [Spell] = [],
+        inventory: [Item] = [],  // Ajouter cette ligne
+        equippedArmor: Item? = nil,
+        equippedWeapon: Item? = nil,
+        equippedShield: Item? = nil,
         currentHitPoints: Int? = nil,
         maximumHitPoints: Int? = nil
     ) {
@@ -207,7 +250,10 @@ final class Character {
         self.charisma = charisma
         self.proficientSkills = proficientSkills
         self.preparedSpells = preparedSpells
-        
+        self.inventory = inventory  // Ajouter cette ligne
+        self.equippedArmor = equippedArmor
+        self.equippedWeapon = equippedWeapon
+        self.equippedShield = equippedShield
         // Calcul des PV par défaut : 8 + modificateur de Constitution
         let constitutionMod = (constitution - 10) / 2
         let defaultMaxHP = 8 + constitutionMod

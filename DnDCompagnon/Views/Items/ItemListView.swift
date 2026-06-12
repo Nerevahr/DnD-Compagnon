@@ -23,6 +23,8 @@ struct ItemListView: View {
     @State private var newItemImageData: Data? = nil
     @State private var isShowingImagePicker = false
     @State private var selectedPhotoItem: PhotosPickerItem? = nil
+    @State private var newItemArmorCategory: ArmorCategory? = nil
+    @State private var newItemBaseArmorClass: Int = 11
     
     // Grouper les objets par type
     private var groupedItems: [ItemType: [Item]] {
@@ -101,6 +103,27 @@ struct ItemListView: View {
                                     Text(type.rawValue).tag(type)
                                 }
                             }
+                            
+                            // Propriétés d'armure si c'est une armure
+                            if newItemType == .armure {
+                                Picker("Catégorie d'armure", selection: $newItemArmorCategory) {
+                                    Text("Sélectionner...").tag(nil as ArmorCategory?)
+                                    ForEach(ArmorCategory.allCases, id: \.self) { category in
+                                        VStack(alignment: .leading) {
+                                            Text(category.rawValue)
+                                            Text(category.calculDescription)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        .tag(category as ArmorCategory?)
+                                    }
+                                }
+                                
+                                if newItemArmorCategory != nil && newItemArmorCategory != .vetement {
+                                    Stepper("CA de base: \(newItemBaseArmorClass)", value: $newItemBaseArmorClass, in: 10...20)
+                                        .help("Classe d'Armure de base de cette armure")
+                                }
+                            }
                         }
                         
                         Section(header: Text("Description")) {
@@ -165,7 +188,9 @@ struct ItemListView: View {
             name: newItemName,
             itemDescription: newItemDescription,
             type: newItemType,
-            imageData: newItemImageData
+            imageData: newItemImageData,
+            armorCategory: newItemType == .armure ? newItemArmorCategory : nil,
+            baseArmorClass: newItemType == .armure && newItemArmorCategory != .vetement ? newItemBaseArmorClass : nil
         )
         modelContext.insert(newItem)
     }
@@ -185,6 +210,8 @@ struct ItemListView: View {
         newItemType = .objet
         newItemImageData = nil
         selectedPhotoItem = nil
+        newItemArmorCategory = nil
+        newItemBaseArmorClass = 11
     }
 }
 
@@ -205,9 +232,42 @@ struct ItemDetailView: View {
                             Text(type.rawValue).tag(type)
                         }
                     }
+                    
+                    // Édition des propriétés d'armure
+                    if item.type == .armure {
+                        Picker("Catégorie d'armure", selection: $item.armorCategory) {
+                            Text("Aucune").tag(nil as ArmorCategory?)
+                            ForEach(ArmorCategory.allCases, id: \.self) { category in
+                                Text(category.rawValue).tag(category as ArmorCategory?)
+                            }
+                        }
+                        
+                        if let category = item.armorCategory, category != .vetement {
+                            Stepper("CA de base: \(item.baseArmorClass ?? 11)",
+                                   value: Binding(
+                                       get: { item.baseArmorClass ?? 11 },
+                                       set: { item.baseArmorClass = $0 }
+                                   ),
+                                   in: 10...20)
+                        }
+                    }
                 } else {
                     LabeledContent("Nom", value: item.name)
                     LabeledContent("Type", value: item.type.rawValue)
+                    
+                    // Affichage des propriétés d'armure en lecture seule
+                    if item.type == .armure {
+                        if let category = item.armorCategory {
+                            LabeledContent("Catégorie", value: category.rawValue)
+                            LabeledContent("Calcul CA", value: category.calculDescription)
+                            
+                            if category != .vetement, let baseCA = item.baseArmorClass {
+                                LabeledContent("CA de base", value: "\(baseCA)")
+                            }
+                        } else {
+                            LabeledContent("Catégorie", value: "Non définie")
+                        }
+                    }
                 }
             }
             
