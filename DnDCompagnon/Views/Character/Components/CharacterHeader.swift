@@ -41,6 +41,24 @@ struct CharacterHeader: View {
             Label("Niveau \(character.level)", systemImage: "star.fill")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+            
+            // Barre de PV
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Label("Points de vie", systemImage: "heart.fill")
+                        .font(.subheadline)
+                        .foregroundColor(.red)
+                    Spacer()
+                    Text("\(character.currentHitPoints) / \(character.maximumHitPoints)")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                }
+                
+                ProgressView(value: Double(character.currentHitPoints), total: Double(character.maximumHitPoints))
+                    .tint(.red)
+                    .scaleEffect(x: 1, y: 2, anchor: .center)
+            }
+            .padding(.top, 8)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)

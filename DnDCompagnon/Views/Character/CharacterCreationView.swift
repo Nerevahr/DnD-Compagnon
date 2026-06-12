@@ -31,6 +31,14 @@ struct CharacterCreationView: View {
     // Compétences maîtrisées
     @State private var proficientSkills: Set<String> = []
     
+    // Points de vie
+    @State private var maxHitPoints: Int = 8
+    
+    private var defaultMaxHP: Int {
+        let constitutionMod = (constitution - 10) / 2
+        return 8 + constitutionMod
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -47,6 +55,18 @@ struct CharacterCreationView: View {
                     TextField("Race", text: $race)
                     TextField("Origine", text: $origin)
                     Stepper("Niveau: \(level)", value: $level, in: 1...20)
+                }
+                
+                Section {
+                    Stepper("Points de vie max: \(maxHitPoints)", value: $maxHitPoints, in: 1...999)
+                    Text("Valeur suggérée: \(defaultMaxHP)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } header: {
+                    Text("Points de vie")
+                } footer: {
+                    Text("Par défaut: 8 + modificateur de Constitution (\(defaultMaxHP))")
+                        .font(.caption)
                 }
                 
                 Section {
@@ -122,7 +142,8 @@ struct CharacterCreationView: View {
             intelligence: intelligence,
             wisdom: wisdom,
             charisma: charisma,
-            proficientSkills: Array(proficientSkills)
+            proficientSkills: Array(proficientSkills),
+            maximumHitPoints: maxHitPoints
         )
         onSave(newCharacter)
     }

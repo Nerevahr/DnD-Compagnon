@@ -28,6 +28,10 @@ final class Character {
     var wisdom: Int
     var charisma: Int
     
+    // Points de vie
+    var currentHitPoints: Int
+    var maximumHitPoints: Int
+    
     // Compétences maîtrisées par le personnage (liste des noms)
     var proficientSkills: [String]
     
@@ -184,7 +188,9 @@ final class Character {
         wisdom: Int = 10,
         charisma: Int = 10,
         proficientSkills: [String] = [],
-        preparedSpells: [Spell] = []
+        preparedSpells: [Spell] = [],
+        currentHitPoints: Int? = nil,
+        maximumHitPoints: Int? = nil
     ) {
         self.timestamp = timestamp
         self.name = name
@@ -201,6 +207,15 @@ final class Character {
         self.charisma = charisma
         self.proficientSkills = proficientSkills
         self.preparedSpells = preparedSpells
+        
+        // Calcul des PV par défaut : 8 + modificateur de Constitution
+        let constitutionMod = (constitution - 10) / 2
+        let defaultMaxHP = 8 + constitutionMod
+        let finalMaxHP = maximumHitPoints ?? defaultMaxHP
+
+        // Initialiser les deux propriétés sans référence à self
+        self.maximumHitPoints = finalMaxHP
+        self.currentHitPoints = currentHitPoints ?? finalMaxHP
     }
 }
 

@@ -45,6 +45,28 @@ struct CharacterEditView: View {
                 }
                 
                 Section {
+                    Stepper("PV actuels: \(character.currentHitPoints)", value: $character.currentHitPoints, in: 0...character.maximumHitPoints)
+                    Stepper("PV maximum: \(character.maximumHitPoints)", value: $character.maximumHitPoints, in: 1...999)
+                    
+                    // Indicateur visuel
+                    HStack {
+                        Text("État:")
+                        Spacer()
+                        ProgressView(value: Double(character.currentHitPoints), total: Double(character.maximumHitPoints))
+                            .tint(.red)
+                            .frame(maxWidth: 150)
+                        Text("\(Int(Double(character.currentHitPoints) / Double(character.maximumHitPoints) * 100))%")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                } header: {
+                    Text("Points de vie")
+                } footer: {
+                    Text("Ajustez les points de vie actuels et maximum de votre personnage.")
+                        .font(.caption)
+                }
+                
+                Section {
                     StatRow(name: "Force", value: $character.strength)
                     StatRow(name: "Dextérité", value: $character.dexterity)
                     StatRow(name: "Constitution", value: $character.constitution)
