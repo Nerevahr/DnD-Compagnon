@@ -15,7 +15,7 @@ struct CharacterCreationView: View {
     let onSave: (Character) -> Void
     
     @State private var name: String = ""
-    @State private var selectedClass: DnDClass?
+    @State private var selectedClassID: PersistentIdentifier?
     @State private var race: String = ""
     @State private var origin: String = ""
     @State private var level: Int = 1
@@ -39,16 +39,20 @@ struct CharacterCreationView: View {
         return 8 + constitutionMod
     }
     
+    private var selectedClass: DnDClass? {
+        availableClasses.first { $0.id == selectedClassID }
+    }
+    
     var body: some View {
         NavigationView {
             Form {
                 Section("Informations générales") {
                     TextField("Nom du personnage", text: $name)
                     
-                    Picker("Classe", selection: $selectedClass) {
-                        Text("Aucune classe").tag(nil as DnDClass?)
+                    Picker("Classe", selection: $selectedClassID) {
+                        Text("Aucune classe").tag(nil as PersistentIdentifier?)
                         ForEach(availableClasses) { dndClass in
-                            Text(dndClass.name).tag(dndClass as DnDClass?)
+                            Text(dndClass.name).tag(dndClass.id as PersistentIdentifier?)
                         }
                     }
                     

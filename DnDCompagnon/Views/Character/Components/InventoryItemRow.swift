@@ -124,7 +124,7 @@ struct InventoryItemRow: View {
         case .armure:
             return "shield.lefthalf.filled"
         case .arme:
-            return "sword.fill"
+            return "figure.fencing"
         case .bouclier:
             return "shield.fill"
         case .consommable:

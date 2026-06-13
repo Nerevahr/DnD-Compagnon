@@ -59,7 +59,7 @@ struct InventoryPage: View {
                     
                     // Arme
                     EquipmentSlot(
-                        icon: "sword.fill",
+                        icon: "figure.fencing",
                         label: "Arme",
                         item: character.equippedWeapon,
                         color: .red

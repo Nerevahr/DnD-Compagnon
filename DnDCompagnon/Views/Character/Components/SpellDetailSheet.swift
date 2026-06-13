@@ -6,13 +6,6 @@
 //
 
 
-//
-//  SpellDetailSheet.swift
-//  DnDCompagnon
-//
-//  Created by Mathieu Verpillat on 11/06/2026.
-//
-
 import SwiftUI
 
 /// Feuille détaillée d'un sort
@@ -68,15 +61,37 @@ struct SpellDetailSheet: View {
                         }
                     }
                     
-                    // Classes
-                    if !spell.classes.isEmpty {
+                    // Propriétés offensives
+                    if spell.isOffensive {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Classes")
-                                .font(.headline)
-                            Text(spell.classesLabel)
-                                .font(.body)
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Image(systemName: "flame.fill")
+                                    .foregroundColor(.red)
+                                Text("Sort offensif")
+                                    .font(.headline)
+                                    .foregroundColor(.red)
+                            }
+                            
+                            if let damage = spell.damageAmount {
+                                InfoRow(label: "Dégâts", value: damage)
+                            }
+                            
+                            if let altDamage = spell.alternateDamageAmount {
+                                InfoRow(label: "Dégâts alternatifs", value: altDamage)
+                            }
+                            
+                            if spell.requiresSavingThrow, let stat = spell.savingThrowStat {
+                                HStack {
+                                    Image(systemName: "shield.fill")
+                                        .foregroundColor(.blue)
+                                    Text("Jet de sauvegarde : \(stat)")
+                                        .foregroundColor(.blue)
+                                }
+                            }
                         }
+                        .padding()
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(10)
                     }
                 }
                 .padding()
