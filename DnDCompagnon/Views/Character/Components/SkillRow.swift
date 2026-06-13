@@ -36,7 +36,7 @@ struct SkillRow: View {
         HStack {
             if isProficient {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
+                    .foregroundColor(.accentColor)
                     .font(.body)
             } else {
                 Image(systemName: "circle")

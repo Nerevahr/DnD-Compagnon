@@ -81,24 +81,33 @@ struct CharacterEditView: View {
                 }
                 
                 Section {
-                    ForEach(Character.allSkills, id: \.name) { skill in
-                        Toggle(isOn: Binding(
-                            get: { proficientSkills.contains(skill.name) },
-                            set: { isOn in
-                                if isOn {
-                                    proficientSkills.insert(skill.name)
+                    ForEach(sortedSkills(), id: \.name) { skill in
+                        Button {
+                            if proficientSkills.contains(skill.name) {
+                                proficientSkills.remove(skill.name)
+                            } else {
+                                proficientSkills.insert(skill.name)
+                            }
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(skill.name)
+                                        .foregroundColor(.primary)
+                                    Text(skill.baseStat)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                if proficientSkills.contains(skill.name) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.accentColor)
                                 } else {
-                                    proficientSkills.remove(skill.name)
+                                    Image(systemName: "circle")
+                                        .foregroundColor(.secondary)
                                 }
                             }
-                        )) {
-                            VStack(alignment: .leading) {
-                                Text(skill.name)
-                                Text(skill.baseStat)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
                         }
+                        .buttonStyle(.plain)
                     }
                 } header: {
                     Text("Maîtrise des compétences")
@@ -126,6 +135,18 @@ struct CharacterEditView: View {
             .onAppear {
                 proficientSkills = Set(character.proficientSkills)
             }
+        }
+    }
+    
+    private func sortedSkills() -> [DnDSkill] {
+        let statOrder = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
+        return Character.allSkills.sorted { skill1, skill2 in
+            let index1 = statOrder.firstIndex(of: skill1.baseStat) ?? 999
+            let index2 = statOrder.firstIndex(of: skill2.baseStat) ?? 999
+            if index1 == index2 {
+                return skill1.name < skill2.name
+            }
+            return index1 < index2
         }
     }
 }

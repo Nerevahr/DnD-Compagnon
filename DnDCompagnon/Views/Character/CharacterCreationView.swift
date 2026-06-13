@@ -58,18 +58,6 @@ struct CharacterCreationView: View {
                 }
                 
                 Section {
-                    Stepper("Points de vie max: \(maxHitPoints)", value: $maxHitPoints, in: 1...999)
-                    Text("Valeur suggérée: \(defaultMaxHP)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } header: {
-                    Text("Points de vie")
-                } footer: {
-                    Text("Par défaut: 8 + modificateur de Constitution (\(defaultMaxHP))")
-                        .font(.caption)
-                }
-                
-                Section {
                     StatRow(name: "Force", value: $strength)
                     StatRow(name: "Dextérité", value: $dexterity)
                     StatRow(name: "Constitution", value: $constitution)
@@ -84,24 +72,33 @@ struct CharacterCreationView: View {
                 }
                 
                 Section {
-                    ForEach(Character.allSkills, id: \.name) { skill in
-                        Toggle(isOn: Binding(
-                            get: { proficientSkills.contains(skill.name) },
-                            set: { isOn in
-                                if isOn {
-                                    proficientSkills.insert(skill.name)
+                    ForEach(sortedSkills(), id: \.name) { skill in
+                        Button {
+                            if proficientSkills.contains(skill.name) {
+                                proficientSkills.remove(skill.name)
+                            } else {
+                                proficientSkills.insert(skill.name)
+                            }
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(skill.name)
+                                        .foregroundColor(.primary)
+                                    Text(skill.baseStat)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                if proficientSkills.contains(skill.name) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.accentColor)
                                 } else {
-                                    proficientSkills.remove(skill.name)
+                                    Image(systemName: "circle")
+                                        .foregroundColor(.secondary)
                                 }
                             }
-                        )) {
-                            VStack(alignment: .leading) {
-                                Text(skill.name)
-                                Text(skill.baseStat)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
                         }
+                        .buttonStyle(.plain)
                     }
                 } header: {
                     Text("Maîtrise des compétences")
@@ -143,8 +140,20 @@ struct CharacterCreationView: View {
             wisdom: wisdom,
             charisma: charisma,
             proficientSkills: Array(proficientSkills),
-            maximumHitPoints: maxHitPoints
+            maximumHitPoints: defaultMaxHP
         )
         onSave(newCharacter)
+    }
+    
+    private func sortedSkills() -> [DnDSkill] {
+        let statOrder = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
+        return Character.allSkills.sorted { skill1, skill2 in
+            let index1 = statOrder.firstIndex(of: skill1.baseStat) ?? 999
+            let index2 = statOrder.firstIndex(of: skill2.baseStat) ?? 999
+            if index1 == index2 {
+                return skill1.name < skill2.name
+            }
+            return index1 < index2
+        }
     }
 }

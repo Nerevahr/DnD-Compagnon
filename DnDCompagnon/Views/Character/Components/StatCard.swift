@@ -51,9 +51,9 @@ struct StatCard: View {
             // Jet de sauvegarde en bas
             HStack(spacing: 4) {
                 if isProficientInSavingThrow {
-                    Image(systemName: "star.fill")
+                    Image(systemName: "checkmark.seal")
                         .font(.caption2)
-                        .foregroundColor(.yellow)
+                        .foregroundColor(.accentColor)
                 }
                 
                 Text("JdS")

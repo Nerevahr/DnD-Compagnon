@@ -45,6 +45,8 @@ final class Character {
     // Inventaire du personnage
     @Relationship(deleteRule: .nullify) var inventory: [Item]
     
+    @Attribute(.externalStorage) var profileImageData: Data?
+    
     // MARK: - Computed Properties - Stats de base
     
     /// Modificateurs calculés

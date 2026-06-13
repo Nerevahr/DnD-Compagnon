@@ -46,13 +46,7 @@ struct SearchView: View {
                     Section(header: Text("Personnages (\(filteredCharacters.count))")) {
                         ForEach(filteredCharacters) { character in
                             NavigationLink {
-                                VStack(alignment: .leading, spacing: 10) {
-                                    Text(character.name)
-                                        .font(.title)
-                                    Text("Créé le : \(character.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                                        .foregroundColor(.gray)
-                                }
-                                .padding()
+                                CharacterDetailView(character: character)
                             } label: {
                                 VStack(alignment: .leading) {
                                     Label(character.name, systemImage: "person.fill")

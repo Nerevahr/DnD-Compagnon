@@ -184,9 +184,9 @@ struct StatsAndSkillsPage: View {
                     .padding(.top)
                 
                 VStack(spacing: 0) {
-                    ForEach(Character.allSkills, id: \.name) { skill in
+                    ForEach(sortedSkills(), id: \.name) { skill in
                         SkillRow(character: character, skill: skill)
-                        if skill.name != Character.allSkills.last?.name {
+                        if skill.name != sortedSkills().last?.name {
                             Divider()
                                 .padding(.leading, 40)
                         }
@@ -196,6 +196,18 @@ struct StatsAndSkillsPage: View {
                 .cornerRadius(10)
             }
             .padding()
+        }
+    }
+    
+    private func sortedSkills() -> [DnDSkill] {
+        let statOrder = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
+        return Character.allSkills.sorted { skill1, skill2 in
+            let index1 = statOrder.firstIndex(of: skill1.baseStat) ?? 999
+            let index2 = statOrder.firstIndex(of: skill2.baseStat) ?? 999
+            if index1 == index2 {
+                return skill1.name < skill2.name
+            }
+            return index1 < index2
         }
     }
 }
