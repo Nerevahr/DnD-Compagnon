@@ -5,14 +5,6 @@
 //  Created by Mathieu Verpillat on 11/06/2026.
 //
 
-
-//
-//  ClassSeeder.swift
-//  DnDCompagnon
-//
-//  Created by Mathieu Verpillat on 11/06/2026.
-//
-
 import Foundation
 import SwiftData
 
@@ -26,6 +18,7 @@ enum ClassSeeder {
         let masteredStats: [String]
         let spellcastingAbility: String
         let masteredSkills: [String]
+        let spellSlots: [String: [String: Int]]? // ⬅️ AJOUT
         
         struct AbilityData: Codable {
             let level: Int
@@ -58,6 +51,22 @@ enum ClassSeeder {
                 )
             }
             
+            // Convertir les spell slots de [String: [String: Int]] vers [Int: [Int: Int]]
+            var spellSlots: [Int: [Int: Int]] = [:]
+            if let jsonSpellSlots = classData.spellSlots {
+                for (charLevelStr, spellLevels) in jsonSpellSlots {
+                    if let charLevel = Int(charLevelStr) {
+                        var levelSlots: [Int: Int] = [:]
+                        for (spellLevelStr, count) in spellLevels {
+                            if let spellLevel = Int(spellLevelStr) {
+                                levelSlots[spellLevel] = count
+                            }
+                        }
+                        spellSlots[charLevel] = levelSlots
+                    }
+                }
+            }
+            
             let dndClass = DnDClass(
                 timestamp: Date(),
                 name: classData.name,
@@ -65,12 +74,14 @@ enum ClassSeeder {
                 abilities: abilities,
                 masteredStats: classData.masteredStats,
                 spellcastingAbility: classData.spellcastingAbility,
-                masteredSkills: classData.masteredSkills
+                masteredSkills: classData.masteredSkills,
+                spellSlots: spellSlots // ⬅️ AJOUT
             )
             context.insert(dndClass)
         }
 
         try? context.save()
+        print("✅ Classes chargées avec succès (dont spell slots)")
     }
 
     // MARK: - Chargement depuis JSON

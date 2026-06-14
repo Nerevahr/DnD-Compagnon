@@ -5,10 +5,8 @@
 //  Created by Mathieu Verpillat on 13/06/2026.
 //
 
-
 import SwiftUI
 
-/// Liste des sorts préparés groupés par niveau
 struct PreparedSpellsList: View {
     let spellsByLevel: [Int: [Spell]]
     let onRemove: (Spell) -> Void

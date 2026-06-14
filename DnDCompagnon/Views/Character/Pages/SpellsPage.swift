@@ -48,6 +48,9 @@ struct SpellsPage: View {
                 
                 if let dndClass = character.dndClass, !dndClass.spellcastingAbility.isEmpty {
                     SpellcastingStatsCard(character: character, spellcastingAbility: dndClass.spellcastingAbility)
+                    
+                    // Carte des emplacements de sorts
+                    SpellSlotsCard(character: character, preparedSpellsByLevel: spellsByLevel)
                 }
                 
                 if character.preparedSpells.isEmpty {

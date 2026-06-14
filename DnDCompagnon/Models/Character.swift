@@ -35,6 +35,9 @@ final class Character {
     // Compétences maîtrisées par le personnage (liste des noms)
     var proficientSkills: [String]
     
+    // Emplacements de sorts utilisés par niveau
+    var usedSpellSlots: [Int: Int] = [:]
+    
     // Sorts préparés (relation vers les sorts)
     @Relationship(deleteRule: .nullify) var preparedSpells: [Spell]
 
@@ -235,7 +238,8 @@ final class Character {
         equippedWeapon: Item? = nil,
         equippedShield: Item? = nil,
         currentHitPoints: Int? = nil,
-        maximumHitPoints: Int? = nil
+        maximumHitPoints: Int? = nil,
+        usedSpellSlots: [Int: Int] = [:]
     ) {
         self.timestamp = timestamp
         self.name = name
@@ -264,6 +268,7 @@ final class Character {
         // Initialiser les deux propriétés sans référence à self
         self.maximumHitPoints = finalMaxHP
         self.currentHitPoints = currentHitPoints ?? finalMaxHP
+        self.usedSpellSlots = usedSpellSlots // ✅ Initialisation
     }
 }
 
@@ -275,4 +280,52 @@ extension Character {
     
     /// Noms des 6 caractéristiques principales
     static let abilityScores = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
+}
+
+// MARK: - Spell Slots Management
+
+extension Character {
+    /// Retourne les emplacements de sorts disponibles pour ce personnage
+    var availableSpellSlots: [Int: Int] {
+        return dndClass?.spellSlots(at: level) ?? [:]
+    }
+    
+    /// Retourne le nombre d'emplacements totaux pour un niveau de sort donné
+    func spellSlotCount(for spellLevel: Int) -> Int {
+        return dndClass?.spellSlotCount(characterLevel: level, spellLevel: spellLevel) ?? 0
+    }
+    
+    /// Retourne le nombre d'emplacements utilisés pour un niveau de sort donné
+    func usedSpellSlotCount(for spellLevel: Int) -> Int {
+        return usedSpellSlots[spellLevel] ?? 0
+    }
+    
+    /// Retourne le nombre d'emplacements restants pour un niveau de sort donné
+    func remainingSpellSlots(for spellLevel: Int) -> Int {
+        let total = spellSlotCount(for: spellLevel)
+        let used = usedSpellSlotCount(for: spellLevel)
+        return max(0, total - used)
+    }
+    
+    /// Utilise un emplacement de sort
+    func useSpellSlot(level: Int) {
+        let current = usedSpellSlots[level] ?? 0
+        let max = spellSlotCount(for: level)
+        if current < max {
+            usedSpellSlots[level] = current + 1
+        }
+    }
+    
+    /// Restaure un emplacement de sort
+    func restoreSpellSlot(level: Int) {
+        let current = usedSpellSlots[level] ?? 0
+        if current > 0 {
+            usedSpellSlots[level] = current - 1
+        }
+    }
+    
+    /// Restaure tous les emplacements de sorts (repos long)
+    func restoreAllSpellSlots() {
+        usedSpellSlots = [:]
+    }
 }
