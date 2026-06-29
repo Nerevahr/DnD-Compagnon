@@ -39,7 +39,7 @@ final class Character {
     var usedSpellSlots: [Int: Int] = [:]
     
     // Sorts préparés (relation vers les sorts)
-    @Relationship(deleteRule: .nullify) var preparedSpells: [Spell]
+    @Relationship(deleteRule: .nullify) var preparedSpells: [PreparedSpell]
 
     // Équipement équipé
     @Relationship(deleteRule: .nullify) var equippedArmor: Item?
@@ -232,7 +232,7 @@ final class Character {
         wisdom: Int = 10,
         charisma: Int = 10,
         proficientSkills: [String] = [],
-        preparedSpells: [Spell] = [],
+        preparedSpells: [PreparedSpell] = [],
         inventory: [Item] = [],  // Ajouter cette ligne
         equippedArmor: Item? = nil,
         equippedWeapon: Item? = nil,
@@ -327,5 +327,35 @@ extension Character {
     /// Restaure tous les emplacements de sorts (repos long)
     func restoreAllSpellSlots() {
         usedSpellSlots = [:]
+    }
+}
+
+// MARK: - Prepared Spells Management
+
+extension Character {
+    /// Retourne les sorts préparés groupés par niveau
+    var preparedSpellsByLevel: [Int: [PreparedSpell]] {
+        let validSpells = preparedSpells.filter { $0.baseSpell != nil }
+        return Dictionary(grouping: validSpells) { preparedSpell in
+            preparedSpell.baseSpell?.niveau ?? 0
+        }
+    }
+    
+    /// Ajoute un sort à la liste des sorts préparés
+    func prepareSpell(_ spell: Spell) {
+        let preparedSpell = PreparedSpell(baseSpell: spell)
+        preparedSpells.append(preparedSpell)
+    }
+    
+    /// Retire un sort préparé
+    func unprepareSpell(_ preparedSpell: PreparedSpell) {
+        if let index = preparedSpells.firstIndex(of: preparedSpell) {
+            preparedSpells.remove(at: index)
+        }
+    }
+    
+    /// Vérifie si un sort est déjà préparé
+    func isSpellPrepared(_ spell: Spell) -> Bool {
+        preparedSpells.contains { $0.baseSpell?.persistentModelID == spell.persistentModelID }
     }
 }

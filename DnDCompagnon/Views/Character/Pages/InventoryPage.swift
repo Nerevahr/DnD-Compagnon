@@ -57,14 +57,6 @@ struct InventoryPage: View {
                         color: .blue
                     )
                     
-                    // Arme
-                    EquipmentSlot(
-                        icon: "figure.fencing",
-                        label: "Arme",
-                        item: character.equippedWeapon,
-                        color: .red
-                    )
-                    
                     // Bouclier
                     EquipmentSlot(
                         icon: "shield.fill",
@@ -152,4 +144,8 @@ struct InventoryPage: View {
             character.inventory.remove(at: index)
         }
     }
+}
+
+#Preview("Guerrier") {
+    InventoryPage(character: MockData.fighter)
 }

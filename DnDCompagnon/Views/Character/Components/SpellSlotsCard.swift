@@ -10,7 +10,7 @@ import SwiftUI
 /// Carte affichant les emplacements de sorts disponibles et utilisés
 struct SpellSlotsCard: View {
     @Bindable var character: Character
-    let preparedSpellsByLevel: [Int: [Spell]]
+    let preparedSpellsByLevel: [Int: [PreparedSpell]]  // ✅ Changé de [Spell] à [PreparedSpell]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -21,7 +21,7 @@ struct SpellSlotsCard: View {
                 
                 Spacer()
                 
-                // Bouton pour repos long (restaure tous les emplacements)
+                // Bouton pour reset (restaure tous les emplacements)
                 Button(action: {
                     withAnimation {
                         character.restoreAllSpellSlots()

@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PreparedSpellsList: View {
-    let spellsByLevel: [Int: [Spell]]
-    let onRemove: (Spell) -> Void
+    let spellsByLevel: [Int: [PreparedSpell]]
     
     var body: some View {
         ForEach(spellsByLevel.keys.sorted(), id: \.self) { level in
@@ -18,10 +18,8 @@ struct PreparedSpellsList: View {
                     .font(.headline)
                     .foregroundColor(.purple)
                 
-                ForEach(spellsByLevel[level] ?? [], id: \.id) { spell in
-                    PreparedSpellRow(spell: spell) {
-                        onRemove(spell)
-                    }
+                ForEach(spellsByLevel[level] ?? [], id: \.persistentModelID) { preparedSpell in
+                    PreparedSpellRow(preparedSpell: preparedSpell)
                 }
             }
             .padding()

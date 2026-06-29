@@ -25,6 +25,9 @@ struct ItemListView: View {
     @State private var selectedPhotoItem: PhotosPickerItem? = nil
     @State private var newItemArmorCategory: ArmorCategory? = nil
     @State private var newItemBaseArmorClass: Int = 11
+    @State private var newItemWeaponType: WeaponType? = nil
+    @State private var newItemDamageDice: String = ""
+    @State private var newItemDamageType: DamageType? = nil
     
     // Grouper les objets par type
     private var groupedItems: [ItemType: [Item]] {
@@ -101,6 +104,29 @@ struct ItemListView: View {
                             Picker("Type", selection: $newItemType) {
                                 ForEach(ItemType.allCases, id: \.self) { type in
                                     Text(type.rawValue).tag(type)
+                                }
+                            }
+                            
+                            // Propriétés d'arme si c'est une arme
+                            if newItemType == .arme {
+                                Section(header: Text("Propriétés d'arme")) {
+                                    Picker("Type d'arme", selection: $newItemWeaponType) {
+                                        Text("Sélectionner...").tag(nil as WeaponType?)
+                                        ForEach(WeaponType.allCases, id: \.self) { weaponType in
+                                            Text(weaponType.rawValue).tag(weaponType as WeaponType?)
+                                        }
+                                    }
+                                    
+                                    TextField("Dés de dégâts (ex: 1d8, 2d6)", text: $newItemDamageDice)
+                                        .keyboardType(.default)
+                                        .autocapitalization(.none)
+                                    
+                                    Picker("Type de dégâts", selection: $newItemDamageType) {
+                                        Text("Sélectionner...").tag(nil as DamageType?)
+                                        ForEach(DamageType.allCases, id: \.self) { damageType in
+                                            Text(damageType.rawValue).tag(damageType as DamageType?)
+                                        }
+                                    }
                                 }
                             }
                             
@@ -190,7 +216,10 @@ struct ItemListView: View {
             type: newItemType,
             imageData: newItemImageData,
             armorCategory: newItemType == .armure ? newItemArmorCategory : nil,
-            baseArmorClass: newItemType == .armure && newItemArmorCategory != .vetement ? newItemBaseArmorClass : nil
+            baseArmorClass: newItemType == .armure && newItemArmorCategory != .vetement ? newItemBaseArmorClass : nil,
+            weaponType: newItemType == .arme ? newItemWeaponType : nil,
+            damageDice: newItemType == .arme && !newItemDamageDice.isEmpty ? newItemDamageDice : nil,
+            damageType: newItemType == .arme ? newItemDamageType : nil
         )
         modelContext.insert(newItem)
     }
@@ -212,6 +241,9 @@ struct ItemListView: View {
         selectedPhotoItem = nil
         newItemArmorCategory = nil
         newItemBaseArmorClass = 11
+        newItemWeaponType = nil
+        newItemDamageDice = ""
+        newItemDamageType = nil
     }
 }
 
@@ -251,6 +283,31 @@ struct ItemDetailView: View {
                                    in: 10...20)
                         }
                     }
+                    
+                    // Édition des propriétés d'arme
+                    if item.type == .arme {
+                        Picker("Type d'arme", selection: $item.weaponType) {
+                            Text("Aucun").tag(nil as WeaponType?)
+                            ForEach(WeaponType.allCases, id: \.self) { weaponType in
+                                Text(weaponType.rawValue).tag(weaponType as WeaponType?)
+                            }
+                        }
+                        
+                        TextField("Dés de dégâts (ex: 1d8, 2d6)",
+                                 text: Binding(
+                                     get: { item.damageDice ?? "" },
+                                     set: { item.damageDice = $0.isEmpty ? nil : $0 }
+                                 ))
+                            .keyboardType(.default)
+                            .autocapitalization(.none)
+                        
+                        Picker("Type de dégâts", selection: $item.damageType) {
+                            Text("Aucun").tag(nil as DamageType?)
+                            ForEach(DamageType.allCases, id: \.self) { damageType in
+                                Text(damageType.rawValue).tag(damageType as DamageType?)
+                            }
+                        }
+                    }
                 } else {
                     LabeledContent("Nom", value: item.name)
                     LabeledContent("Type", value: item.type.rawValue)
@@ -266,6 +323,26 @@ struct ItemDetailView: View {
                             }
                         } else {
                             LabeledContent("Catégorie", value: "Non définie")
+                        }
+                    }
+                    // Affichage des propriétés d'arme en lecture seule
+                    if item.type == .arme {
+                        if let weaponType = item.weaponType {
+                            LabeledContent("Type d'arme", value: weaponType.rawValue)
+                        }
+                        
+                        if let damageDice = item.damageDice {
+                            LabeledContent("Dégâts", value: damageDice)
+                        }
+                        
+                        if let damageType = item.damageType {
+                            LabeledContent("Type de dégâts", value: damageType.rawValue)
+                        }
+                        
+                        if item.weaponType == nil && item.damageDice == nil && item.damageType == nil {
+                            Text("Propriétés d'arme non définies")
+                                .foregroundColor(.secondary)
+                                .italic()
                         }
                     }
                 }

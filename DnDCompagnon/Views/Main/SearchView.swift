@@ -60,6 +60,25 @@ struct SearchView: View {
                     }
                 }
                 
+                // Section Items
+                if !filteredItems.isEmpty {
+                    Section(header: Text("Objets (\(filteredItems.count))")) {
+                        ForEach(filteredItems) { item in
+                            NavigationLink {
+                                ItemDetailView(item: item)
+                            } label: {
+                                VStack(alignment: .leading) {
+                                    Label(item.name, systemImage: "backpack.fill")
+                                        .font(.headline)
+                                    Text(item.type.rawValue)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 // Section Sorts
                 if !filteredSpells.isEmpty {
                     Section(header: Text("Sorts (\(filteredSpells.count))")) {

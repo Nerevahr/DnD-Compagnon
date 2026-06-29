@@ -10,9 +10,10 @@ import SwiftData
 
 struct CharacterCreationView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     
     let availableClasses: [DnDClass]
-    let onSave: (Character) -> Void
+    let onSuccess: () -> Void
     
     @State private var name: String = ""
     @State private var selectedClassID: PersistentIdentifier?
@@ -33,6 +34,9 @@ struct CharacterCreationView: View {
     
     // Points de vie
     @State private var maxHitPoints: Int = 8
+    
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
     
     private var defaultMaxHP: Int {
         let constitutionMod = (constitution - 10) / 2
@@ -126,27 +130,43 @@ struct CharacterCreationView: View {
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
+            // ✅ Ajout de l'alerte d'erreur
+            .alert("Erreur", isPresented: $showErrorAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(errorMessage)
+            }
         }
     }
     
     private func createCharacter() {
-        let newCharacter = Character(
-            timestamp: Date(),
-            name: name,
-            level: level,
-            dndClass: selectedClass,
-            race: race,
-            origin: origin,
-            strength: strength,
-            dexterity: dexterity,
-            constitution: constitution,
-            intelligence: intelligence,
-            wisdom: wisdom,
-            charisma: charisma,
-            proficientSkills: Array(proficientSkills),
-            maximumHitPoints: defaultMaxHP
-        )
-        onSave(newCharacter)
+        do {
+            // Le service gère TOUT : création, insertion, sauvegarde
+            let _ = try CharacterService.createCharacter(
+                name: name,
+                level: level,
+                dndClass: selectedClass,
+                race: race,
+                origin: origin,
+                strength: strength,
+                dexterity: dexterity,
+                constitution: constitution,
+                intelligence: intelligence,
+                wisdom: wisdom,
+                charisma: charisma,
+                proficientSkills: Array(proficientSkills),
+                context: modelContext
+            )
+            
+            onSuccess()
+            dismiss()
+        } catch CharacterCreationError.invalidName {
+            errorMessage = "Le nom du personnage est invalide."
+            showErrorAlert = true
+        } catch {
+            errorMessage = "Une erreur s'est produite lors de la création du personnage."
+            showErrorAlert = true
+        }
     }
     
     private func sortedSkills() -> [DnDSkill] {

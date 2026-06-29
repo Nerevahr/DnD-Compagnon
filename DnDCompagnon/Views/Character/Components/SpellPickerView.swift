@@ -5,14 +5,6 @@
 //  Created by Mathieu Verpillat on 11/06/2026.
 //
 
-
-//
-//  SpellPickerView.swift
-//  DnDCompagnon
-//
-//  Created by Mathieu Verpillat on 11/06/2026.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -28,15 +20,21 @@ struct SpellPickerView: View {
     
     @Query private var allSpells: [Spell]
     
+    // Set d'identifiants des sorts préparés
+    private var preparedSpellIds: Set<PersistentIdentifier> {
+        Set(character.preparedSpells.compactMap { $0.baseSpell?.persistentModelID })
+    }
+    
     var spellsToDisplay: [Spell] {
         if showAllClasses {
-            // Tous les sorts moins ceux déjà préparés
-            return allSpells.filter { spell in
-                !character.preparedSpells.contains(where: { $0.id == spell.id })
-            }
+            // Tous les sorts (incluant ceux déjà préparés pour multi-select)
+            return allSpells
         } else {
-            // Seulement les sorts de la classe du personnage
-            return availableSpells
+            // Tous les sorts de la classe (sans filtrer les préparés)
+            guard let className = character.dndClass?.name else { return [] }
+            return allSpells.filter { spell in
+                spell.classes.contains(className)
+            }
         }
     }
     
@@ -82,18 +80,19 @@ struct SpellPickerView: View {
                     ContentUnavailableView(
                         "Aucun sort trouvé",
                         systemImage: "sparkles",
-                        description: Text("Modifiez vos critères de recherche ou tous les sorts sont déjà préparés.")
+                        description: Text("Modifiez vos critères de recherche.")
                     )
                 } else {
                     SpellSelectionList(
                         spellsByLevel: spellsByLevel,
                         showAllClasses: showAllClasses,
-                        onAddSpell: addSpell
+                        selectedSpellIds: preparedSpellIds,
+                        onToggleSpell: toggleSpell
                     )
                 }
             }
             .searchable(text: $searchText, prompt: "Rechercher un sort")
-            .navigationTitle("Ajouter des sorts")
+            .navigationTitle("Préparer des sorts")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -105,9 +104,18 @@ struct SpellPickerView: View {
         }
     }
     
-    private func addSpell(_ spell: Spell) {
+    private func toggleSpell(_ spell: Spell) {
         withAnimation {
-            character.preparedSpells.append(spell)
+            if let index = character.preparedSpells.firstIndex(where: {
+                $0.baseSpell?.persistentModelID == spell.persistentModelID
+            }) {
+                // Le sort est déjà préparé, le retirer
+                character.preparedSpells.remove(at: index)
+            } else {
+                // Le sort n'est pas préparé, l'ajouter
+                let preparedSpell = PreparedSpell(baseSpell: spell)
+                character.preparedSpells.append(preparedSpell)
+            }
         }
     }
 }
@@ -118,17 +126,19 @@ struct SpellPickerView: View {
 struct SpellSelectionList: View {
     let spellsByLevel: [Int: [Spell]]
     let showAllClasses: Bool
-    let onAddSpell: (Spell) -> Void
+    let selectedSpellIds: Set<PersistentIdentifier>
+    let onToggleSpell: (Spell) -> Void
     
     var body: some View {
         List {
             ForEach(spellsByLevel.keys.sorted(), id: \.self) { level in
                 Section(level == 0 ? "Tours de magie" : "Niveau \(level)") {
-                    ForEach(spellsByLevel[level] ?? [], id: \.id) { spell in
+                    ForEach(spellsByLevel[level] ?? [], id: \.persistentModelID) { spell in
                         SpellSelectionRow(
                             spell: spell,
                             showClasses: showAllClasses,
-                            onAdd: { onAddSpell(spell) }
+                            isSelected: selectedSpellIds.contains(spell.persistentModelID),
+                            onToggle: { onToggleSpell(spell) }
                         )
                     }
                 }
@@ -143,10 +153,16 @@ struct SpellSelectionList: View {
 struct SpellSelectionRow: View {
     let spell: Spell
     let showClasses: Bool
-    let onAdd: () -> Void
+    let isSelected: Bool
+    let onToggle: () -> Void
+    
+    // Propriété calculée pour simplifier l'expression
+    private var classesText: String {
+        spell.classes.prefix(2).joined(separator: ", ")
+    }
     
     var body: some View {
-        Button(action: onAdd) {
+        Button(action: onToggle) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(spell.name)
@@ -168,7 +184,7 @@ struct SpellSelectionRow: View {
                             Text("•")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            Text(spell.classes.prefix(2).joined(separator: ", "))
+                            Text(classesText)
                                 .font(.caption)
                                 .foregroundColor(.blue)
                                 .lineLimit(1)
@@ -178,9 +194,12 @@ struct SpellSelectionRow: View {
                 
                 Spacer()
                 
-                Image(systemName: "plus.circle.fill")
-                    .foregroundColor(.green)
+                // Checkbox au lieu du bouton +
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(isSelected ? .purple : .gray)
+                    .font(.title3)
             }
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }

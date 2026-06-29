@@ -5,7 +5,6 @@
 //  Created by Mathieu Verpillat on 11/06/2026.
 //
 
-
 import SwiftUI
 import SwiftData
 
@@ -21,13 +20,15 @@ struct SpellsPage: View {
         guard let className = character.dndClass?.name else { return [] }
         return allSpells.filter { spell in
             spell.classes.contains(className) &&
-            !character.preparedSpells.contains(where: { $0.id == spell.id })
+            !character.preparedSpells.contains(where: { $0.baseSpell?.persistentModelID == spell.persistentModelID })
         }
     }
     
-    var spellsByLevel: [Int: [Spell]] {
-        Dictionary(grouping: character.preparedSpells, by: { $0.niveau })
-            .mapValues { $0.sorted { $0.name < $1.name } }
+    // Changé : maintenant retourne [Int: [PreparedSpell]]
+    var spellsByLevel: [Int: [PreparedSpell]] {
+        let validPreparedSpells = character.preparedSpells.filter { $0.baseSpell != nil }
+        return Dictionary(grouping: validPreparedSpells, by: { $0.baseSpell!.niveau })
+            .mapValues { $0.sorted { ($0.baseSpell?.name ?? "") < ($1.baseSpell?.name ?? "") } }
     }
     
     var body: some View {
@@ -41,7 +42,7 @@ struct SpellsPage: View {
                     Spacer()
                     
                     Button(action: { isShowingSpellPicker = true }) {
-                        Label("Ajouter", systemImage: "plus.circle.fill")
+                        Label("Préparer", systemImage: "book")
                             .font(.headline)
                     }
                 }
@@ -56,7 +57,7 @@ struct SpellsPage: View {
                 if character.preparedSpells.isEmpty {
                     EmptySpellsView()
                 } else {
-                    PreparedSpellsList(spellsByLevel: spellsByLevel, onRemove: removeSpell)
+                    PreparedSpellsList(spellsByLevel: spellsByLevel)
                 }
             }
             .padding()
@@ -65,12 +66,9 @@ struct SpellsPage: View {
             SpellPickerView(character: character, availableSpells: availableSpells)
         }
     }
-    
-    private func removeSpell(_ spell: Spell) {
-        withAnimation {
-            if let index = character.preparedSpells.firstIndex(where: { $0.id == spell.id }) {
-                character.preparedSpells.remove(at: index)
-            }
-        }
-    }
+}
+
+#Preview("Magicien avec armes") {
+    let character = MockData.wizardWithEquippedWeapon()
+    return SpellsPage(character: character)
 }

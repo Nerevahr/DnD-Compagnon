@@ -53,7 +53,7 @@ struct CharacterHeader: View {
                     }
                     .font(.headline)
                     
-                    Label("Niveau \(character.level)", systemImage: "star.fill")
+                    Label("Niveau \(character.level)", systemImage: "bookmark.fill")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

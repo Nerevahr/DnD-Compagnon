@@ -87,7 +87,7 @@ struct SpellDetailView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Description")
                             .font(.headline)
-                        Text(spell.descriptionSort)
+                        Text(.init(spell.descriptionSort))
                             .font(.body)
                     }
                 }
@@ -129,4 +129,8 @@ struct SpellDetailView: View {
             SpellEditView(spell: spell)
         }
     }
+}
+
+#Preview {
+    SpellDetailView(spell: MockData.shieldSpell)
 }

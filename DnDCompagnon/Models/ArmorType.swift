@@ -11,7 +11,7 @@ import Foundation
 enum ArmorCategory: String, Codable, CaseIterable {
     case vetement = "Vêtement"      // CA 10 + Dex (sans armure)
     case legere = "Légère"          // CA de base + Dex complet
-    case moyenne = "Moyenne"        // CA de base + Dex (max +2)
+    case moyenne = "Intermédiaire"        // CA de base + Dex (max +2)
     case lourde = "Lourde"          // CA fixe (pas de bonus Dex)
     
     /// Description de comment fonctionne le calcul de CA

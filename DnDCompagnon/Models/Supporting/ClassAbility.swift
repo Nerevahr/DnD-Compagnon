@@ -5,14 +5,6 @@
 //  Created by Mathieu Verpillat on 11/06/2026.
 //
 
-
-//
-//  ClassAbility.swift
-//  DnDCompagnon
-//
-//  Created by Mathieu Verpillat on 11/06/2026.
-//
-
 import Foundation
 
 /// Structure pour représenter une aptitude (feature) de classe

@@ -56,7 +56,7 @@ struct SpellDetailSheet: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Description")
                                 .font(.headline)
-                            Text(spell.descriptionSort)
+                            Text(.init(spell.descriptionSort))
                                 .font(.body)
                         }
                     }

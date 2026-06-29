@@ -127,11 +127,7 @@ struct InventoryItemRow: View {
             return "figure.fencing"
         case .bouclier:
             return "shield.fill"
-        case .consommable:
-            return "flask.fill"
-        case .tresor:
-            return "diamond.fill"
-        case .outilArtisan:
+        case .tools:
             return "hammer.fill"
         default:
             return "cube.box.fill"
@@ -146,10 +142,6 @@ struct InventoryItemRow: View {
             return .red
         case .bouclier:
             return .green
-        case .consommable:
-            return .purple
-        case .tresor:
-            return .yellow
         default:
             return .gray
         }

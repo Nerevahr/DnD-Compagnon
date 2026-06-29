@@ -25,6 +25,11 @@ enum SpellSeeder {
         let classes: [String]
         let concentration: Bool
         let descriptionSort: String
+        let isOffensive: Bool?
+        let requiresSavingThrow: Bool?
+        let savingThrowStat: String?
+        let damageAmount: String?
+        let alternateDamageAmount: String?
     }
     
     /// Insère les sorts de base uniquement si la base est vide.
@@ -35,9 +40,12 @@ enum SpellSeeder {
         let count = (try? context.fetchCount(descriptor)) ?? 0
         guard count == 0 else { return }
 
-        // Charger les sorts depuis le JSON
-        guard let spells = loadSpellsFromJSON() else {
-            print("❌ Impossible de charger les sorts depuis le JSON")
+        // Liste des fichiers JSON à charger
+        let jsonFiles = ["cleric_spells", "druid_spells"]
+        
+        // Charger les sorts depuis les JSON
+        guard let spells = loadSpellsFromJSON(fileNames: jsonFiles) else {
+            print("❌ Impossible de charger les sorts depuis les JSON")
             return
         }
 
@@ -57,7 +65,12 @@ enum SpellSeeder {
                 niveau: spellData.niveau,
                 classes: spellData.classes,
                 concentration: spellData.concentration,
-                descriptionSort: spellData.descriptionSort
+                descriptionSort: spellData.descriptionSort,
+                isOffensive: spellData.isOffensive ?? false,
+                requiresSavingThrow: spellData.requiresSavingThrow ?? false,
+                savingThrowStat: spellData.savingThrowStat,
+                damageAmount: spellData.damageAmount,
+                alternateDamageAmount: spellData.alternateDamageAmount
             )
             context.insert(spell)
         }
@@ -67,20 +80,26 @@ enum SpellSeeder {
 
     // MARK: - Chargement depuis JSON
     
-    private static func loadSpellsFromJSON() -> [SpellData]? {
-        guard let url = Bundle.main.url(forResource: "spells", withExtension: "json") else {
-            print("❌ Fichier spells.json introuvable")
-            return nil
+    private static func loadSpellsFromJSON(fileNames: [String]) -> [SpellData]? {
+        var allSpells: [SpellData] = []
+        
+        for fileName in fileNames {
+            guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else {
+                print("⚠️ Fichier \(fileName).json introuvable")
+                continue
+            }
+            
+            do {
+                let data = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                let spells = try decoder.decode([SpellData].self, from: data)
+                allSpells.append(contentsOf: spells)
+                print("✅ \(spells.count) sorts chargés depuis \(fileName).json")
+            } catch {
+                print("❌ Erreur lors du décodage de \(fileName).json: \(error)")
+            }
         }
         
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let spells = try decoder.decode([SpellData].self, from: data)
-            return spells
-        } catch {
-            print("❌ Erreur lors du décodage du JSON: \(error)")
-            return nil
-        }
+        return allSpells.isEmpty ? nil : allSpells
     }
 }
