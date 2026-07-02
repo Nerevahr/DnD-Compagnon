@@ -10,6 +10,45 @@ import Foundation
 /// Données fictives pour les previews et tests
 struct MockData {
     
+    // MARK: - Races
+    
+    static let humanRace = Race(
+        name: "Humain",
+        abilities: [
+            RaceAbility(name: "Polyvalence", description: "+1 à toutes les caractéristiques")
+        ],
+        abilityBonuses: [
+            "Force": 1, "Dextérité": 1, "Constitution": 1,
+            "Intelligence": 1, "Sagesse": 1, "Charisme": 1
+        ],
+        speed: 30,
+        defaultSize: "Moyen"
+    )
+    
+    static let elfRace = Race(
+        name: "Elfe",
+        abilities: [
+            RaceAbility(name: "Vision dans le noir", description: "Vision à 60 pieds dans le noir"),
+            RaceAbility(name: "Sens aiguisés", description: "Maîtrise de la compétence Perception"),
+            RaceAbility(name: "Ascendance féerique", description: "Avantage aux jets de sauvegarde contre la magie de charme")
+        ],
+        abilityBonuses: ["Dextérité": 2],
+        speed: 30,
+        defaultSize: "Moyen"
+    )
+    
+    static let dwarfRace = Race(
+        name: "Nain",
+        abilities: [
+            RaceAbility(name: "Vision dans le noir", description: "Vision à 60 pieds dans le noir"),
+            RaceAbility(name: "Résistance naine", description: "Avantage aux jets de sauvegarde contre le poison"),
+            RaceAbility(name: "Formation aux armes naines", description: "Maîtrise des armes naines")
+        ],
+        abilityBonuses: ["Constitution": 2],
+        speed: 25,
+        defaultSize: "Moyen"
+    )
+    
     // MARK: - Classes
     
     static let wizardClass = DnDClass(
@@ -91,8 +130,9 @@ struct MockData {
     static let shield = Item(
         name: "Bouclier",
         itemDescription: "Un bouclier rond en bois",
-        type: .bouclier,
+        type: .bouclier
     )
+    
     // MARK: - Spells (Tours de magie offensifs)
     
     static let fireBolt = Spell(
@@ -209,7 +249,7 @@ struct MockData {
         name: "Gandalf",
         level: 3,
         dndClass: wizardClass,
-        race: "Humain",
+        race: humanRace,
         origin: "Érudit",
         strength: 10,
         dexterity: 14,
@@ -221,7 +261,7 @@ struct MockData {
         preparedSpells: [
             prepareSpell(fireBolt),
             prepareSpell(rayOfFrost),
-            prepareSpellWithCustomDamage(shockingGrasp, customDamage: "2d8"), // Exemple de personnalisation
+            prepareSpellWithCustomDamage(shockingGrasp, customDamage: "2d8"),
             prepareSpell(magicMissile),
             prepareSpell(shieldSpell)
         ],
@@ -232,7 +272,7 @@ struct MockData {
         name: "Conan",
         level: 5,
         dndClass: fighterClass,
-        race: "Humain",
+        race: dwarfRace,
         origin: "Soldat",
         strength: 18,
         dexterity: 14,

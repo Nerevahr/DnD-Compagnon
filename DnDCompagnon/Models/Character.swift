@@ -16,7 +16,7 @@ final class Character {
     
     // Relation vers la classe
     var dndClass: DnDClass?
-    var race: String
+    @Relationship(deleteRule: .nullify) var race: Race?
     var origin: String // origine
     var size: String // Catégorie de taille (Petit, Moyen, Grand, etc.)
     
@@ -47,6 +47,7 @@ final class Character {
     @Relationship(deleteRule: .nullify) var equippedShield: Item?
     // Inventaire du personnage
     @Relationship(deleteRule: .nullify) var inventory: [Item]
+    var gold: Double = 0.0
     
     @Attribute(.externalStorage) var profileImageData: Data?
     
@@ -222,7 +223,7 @@ final class Character {
         name: String,
         level: Int = 1,
         dndClass: DnDClass? = nil,
-        race: String = "",
+        race: Race? = nil,
         origin: String = "",
         size: String = "Moyen",
         strength: Int = 10,
@@ -239,7 +240,8 @@ final class Character {
         equippedShield: Item? = nil,
         currentHitPoints: Int? = nil,
         maximumHitPoints: Int? = nil,
-        usedSpellSlots: [Int: Int] = [:]
+        usedSpellSlots: [Int: Int] = [:],
+        gold: Double = 0.0
     ) {
         self.timestamp = timestamp
         self.name = name
@@ -269,6 +271,7 @@ final class Character {
         self.maximumHitPoints = finalMaxHP
         self.currentHitPoints = currentHitPoints ?? finalMaxHP
         self.usedSpellSlots = usedSpellSlots // ✅ Initialisation
+        self.gold = gold
     }
 }
 

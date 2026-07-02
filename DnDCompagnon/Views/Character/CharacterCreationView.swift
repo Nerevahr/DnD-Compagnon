@@ -13,11 +13,12 @@ struct CharacterCreationView: View {
     @Environment(\.modelContext) private var modelContext
     
     let availableClasses: [DnDClass]
+    let availableRaces: [Race] // Ajouter la liste des races disponibles
     let onSuccess: () -> Void
     
     @State private var name: String = ""
     @State private var selectedClassID: PersistentIdentifier?
-    @State private var race: String = ""
+    @State private var selectedRaceID: PersistentIdentifier? // Changé de String à ID
     @State private var origin: String = ""
     @State private var level: Int = 1
     
@@ -47,6 +48,10 @@ struct CharacterCreationView: View {
         availableClasses.first { $0.id == selectedClassID }
     }
     
+    private var selectedRace: Race? {
+        availableRaces.first { $0.id == selectedRaceID }
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -60,9 +65,32 @@ struct CharacterCreationView: View {
                         }
                     }
                     
-                    TextField("Race", text: $race)
+                    Picker("Race", selection: $selectedRaceID) {
+                        Text("Aucune race").tag(nil as PersistentIdentifier?)
+                        ForEach(availableRaces) { race in
+                            Text(race.name).tag(race.id as PersistentIdentifier?)
+                        }
+                    }
+                    
                     TextField("Origine", text: $origin)
                     Stepper("Niveau: \(level)", value: $level, in: 1...20)
+                }
+                
+                // Section pour afficher les aptitudes de la race sélectionnée
+                if let race = selectedRace, !race.abilities.isEmpty {
+                    Section("Aptitudes raciales") {
+                        ForEach(race.abilities) { ability in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(ability.name)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                Text(ability.description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
                 }
                 
                 Section {
@@ -130,7 +158,6 @@ struct CharacterCreationView: View {
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
-            // ✅ Ajout de l'alerte d'erreur
             .alert("Erreur", isPresented: $showErrorAlert) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -146,7 +173,7 @@ struct CharacterCreationView: View {
                 name: name,
                 level: level,
                 dndClass: selectedClass,
-                race: race,
+                race: selectedRace, // Maintenant c'est un objet Race?
                 origin: origin,
                 strength: strength,
                 dexterity: dexterity,

@@ -16,6 +16,10 @@ struct InventoryPage: View {
     @Bindable var character: Character
     
     @State private var showingItemPicker = false
+    @State private var showingGoldEditor = false
+
+
+    
     
     var body: some View {
         ScrollView {
@@ -32,13 +36,21 @@ struct InventoryPage: View {
                     Text("Or")
                         .font(.headline)
                     Spacer()
-                    Text("0")
+                    Text(String(format: "%.2f", character.gold))
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(.orange)
                     Text("po")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    
+                    Button {
+                        showingGoldEditor = true
+                    } label: {
+                        Image(systemName: "pencil.circle.fill")
+                            .font(.title3)
+                            .foregroundColor(.orange)
+                    }
                 }
                 .padding()
                 .background(Color.orange.opacity(0.1))
@@ -124,6 +136,9 @@ struct InventoryPage: View {
                 character: character,
                 allItems: allItems
             )
+        }
+        .sheet(isPresented: $showingGoldEditor) {
+            GoldEditorView(gold: $character.gold)
         }
     }
     

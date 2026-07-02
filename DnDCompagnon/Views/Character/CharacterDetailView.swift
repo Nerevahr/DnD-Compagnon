@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 struct CharacterDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var classes: [DnDClass]
+    @Query private var races: [Race] // Ajouter la query pour les races
     
     @Bindable var character: Character
 
@@ -32,9 +33,11 @@ struct CharacterDetailView: View {
                 PageIndicator(title: "Caractéristiques", isActive: currentPage == 0)
                 PageIndicator(title: "Combat", isActive: currentPage == 1)
                 PageIndicator(title: "Sorts", isActive: currentPage == 2)
-                PageIndicator(title: "Inventaire", isActive: currentPage == 3)
+                PageIndicator(title: "Aptitudes", isActive: currentPage == 3)
+                PageIndicator(title: "Inventaire", isActive: currentPage == 4)
             }
             .padding(.vertical, 8)
+
             
             // TabView avec pages scrollables
             TabView(selection: $currentPage) {
@@ -47,8 +50,11 @@ struct CharacterDetailView: View {
                 SpellsPage(character: character)
                     .tag(2)
                 
-                InventoryPage(character: character)
+                AbilitiesPage(character: character)
                     .tag(3)
+                
+                InventoryPage(character: character)
+                    .tag(4)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
@@ -73,7 +79,7 @@ struct CharacterDetailView: View {
             }
         }
         .sheet(isPresented: $isShowingEditSheet) {
-            CharacterEditView(character: character, availableClasses: classes)
+            CharacterEditView(character: character, availableClasses: classes, availableRaces: races)
         }
         .fileExporter(
             isPresented: $showingExportDialog,

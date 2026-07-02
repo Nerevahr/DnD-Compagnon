@@ -1,0 +1,73 @@
+[
+  {
+    "name": "Humain",
+    "abilities": [
+      {
+        "name": "Polyvalence",
+        "description": "+1 à toutes les caractéristiques"
+      }
+    ],
+    "abilityBonuses": {
+      "Force": 1,
+      "Dextérité": 1,
+      "Constitution": 1,
+      "Intelligence": 1,
+      "Sagesse": 1,
+      "Charisme": 1
+    },
+    "speed": 30,
+    "defaultSize": "Moyen"
+  },
+  {
+    "name": "Elfe",
+    "abilities": [
+      {
+        "name": "Vision dans le noir",
+        "description": "Vision à 60 pieds dans le noir"
+      },
+      {
+        "name": "Sens aiguisés",
+        "description": "Maîtrise de la compétence Perception"
+      },
+      {
+        "name": "Ascendance féerique",
+        "description": "Avantage aux jets de sauvegarde contre la magie de charme et immunité au sommeil magique"
+      },
+      {
+        "name": "Transe",
+        "description": "Les elves n'ont pas besoin de dormir. Ils méditent 4 heures par jour au lieu de dormir 8 heures"
+      }
+    ],
+    "abilityBonuses": {
+      "Dextérité": 2
+    },
+    "speed": 30,
+    "defaultSize": "Moyen"
+  },
+  {
+    "name": "Nain",
+    "abilities": [
+      {
+        "name": "Vision dans le noir",
+        "description": "Vision à 60 pieds dans le noir"
+      },
+      {
+        "name": "Résistance naine",
+        "description": "Avantage aux jets de sauvegarde contre le poison et résistance aux dégâts de poison"
+      },
+      {
+        "name": "Connaissance de la pierre",
+        "description": "Chaque fois que vous effectuez un test d'Intelligence (Histoire) lié à l'origine d'un travail lié à la pierre, vous êtes considéré comme maîtrisant la compétence Histoire et vous ajoutez le double de votre bonus de maîtrise au test"
+      },
+      {
+        "name": "Formation aux armes naines",
+        "description": "Maîtrise des haches de guerre, hachettes, marteaux légers et marteaux de guerre"
+      }
+    ],
+    "abilityBonuses": {
+      "Constitution": 2
+    },
+    "speed": 25,
+    "defaultSize": "Moyen"
+  }
+]

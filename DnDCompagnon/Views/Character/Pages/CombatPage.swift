@@ -90,13 +90,3 @@ struct CombatPage: View {
 #Preview("Guerrier") {
     CombatPage(character: MockData.fighter)
 }
-
-#Preview("Sans armes ni sorts") {
-    let emptyCharacter = Character(
-        name: "Aventurier débutant",
-        level: 1,
-        race: "Halfelin",
-        origin: "Criminel"
-    )
-    return CombatPage(character: emptyCharacter)
-}

@@ -15,7 +15,7 @@ import UIKit
 struct CharacterJSON: Codable {
     var name: String
     var level: Int
-    var race: String
+    var race: String // Changé de race à raceName
     var origin: String
     var size: String
     
@@ -51,6 +51,9 @@ struct CharacterJSON: Codable {
     var equippedWeaponName: String?
     var equippedShieldName: String?
     
+    // Or
+    var gold: Double
+    
     // Image de profil (encodée en base64)
     var profileImageBase64: String?
     
@@ -83,7 +86,7 @@ enum CharacterImportExportService {
         let characterJSON = CharacterJSON(
             name: character.name,
             level: character.level,
-            race: character.race,
+            race: character.race?.name ?? "", // Utiliser le nom de la race
             origin: character.origin,
             size: character.size,
             strength: character.strength,
@@ -102,6 +105,7 @@ enum CharacterImportExportService {
             equippedArmorName: character.equippedArmor?.name,
             equippedWeaponName: character.equippedWeapon?.name,
             equippedShieldName: character.equippedShield?.name,
+            gold: character.gold,
             profileImageBase64: profileImageBase64,
             exportDate: Date(),
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -139,10 +143,16 @@ enum CharacterImportExportService {
         let characterJSON = try decoder.decode(CharacterJSON.self, from: data)
         
         // Trouver la classe par son nom
-        let fetchDescriptor = FetchDescriptor<DnDClass>(
+        let classFetchDescriptor = FetchDescriptor<DnDClass>(
             predicate: #Predicate<DnDClass> { $0.name == characterJSON.className ?? "" }
         )
-        let dndClass = try? context.fetch(fetchDescriptor).first
+        let dndClass = try? context.fetch(classFetchDescriptor).first
+        
+        // Trouver la race par son nom
+        let raceFetchDescriptor = FetchDescriptor<Race>(
+            predicate: #Predicate<Race> { $0.name == characterJSON.race }
+        )
+        let race = try? context.fetch(raceFetchDescriptor).first
         
         // Convertir usedSpellSlots avec clés Int
         let usedSpellSlots = characterJSON.usedSpellSlots.reduce(into: [Int: Int]()) { result, pair in
@@ -161,7 +171,7 @@ enum CharacterImportExportService {
             name: characterJSON.name,
             level: characterJSON.level,
             dndClass: dndClass,
-            race: characterJSON.race,
+            race: race,
             origin: characterJSON.origin,
             size: characterJSON.size,
             strength: characterJSON.strength,
@@ -173,7 +183,8 @@ enum CharacterImportExportService {
             proficientSkills: characterJSON.proficientSkills,
             currentHitPoints: characterJSON.currentHitPoints,
             maximumHitPoints: characterJSON.maximumHitPoints,
-            usedSpellSlots: usedSpellSlots
+            usedSpellSlots: usedSpellSlots,
+            gold: characterJSON.gold
         )
         
         character.profileImageData = profileImageData
@@ -243,6 +254,7 @@ enum CharacterImportExportService {
 enum CharacterImportExportError: LocalizedError {
     case invalidJSON
     case classNotFound
+    case raceNotFound
     case spellNotFound(String)
     case itemNotFound(String)
     
@@ -252,6 +264,8 @@ enum CharacterImportExportError: LocalizedError {
             return "Le fichier JSON n'est pas valide"
         case .classNotFound:
             return "La classe du personnage n'a pas été trouvée"
+        case .raceNotFound:
+            return "La race du personnage n'a pas été trouvée"
         case .spellNotFound(let name):
             return "Le sort '\(name)' n'a pas été trouvé"
         case .itemNotFound(let name):

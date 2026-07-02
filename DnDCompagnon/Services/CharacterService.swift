@@ -16,7 +16,7 @@ enum CharacterService {
         name: String,
         level: Int,
         dndClass: DnDClass?,
-        race: String,
+        race: Race?, // Changé de String à Race?
         origin: String,
         strength: Int,
         dexterity: Int,
@@ -37,7 +37,7 @@ enum CharacterService {
             name: name,
             level: level,
             dndClass: dndClass,
-            race: race,
+            race: race, // Maintenant c'est un objet Race?
             origin: origin,
             strength: strength,
             dexterity: dexterity,

@@ -334,7 +334,7 @@
 				C6893BE12FD951B400627813 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		C6893BE22FD951B400627813 /* Build configuration list for PBXNativeTarget "DnDCompagnon" */ = {
 			isa = XCConfigurationList;
@@ -343,7 +343,7 @@
 				C6893BE42FD951B400627813 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

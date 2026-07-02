@@ -6,13 +6,6 @@
 //
 
 
-//
-//  CharacterEditView.swift
-//  DnDCompagnon
-//
-//  Created by Mathieu Verpillat on 11/06/2026.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -21,6 +14,7 @@ struct CharacterEditView: View {
     
     @Bindable var character: Character
     let availableClasses: [DnDClass]
+    let availableRaces: [Race] // Ajouter la liste des races
     
     @State private var proficientSkills: Set<String> = []
     
@@ -37,11 +31,33 @@ struct CharacterEditView: View {
                         }
                     }
                     
-                    TextField("Race", text: $character.race)
+                    Picker("Race", selection: $character.race) {
+                        Text("Aucune race").tag(nil as Race?)
+                        ForEach(availableRaces) { race in
+                            Text(race.name).tag(race as Race?)
+                        }
+                    }
                     
                     TextField("Origine", text: $character.origin)
                     
                     Stepper("Niveau: \(character.level)", value: $character.level, in: 1...20)
+                }
+                
+                // Section pour afficher les aptitudes de la race actuelle
+                if let race = character.race, !race.abilities.isEmpty {
+                    Section("Aptitudes raciales") {
+                        ForEach(race.abilities) { ability in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(ability.name)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                Text(ability.description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
                 }
                 
                 Section {

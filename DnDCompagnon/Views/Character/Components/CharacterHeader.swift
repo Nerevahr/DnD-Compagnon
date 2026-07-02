@@ -34,8 +34,8 @@ struct CharacterHeader: View {
                         .fontWeight(.bold)
                     
                     HStack {
-                        if !character.race.isEmpty {
-                            Label(character.race, systemImage: "person.fill")
+                        if let race = character.race {
+                            Label(race.name, systemImage: "person.fill")
                                 .foregroundColor(.green)
                         }
                         if !character.origin.isEmpty {
