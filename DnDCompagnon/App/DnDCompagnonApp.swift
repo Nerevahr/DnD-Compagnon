@@ -15,15 +15,16 @@ struct DnDCompagnonApp: App {
     init() {
         do {
             let config = ModelConfiguration(
-                schema: Schema([Character.self, Spell.self, Item.self, DnDClass.self, Race.self]),
+                schema: Schema([Character.self, Spell.self, Item.self, DnDClass.self, Race.self, Background.self]),
                 isStoredInMemoryOnly: false
             )
-            container = try ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, Race.self, configurations: config)
+            container = try ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, Race.self, Background.self, configurations: config)
             
             SpellSeeder.seedIfNeeded(context: container.mainContext)
             ClassSeeder.seedIfNeeded(context: container.mainContext)
             ItemSeeder.seedIfNeeded(context: container.mainContext)
             RaceSeeder.seedIfNeeded(context: container.mainContext)
+            BackgroundSeeder.seedIfNeeded(context: container.mainContext)
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")
         }

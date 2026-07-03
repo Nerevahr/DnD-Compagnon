@@ -38,8 +38,8 @@ struct CharacterHeader: View {
                             Label(race.name, systemImage: "person.fill")
                                 .foregroundColor(.green)
                         }
-                        if !character.origin.isEmpty {
-                            Label(character.origin, systemImage: "book.fill")
+                        if let origin = character.origin  {
+                            Label(origin.name, systemImage: "book.fill")
                                 .foregroundColor(.orange)
                         }
                     }

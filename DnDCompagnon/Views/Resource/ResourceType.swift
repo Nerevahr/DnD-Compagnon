@@ -10,7 +10,9 @@ import SwiftUI
 enum ResourceType: String, CaseIterable {
     case spells = "Sorts"
     case items = "Objets"
-    case classes = "Classes"  // ← Nouveau
+    case classes = "Classes"
+    case races = "Races"
+    case backgrounds = "Origines"  // ← ajouter
 }
 
 struct ResourcesView: View {
@@ -27,6 +29,10 @@ struct ResourcesView: View {
                     ItemListView(resourceSelector: AnyView(resourceSelectorView))
                 case .classes:
                     ClassListView(resourceSelector: AnyView(resourceSelectorView))
+                case .races:
+                    RaceListView(resourceSelector: AnyView(resourceSelectorView))
+                case .backgrounds:
+                    BackgroundListView(resourceSelector: AnyView(resourceSelectorView))
                 }
             }
         }

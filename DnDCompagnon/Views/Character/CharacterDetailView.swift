@@ -79,7 +79,7 @@ struct CharacterDetailView: View {
             }
         }
         .sheet(isPresented: $isShowingEditSheet) {
-            CharacterEditView(character: character, availableClasses: classes, availableRaces: races)
+            CharacterEditView(character: character)
         }
         .fileExporter(
             isPresented: $showingExportDialog,

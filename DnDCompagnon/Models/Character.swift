@@ -17,7 +17,7 @@ final class Character {
     // Relation vers la classe
     var dndClass: DnDClass?
     @Relationship(deleteRule: .nullify) var race: Race?
-    var origin: String // origine
+    @Relationship(deleteRule: .nullify) var origin: Background?
     var size: String // Catégorie de taille (Petit, Moyen, Grand, etc.)
     
     // Stats de base (scores de caractéristiques)
@@ -224,7 +224,7 @@ final class Character {
         level: Int = 1,
         dndClass: DnDClass? = nil,
         race: Race? = nil,
-        origin: String = "",
+        origin: Background? = nil,
         size: String = "Moyen",
         strength: Int = 10,
         dexterity: Int = 10,

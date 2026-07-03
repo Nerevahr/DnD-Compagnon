@@ -16,8 +16,8 @@ enum CharacterService {
         name: String,
         level: Int,
         dndClass: DnDClass?,
-        race: Race?, // Changé de String à Race?
-        origin: String,
+        race: Race?,           // ← était String
+        background: Background?, // ← était origin: Background?
         strength: Int,
         dexterity: Int,
         constitution: Int,
@@ -27,18 +27,17 @@ enum CharacterService {
         proficientSkills: [String],
         context: ModelContext
     ) throws -> Character {
-        // Validation
         guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw CharacterCreationError.invalidName
         }
-        
+
         let character = Character(
             timestamp: Date(),
             name: name,
             level: level,
             dndClass: dndClass,
-            race: race, // Maintenant c'est un objet Race?
-            origin: origin,
+            race: race,
+            origin: background,
             strength: strength,
             dexterity: dexterity,
             constitution: constitution,
@@ -47,10 +46,10 @@ enum CharacterService {
             charisma: charisma,
             proficientSkills: proficientSkills
         )
-        
+
         context.insert(character)
         try context.save()
-        
+
         return character
     }
     

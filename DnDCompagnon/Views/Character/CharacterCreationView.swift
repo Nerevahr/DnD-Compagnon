@@ -19,6 +19,7 @@ struct CharacterCreationView: View {
     @State private var name: String = ""
     @State private var selectedClassID: PersistentIdentifier?
     @State private var selectedRaceID: PersistentIdentifier? // Changé de String à ID
+    @State private var selectedBackgroundID: PersistentIdentifier?
     @State private var origin: String = ""
     @State private var level: Int = 1
     
@@ -38,6 +39,12 @@ struct CharacterCreationView: View {
     
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
+    
+    @Query(sort: \Background.name) private var backgrounds: [Background]
+
+    private var selectedBackground: Background? {
+        backgrounds.first { $0.id == selectedBackgroundID }
+    }
     
     private var defaultMaxHP: Int {
         let constitutionMod = (constitution - 10) / 2
@@ -72,7 +79,12 @@ struct CharacterCreationView: View {
                         }
                     }
                     
-                    TextField("Origine", text: $origin)
+                    Picker("Origine", selection: $selectedBackgroundID) {
+                        Text("Aucune origine").tag(nil as PersistentIdentifier?)
+                        ForEach(backgrounds) { background in
+                            Text(background.name).tag(background.id as PersistentIdentifier?)
+                        }
+                    }
                     Stepper("Niveau: \(level)", value: $level, in: 1...20)
                 }
                 
@@ -173,8 +185,8 @@ struct CharacterCreationView: View {
                 name: name,
                 level: level,
                 dndClass: selectedClass,
-                race: selectedRace, // Maintenant c'est un objet Race?
-                origin: origin,
+                race: selectedRace,
+                background: selectedBackground, // ← était origin: origin
                 strength: strength,
                 dexterity: dexterity,
                 constitution: constitution,

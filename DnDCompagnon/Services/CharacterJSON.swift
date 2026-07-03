@@ -86,8 +86,8 @@ enum CharacterImportExportService {
         let characterJSON = CharacterJSON(
             name: character.name,
             level: character.level,
-            race: character.race?.name ?? "", // Utiliser le nom de la race
-            origin: character.origin,
+            race: character.race?.name ?? "",
+            origin: character.origin?.name ?? "",
             size: character.size,
             strength: character.strength,
             dexterity: character.dexterity,
@@ -154,6 +154,11 @@ enum CharacterImportExportService {
         )
         let race = try? context.fetch(raceFetchDescriptor).first
         
+        let originFetchDescriptor = FetchDescriptor<Background>(
+            predicate: #Predicate<Background> { $0.name == characterJSON.origin }
+        )
+        let origin = try? context.fetch(originFetchDescriptor).first
+        
         // Convertir usedSpellSlots avec clés Int
         let usedSpellSlots = characterJSON.usedSpellSlots.reduce(into: [Int: Int]()) { result, pair in
             if let key = Int(pair.key) {
@@ -172,7 +177,7 @@ enum CharacterImportExportService {
             level: characterJSON.level,
             dndClass: dndClass,
             race: race,
-            origin: characterJSON.origin,
+            origin: origin,
             size: characterJSON.size,
             strength: characterJSON.strength,
             dexterity: characterJSON.dexterity,

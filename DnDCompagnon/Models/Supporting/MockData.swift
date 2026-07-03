@@ -244,13 +244,12 @@ struct MockData {
     }
     
     // MARK: - Characters
-    
+
     static let wizard = Character(
         name: "Gandalf",
         level: 3,
         dndClass: wizardClass,
-        race: humanRace,
-        origin: "Érudit",
+        origin: nil,
         strength: 10,
         dexterity: 14,
         constitution: 12,
@@ -267,13 +266,12 @@ struct MockData {
         ],
         inventory: [longsword, dagger, shortbow, leatherArmor]
     )
-    
+
     static let fighter = Character(
         name: "Conan",
         level: 5,
         dndClass: fighterClass,
-        race: dwarfRace,
-        origin: "Soldat",
+        origin: nil,
         strength: 18,
         dexterity: 14,
         constitution: 16,
@@ -286,7 +284,6 @@ struct MockData {
         equippedArmor: chainmail,
         equippedWeapon: greatsword
     )
-    
     /// Configure un personnage avec une arme équipée
     static func wizardWithEquippedWeapon() -> Character {
         let char = wizard
