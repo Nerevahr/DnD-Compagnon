@@ -12,14 +12,14 @@ struct SpellEditView: View {
     @Environment(\.dismiss) private var dismiss
     
     @Bindable var spell: Spell
-    
-    @State private var editingClasses: Set<String> = []
-    
-    let ecolesDeMagie = [
-        "Abjuration", "Conjuration", "Divination", "Enchantement",
-        "Évocation", "Illusion", "Nécromancie", "Transmutation"
-    ]
-    
+
+    @State private var viewModel: SpellEditViewModel
+
+    init(spell: Spell) {
+        self.spell = spell
+        _viewModel = State(initialValue: SpellEditViewModel(spell: spell))
+    }
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -50,7 +50,7 @@ struct SpellEditView: View {
                             Text("École")
                                 .font(.headline)
                             Picker("École", selection: $spell.ecole) {
-                                ForEach(ecolesDeMagie, id: \.self) { ecole in
+                                ForEach(SpellEditViewModel.ecolesDeMagie, id: \.self) { ecole in
                                     Text(ecole).tag(ecole)
                                 }
                             }
@@ -172,18 +172,14 @@ struct SpellEditView: View {
                             HStack {
                                 ForEach(Spell.classesDnD, id: \.self) { classe in
                                     Button(action: {
-                                        if editingClasses.contains(classe) {
-                                            editingClasses.remove(classe)
-                                        } else {
-                                            editingClasses.insert(classe)
-                                        }
+                                        viewModel.toggleClass(classe)
                                     }) {
                                         Text(classe)
                                             .font(.caption)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 6)
-                                            .background(editingClasses.contains(classe) ? Color.accentColor : Color.gray.opacity(0.2))
-                                            .foregroundColor(editingClasses.contains(classe) ? .white : .primary)
+                                            .background(viewModel.editingClasses.contains(classe) ? Color.accentColor : Color.gray.opacity(0.2))
+                                            .foregroundColor(viewModel.editingClasses.contains(classe) ? .white : .primary)
                                             .cornerRadius(8)
                                     }
                                 }
@@ -214,30 +210,11 @@ struct SpellEditView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Enregistrer") {
-                        // Sauvegarder les classes
-                        spell.classes = Array(editingClasses).sorted()
-                        
-                        // Nettoyer les données conditionnelles
-                        if !spell.componentM {
-                            spell.materialDescription = ""
-                        }
-                        if !spell.isOffensive {
-                            spell.damageAmount = nil
-                            spell.alternateDamageAmount = nil
-                            spell.requiresSavingThrow = false
-                            spell.savingThrowStat = nil
-                        }
-                        if !spell.requiresSavingThrow {
-                            spell.savingThrowStat = nil
-                        }
-                        
+                        viewModel.save()
                         dismiss()
                     }
-                    .disabled(spell.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(!viewModel.isValid)
                 }
-            }
-            .onAppear {
-                editingClasses = Set(spell.classes)
             }
         }
     }
