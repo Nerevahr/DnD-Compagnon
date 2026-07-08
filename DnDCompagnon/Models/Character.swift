@@ -32,6 +32,9 @@ final class Character {
     var currentHitPoints: Int
     var maximumHitPoints: Int
     
+    // Historique des PV gagnés par niveau (clé: niveau, valeur: PV gagnés)
+    var hpLevelHistory: [Int: Int] = [:]
+    
     // Compétences maîtrisées par le personnage (liste des noms)
     var proficientSkills: [String]
     
@@ -384,5 +387,133 @@ extension Character {
     /// Vérifie si un don est déjà attribué au personnage
     func hasFeat(_ feat: Feat) -> Bool {
         feats.contains { $0.id == feat.id }
+    }
+}
+
+// MARK: - Level and HP Management
+
+extension Character {
+    /// Augmente le niveau du personnage et enregistre les PV gagnés
+    /// - Parameter dieRoll: Résultat du dé de gain de PV
+    func levelUp(dieRoll: Int) {
+        // Valider que le niveau n'est pas déjà au maximum
+        guard level < 20 else { return }
+        
+        // Sauvegarder l'ancien niveau pour la validation
+        let previousLevel = level
+        
+        // Calculer le gain de PV : dé + modificateur de Constitution, minimum 1
+        let hpGain = max(1, dieRoll + constitutionModifier)
+        
+        // Augmenter le niveau
+        level += 1
+        
+        // Validation: vérifier que le niveau a bien augmenté
+        assert(level == previousLevel + 1, "Level increment failed: \(previousLevel) -> \(level)")
+        
+        // Enregistrer le gain dans l'historique
+        hpLevelHistory[level] = hpGain
+        
+        // Validation: vérifier que l'historique a bien enregistré la valeur
+        assert(hpLevelHistory[level] == hpGain, "HP history recording failed at level \(level)")
+        
+        // Augmenter les PV max
+        maximumHitPoints += hpGain
+        
+        // Augmenter les PV actuels du même montant (restauration partielle)
+        currentHitPoints = min(currentHitPoints + hpGain, maximumHitPoints)
+        
+        // Diagnostique pour le débogage
+        print("✅ Level Up Success: Lvl \(level), HP Gain: \(hpGain), Max HP: \(maximumHitPoints), History: \(hpLevelHistory)")
+    }
+    
+    /// Diminue le niveau du personnage et retire les PV correspondants
+    /// - Retourne `true` si la descente a réussi, `false` si le niveau est déjà 1
+    @discardableResult
+    func levelDown() -> Bool {
+        guard level > 1 else { return false }
+        
+        let previousLevel = level
+        
+        // Récupérer le gain de PV du niveau actuel AVANT de le diminuer
+        if let hpGain = hpLevelHistory[level] {
+            // Retirer les PV max
+            maximumHitPoints = max(1, maximumHitPoints - hpGain)
+            
+            // Retirer les PV actuels (sans descendre en dessous de 1)
+            currentHitPoints = min(currentHitPoints, maximumHitPoints)
+            
+            // Supprimer l'entrée de l'historique
+            hpLevelHistory.removeValue(forKey: level)
+        }
+        
+        // Diminuer le niveau
+        level -= 1
+        
+        // Validation
+        assert(level == previousLevel - 1, "Level decrement failed: \(previousLevel) -> \(level)")
+        
+        print("✅ Level Down Success: Lvl \(level), Max HP: \(maximumHitPoints), History: \(hpLevelHistory)")
+        
+        return true
+    }
+}
+
+// MARK: - Validation & Debugging
+
+extension Character {
+    /// Valide la cohérence des données du personnage
+    /// Retourne un message d'erreur si des incohérences sont détectées
+    func validateIntegrity() -> String? {
+        // Vérifier que le niveau est dans les limites valides
+        if level < 1 || level > 20 {
+            return "❌ Niveau invalide: \(level) (doit être entre 1 et 20)"
+        }
+        
+        // Vérifier que les PV max sont positifs
+        if maximumHitPoints < 1 {
+            return "❌ PV max invalides: \(maximumHitPoints) (doit être > 0)"
+        }
+        
+        // Vérifier que les PV actuels ne dépassent pas les PV max
+        if currentHitPoints > maximumHitPoints {
+            return "❌ PV actuels (\(currentHitPoints)) > PV max (\(maximumHitPoints))"
+        }
+        
+        // Vérifier que l'historique n'a pas d'entrées pour les niveaux impossibles
+        for (histLevel, _) in hpLevelHistory {
+            if histLevel < 2 || histLevel > 20 {
+                return "❌ Entrée d'historique invalide au niveau \(histLevel)"
+            }
+        }
+        
+        // Vérifier que toutes les entrées d'historique sont positives
+        for (_, hpGain) in hpLevelHistory {
+            if hpGain < 1 {
+                return "❌ Gain de PV invalide: \(hpGain) (doit être > 0)"
+            }
+        }
+        
+        // ✅ Tout est valide
+        return nil
+    }
+    
+    /// Affiche un rapport de diagnostic complet
+    func printDiagnostics() {
+        print("""
+        === CHARACTER DIAGNOSTICS ===
+        Name: \(name)
+        Level: \(level)
+        Max HP: \(maximumHitPoints)
+        Current HP: \(currentHitPoints)
+        HP History: \(hpLevelHistory)
+        Constitution Modifier: \(constitutionModifier)
+        """)
+        
+        if let error = validateIntegrity() {
+            print("⚠️  VALIDATION ERROR: \(error)")
+        } else {
+            print("✅ All validations passed")
+        }
     }
 }

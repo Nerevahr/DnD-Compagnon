@@ -15,6 +15,12 @@ struct CharacterDetailView: View {
     init(character: Character) {
         self.character = character
         _viewModel = State(initialValue: CharacterDetailViewModel(character: character))
+        
+        // Valider l'intégrité du personnage au chargement
+        if let error = character.validateIntegrity() {
+            print("⚠️  CHARACTER LOAD ERROR: \(error)")
+            character.printDiagnostics()
+        }
     }
     
     var body: some View {

@@ -7,9 +7,11 @@
 
 import SwiftUI
 import SwiftData
+import SwiftData
 
 struct CharacterEditView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
 
     @Bindable var character: Character
 
@@ -18,6 +20,8 @@ struct CharacterEditView: View {
     @Query(sort: \DnDClass.name) private var classes: [DnDClass]
 
     @State private var proficientSkills: Set<String> = []
+    @State private var showLevelUpSheet = false
+    @State private var showLevelDownConfirmation = false
 
     var body: some View {
         NavigationView {
@@ -46,7 +50,29 @@ struct CharacterEditView: View {
                         }
                     }
 
-                    Stepper("Niveau: \(character.level)", value: $character.level, in: 1...20)
+                    HStack {
+                        Text("Niveau")
+                        Spacer()
+                        HStack(spacing: 12) {
+                            Button(action: requestLevelDown) {
+                                Image(systemName: "minus.circle.fill")
+                                    .font(.title3)
+                            }
+                            .buttonStyle(.borderless)
+                            .disabled(character.level <= 1)
+                            
+                            Text("\(character.level)")
+                                .font(.headline)
+                                .frame(minWidth: 40)
+                            
+                            Button(action: requestLevelUp) {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.title3)
+                            }
+                            .buttonStyle(.borderless)
+                            .disabled(character.level >= 20)
+                        }
+                    }
                 }
 
                 Section {
@@ -62,6 +88,33 @@ struct CharacterEditView: View {
                         Text("\(Int(Double(character.currentHitPoints) / Double(character.maximumHitPoints) * 100))%")
                             .font(.caption)
                             .foregroundColor(.secondary)
+                    }
+                    
+                    // Historique des PV par niveau
+                    if !character.hpLevelHistory.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Historique des PV")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.secondary)
+                            
+                            ForEach(character.hpLevelHistory.keys.sorted().reversed(), id: \.self) { level in
+                                if let hpGain = character.hpLevelHistory[level] {
+                                    HStack {
+                                        Text("Niveau \(level)")
+                                            .font(.caption)
+                                        Spacer()
+                                        Text("+\(hpGain) PV")
+                                            .font(.caption)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.green)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(8)
+                        .background(Color.gray.opacity(0.05))
+                        .cornerRadius(6)
                     }
                 } header: {
                     Text("Points de vie")
@@ -129,6 +182,7 @@ struct CharacterEditView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Enregistrer") {
                         character.proficientSkills = Array(proficientSkills)
+                        try? modelContext.save()
                         dismiss()
                     }
                     .disabled(character.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -137,9 +191,38 @@ struct CharacterEditView: View {
             .onAppear {
                 proficientSkills = Set(character.proficientSkills)
             }
+            .sheet(isPresented: $showLevelUpSheet) {
+                LevelUpSheet(character: character, newLevel: character.level + 1)
+            }
+            .confirmationDialog(
+                "Confirmer la descente de niveau",
+                isPresented: $showLevelDownConfirmation,
+                actions: {
+                    Button("Descendre", role: .destructive) {
+                        character.levelDown()
+                        try? modelContext.save()
+                    }
+                    Button("Annuler", role: .cancel) {}
+                },
+                message: {
+                    if let hpLoss = character.hpLevelHistory[character.level] {
+                        Text("Vous allez perdre \(hpLoss) PV maximum.")
+                    } else {
+                        Text("Êtes-vous sûr de vouloir descendre de niveau ?")
+                    }
+                }
+            )
         }
     }
-
+    
+    private func requestLevelUp() {
+        showLevelUpSheet = true
+    }
+    
+    private func requestLevelDown() {
+        showLevelDownConfirmation = true
+    }
+    
     private func sortedSkills() -> [DnDSkill] {
         let statOrder = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
         return Character.allSkills.sorted { skill1, skill2 in

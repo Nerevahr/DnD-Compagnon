@@ -31,6 +31,9 @@ struct CharacterJSON: Codable {
     var currentHitPoints: Int
     var maximumHitPoints: Int
     
+    // Historique des PV gagnés par niveau
+    var hpLevelHistory: [String: Int] // Utilise String comme clé pour JSON
+    
     // Classe (juste le nom, car DnDClass est complexe)
     var className: String?
     
@@ -78,6 +81,11 @@ enum CharacterImportExportService {
             result[String(pair.key)] = pair.value
         }
         
+        // Convertir hpLevelHistory avec clés String
+        let hpLevelHistoryStringKeys = character.hpLevelHistory.reduce(into: [String: Int]()) { result, pair in
+            result[String(pair.key)] = pair.value
+        }
+        
         // Encoder l'image de profil en base64 si présente
         let profileImageBase64: String? = character.profileImageData.map {
             $0.base64EncodedString()
@@ -97,6 +105,7 @@ enum CharacterImportExportService {
             charisma: character.charisma,
             currentHitPoints: character.currentHitPoints,
             maximumHitPoints: character.maximumHitPoints,
+            hpLevelHistory: hpLevelHistoryStringKeys,
             className: character.dndClass?.name,
             proficientSkills: character.proficientSkills,
             usedSpellSlots: usedSpellSlotsStringKeys,
@@ -166,6 +175,13 @@ enum CharacterImportExportService {
             }
         }
         
+        // Convertir hpLevelHistory avec clés Int
+        let hpLevelHistory = characterJSON.hpLevelHistory.reduce(into: [Int: Int]()) { result, pair in
+            if let key = Int(pair.key) {
+                result[key] = pair.value
+            }
+        }
+        
         // Décoder l'image de profil depuis base64
         let profileImageData: Data? = characterJSON.profileImageBase64.flatMap {
             Data(base64Encoded: $0)
@@ -193,6 +209,7 @@ enum CharacterImportExportService {
         )
         
         character.profileImageData = profileImageData
+        character.hpLevelHistory = hpLevelHistory
         
         // Récupérer les sorts préparés par leurs noms
         for spellName in characterJSON.preparedSpellNames {

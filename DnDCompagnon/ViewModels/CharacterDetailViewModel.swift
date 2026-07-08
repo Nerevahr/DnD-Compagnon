@@ -17,9 +17,25 @@ final class CharacterDetailViewModel {
     // MARK: - UI State
     var isShowingEditSheet = false
     var currentPage = 0
+    var showLevelUpSheet = false
+    var showLevelDownConfirmation = false
     
     // MARK: - Initialization
     init(character: Character) {
         self.character = character
+    }
+    
+    // MARK: - Level Management
+    func requestLevelUp() {
+        showLevelUpSheet = true
+    }
+    
+    func requestLevelDown() {
+        showLevelDownConfirmation = true
+    }
+    
+    func confirmLevelDown() {
+        character.levelDown()
+        showLevelDownConfirmation = false
     }
 }
