@@ -50,6 +50,11 @@ struct FeatListView: View {
         }
         .navigationTitle("Dons")
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if let resourceSelector = resourceSelector {
+                    resourceSelector
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button(action: { viewModel.isShowingAddSheet = true }) {
                     Image(systemName: "plus")
