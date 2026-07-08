@@ -388,6 +388,23 @@ extension Character {
     func hasFeat(_ feat: Feat) -> Bool {
         feats.contains { $0.id == feat.id }
     }
+    
+    /// Assigne une nouvelle origine et synchronise son don d'origine
+    /// Retire le don de l'ancienne origine (si présent) et ajoute celui de la nouvelle
+    func setOrigin(_ newOrigin: Background?) {
+        // Retirer le don d'origine de l'ancienne origine
+        if let oldFeat = origin?.originFeat {
+            removeFeat(oldFeat)
+        }
+        
+        // Assigner nouvelle origine
+        origin = newOrigin
+        
+        // Ajouter le don d'origine de la nouvelle origine
+        if let newFeat = newOrigin?.originFeat {
+            addFeat(newFeat)
+        }
+    }
 }
 
 // MARK: - Level and HP Management

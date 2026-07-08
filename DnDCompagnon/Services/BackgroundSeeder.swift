@@ -18,6 +18,7 @@ enum BackgroundSeeder {
         let suggestedStats: [String]
         let feature: FeatureData
         let toolProficiency: String
+        let originFeatName: String?
 
         struct FeatureData: Codable {
             let name: String
@@ -38,12 +39,23 @@ enum BackgroundSeeder {
 
         for data in backgrounds {
             let feature = BackgroundAbility(name: data.feature.name, abilityDescription: data.feature.description)
+            
+            // Rechercher le don d'origine par son nom
+            var originFeat: Feat? = nil
+            if let featName = data.originFeatName {
+                let featDescriptor = FetchDescriptor<Feat>(
+                    predicate: #Predicate<Feat> { $0.name == featName }
+                )
+                originFeat = try? context.fetch(featDescriptor).first
+            }
+            
             let background = Background(
                 name: data.name,
                 description: data.description,
                 suggestedStats: data.suggestedStats,
                 feature: feature,
-                toolProficiency: data.toolProficiency
+                toolProficiency: data.toolProficiency,
+                originFeat: originFeat
             )
             context.insert(background)
         }

@@ -19,6 +19,13 @@ struct AddBackgroundView: View {
     @State private var featureName = ""
     @State private var featureDescription = ""
     @State private var toolProficiency = ""
+    @State private var selectedOriginFeat: Feat?
+    
+    @Query(sort: \Feat.name) private var allFeats: [Feat]
+    
+    private var originFeats: [Feat] {
+        allFeats.filter { $0.type == .origine }
+    }
 
     var body: some View {
         NavigationStack {
@@ -36,6 +43,14 @@ struct AddBackgroundView: View {
                 Section("Maîtrise d'outil") {
                     TextField("Ex: Outils de voleur", text: $toolProficiency)
                 }
+                Section("Don d'origine") {
+                    Picker("Don associé (optionnel)", selection: $selectedOriginFeat) {
+                        Text("Aucun don").tag(nil as Feat?)
+                        ForEach(originFeats) { feat in
+                            Text(feat.name).tag(feat as Feat?)
+                        }
+                    }
+                }
             }
             .navigationTitle("Nouvelle Origine")
             .navigationBarTitleDisplayMode(.inline)
@@ -50,7 +65,8 @@ struct AddBackgroundView: View {
                             name: name,
                             description: description,
                             feature: feature,
-                            toolProficiency: toolProficiency
+                            toolProficiency: toolProficiency,
+                            originFeat: selectedOriginFeat
                         )
                         modelContext.insert(background)
                         dismiss()

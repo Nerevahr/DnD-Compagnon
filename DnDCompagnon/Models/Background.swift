@@ -16,18 +16,21 @@ final class Background {
     var suggestedStats: [String]
     var feature: BackgroundAbility
     var toolProficiency: String
-
+    @Relationship(deleteRule: .nullify) var originFeat: Feat?
+    
     init(
         name: String,
         description: String = "",
         suggestedStats: [String] = [],
         feature: BackgroundAbility = BackgroundAbility(name: ""),
-        toolProficiency: String = ""
+        toolProficiency: String = "",
+        originFeat: Feat? = nil
     ) {
         self.name = name
         self.backgroundDescription = description
         self.suggestedStats = suggestedStats
         self.feature = feature
         self.toolProficiency = toolProficiency
+        self.originFeat = originFeat
     }
 }

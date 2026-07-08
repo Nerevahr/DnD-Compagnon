@@ -57,6 +57,9 @@ struct CharacterJSON: Codable {
     // Or
     var gold: Double
     
+    // Dons du personnage (juste les noms)
+    var featNames: [String]
+    
     // Image de profil (encodée en base64)
     var profileImageBase64: String?
     
@@ -115,6 +118,7 @@ enum CharacterImportExportService {
             equippedWeaponName: character.equippedWeapon?.name,
             equippedShieldName: character.equippedShield?.name,
             gold: character.gold,
+            featNames: character.feats.map { $0.name },
             profileImageBase64: profileImageBase64,
             exportDate: Date(),
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -253,10 +257,28 @@ enum CharacterImportExportService {
             character.equippedShield = try? context.fetch(shieldDescriptor).first
         }
         
-        context.insert(character)
-        try context.save()
-        
-        return character
+         context.insert(character)
+         try context.save()
+         
+         // Récupérer les dons par leurs noms et les ajouter au personnage
+         for featName in characterJSON.featNames {
+             let featDescriptor = FetchDescriptor<Feat>(
+                 predicate: #Predicate<Feat> { $0.name == featName }
+             )
+             if let feat = try? context.fetch(featDescriptor).first {
+                 character.addFeat(feat)
+             }
+         }
+         
+         // Synchroniser le don d'origine avec l'origine du personnage
+         // Cela garanti la cohérence même si le JSON a été modifié
+         if let origin = character.origin {
+             character.setOrigin(origin)
+         }
+         
+         try context.save()
+         
+         return character
     }
     
     /// Importe un personnage depuis un fichier

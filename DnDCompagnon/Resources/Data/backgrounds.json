@@ -7,7 +7,8 @@
       "name": "Abri des fidèles",
       "description": "Vous pouvez trouver un abri dans les temples et lieux sacrés de votre religion."
     },
-    "toolProficiency": "Aucune"
+    "toolProficiency": "Aucune",
+    "originFeatName": null
   },
   {
     "name": "Criminel",
@@ -17,7 +18,8 @@
       "name": "Contact criminel",
       "description": "Vous avez un contact fiable dans le milieu criminel qui peut vous fournir des informations."
     },
-    "toolProficiency": "Outils de voleur"
+    "toolProficiency": "Outils de voleur",
+    "originFeatName": null
   },
   {
     "name": "Soldat",
@@ -27,7 +29,8 @@
       "name": "Rang militaire",
       "description": "Vous possédez un rang militaire qui vous permet d'être reconnu par vos anciens pairs."
     },
-    "toolProficiency": "Véhicules terrestres"
+    "toolProficiency": "Véhicules terrestres",
+    "originFeatName": "Force forgée"
   },
   {
     "name": "Sage",
@@ -37,7 +40,8 @@
       "name": "Chercheur",
       "description": "Quand vous ne trouvez pas une information, vous savez où et auprès de qui la chercher."
     },
-    "toolProficiency": "Aucune"
+    "toolProficiency": "Aucune",
+    "originFeatName": "Héritage humain"
   },
   {
     "name": "Noble",
@@ -47,7 +51,8 @@
       "name": "Position de privilège",
       "description": "Les gens de haute société vous traitent comme l'un des leurs et vous accordent leur confiance."
     },
-    "toolProficiency": "Jeu d'échecs tridimensionnel"
+    "toolProficiency": "Jeu d'échecs tridimensionnel",
+    "originFeatName": "Héritage humain"
   },
   {
     "name": "Guide",
@@ -57,6 +62,8 @@
       "name": "Initié à la Magie (druide)",
       "description": "Vous avez appris les secrets de la nature et pouvez utiliser la magie druidique pour protéger et guider."
     },
-    "toolProficiency": "Jeu d'échecs tridimensionnel"
+    "toolProficiency": "Jeu d'échecs tridimensionnel",
+    "originFeatName": null
   }
 ]
+

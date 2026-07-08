@@ -8,10 +8,16 @@
 
 // Views/Backgrounds/BackgroundDetailView.swift
 import SwiftUI
+import SwiftData
 
 struct BackgroundDetailView: View {
     @Bindable var background: Background
     @State private var isEditing = false
+    @Query(sort: \Feat.name) private var allFeats: [Feat]
+    
+    private var originFeats: [Feat] {
+        allFeats.filter { $0.type == .origine }
+    }
 
     var body: some View {
         Form {
@@ -68,6 +74,31 @@ struct BackgroundDetailView: View {
                 } else {
                     Text(background.toolProficiency.isEmpty ? "Aucune" : background.toolProficiency)
                         .foregroundStyle(background.toolProficiency.isEmpty ? .secondary : .primary)
+                }
+            }
+            
+            Section("Don d'origine") {
+                if isEditing {
+                    Picker("Don associé (optionnel)", selection: $background.originFeat) {
+                        Text("Aucun don").tag(nil as Feat?)
+                        ForEach(originFeats) { feat in
+                            Text(feat.name).tag(feat as Feat?)
+                        }
+                    }
+                } else {
+                    if let feat = background.originFeat {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(feat.name)
+                                .font(.headline)
+                            Text(feat.featDescription)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Text("Aucun")
+                            .foregroundStyle(.secondary)
+                            .italic()
+                    }
                 }
             }
         }

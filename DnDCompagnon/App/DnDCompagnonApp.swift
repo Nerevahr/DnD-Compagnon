@@ -24,8 +24,8 @@ struct DnDCompagnonApp: App {
             ClassSeeder.seedIfNeeded(context: container.mainContext)
             ItemSeeder.seedIfNeeded(context: container.mainContext)
             RaceSeeder.seedIfNeeded(context: container.mainContext)
-            BackgroundSeeder.seedIfNeeded(context: container.mainContext)
             FeatSeeder.seedIfNeeded(context: container.mainContext)
+            BackgroundSeeder.seedIfNeeded(context: container.mainContext)
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")
         }

@@ -20,7 +20,6 @@ struct CharacterCreationView: View {
     @State private var selectedClassID: PersistentIdentifier?
     @State private var selectedRaceID: PersistentIdentifier? // Changé de String à ID
     @State private var selectedBackgroundID: PersistentIdentifier?
-    @State private var origin: String = ""
     @State private var level: Int = 1
     
     // Statistiques
@@ -181,12 +180,12 @@ struct CharacterCreationView: View {
     private func createCharacter() {
         do {
             // Le service gère TOUT : création, insertion, sauvegarde
-            let _ = try CharacterService.createCharacter(
+            let character = try CharacterService.createCharacter(
                 name: name,
                 level: level,
                 dndClass: selectedClass,
-                race: selectedRace,
-                background: selectedBackground, // ← était origin: origin
+                race: selectedRace, // Maintenant c'est un objet Race?
+                background: selectedBackground,
                 strength: strength,
                 dexterity: dexterity,
                 constitution: constitution,

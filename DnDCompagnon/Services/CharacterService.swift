@@ -37,7 +37,7 @@ enum CharacterService {
             level: level,
             dndClass: dndClass,
             race: race,
-            origin: background,
+            origin: nil, // Sera assigné via setOrigin
             strength: strength,
             dexterity: dexterity,
             constitution: constitution,
@@ -48,6 +48,10 @@ enum CharacterService {
         )
 
         context.insert(character)
+        
+        // Synchroniser l'origine et ajouter le don d'origine
+        character.setOrigin(background)
+        
         try context.save()
 
         return character

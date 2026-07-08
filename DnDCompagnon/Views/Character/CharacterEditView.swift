@@ -89,7 +89,10 @@ struct CharacterEditView: View {
                 }
             }
 
-            Picker("Origine", selection: $character.origin) {
+            Picker("Origine", selection: Binding(
+                get: { character.origin },
+                set: { character.setOrigin($0) }
+            )) {
                 Text("Aucune origine").tag(nil as Background?)
                 ForEach(backgrounds) { background in
                     Text(background.name).tag(background as Background?)
