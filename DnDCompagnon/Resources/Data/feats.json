@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Alerte",
+    "type": "don général",
+    "featDescription": "Augmentez votre score de Sagesse ou d'Intelligence de 1 (max 20). Vous gagnez +5 à l'initiative. Les créatures n'obtiennent pas d'avantage aux jets d'attaque contre vous du fait d'être invisibles."
+  },
+  {
+    "name": "Chevaucheur",
+    "type": "don général",
+    "featDescription": "Vous gagnez un coup de sabot quand vous frappez une créature avec une attaque à cheval. Ce coup fait 1d6 dégâts supplémentaires."
+  },
+  {
+    "name": "Défense solide",
+    "type": "don général",
+    "featDescription": "Vous gagnez +1 à la CA quand vous portez une armure."
+  },
+  {
+    "name": "Attaque défensive",
+    "type": "don de style de combat",
+    "featDescription": "Quand vous remplissez l'action Attaquer, vous pouvez sacrifier un jet d'attaque pour bénéficier d'un bonus de +2 à la CA jusqu'à la fin de votre tour."
+  },
+  {
+    "name": "Archer chevronné",
+    "type": "don de style de combat",
+    "featDescription": "Vos attaques avec des armes de jet ignorent les trois quarts des couvertures."
+  },
+  {
+    "name": "Maître du combat rapproché",
+    "type": "don de style de combat",
+    "featDescription": "Quand vous blessez une créature au combat rapproché pendant votre tour, elle subit un désavantage au prochain jet d'attaque qu'elle effectue avant la fin de votre tour suivant."
+  },
+  {
+    "name": "Héritage humain",
+    "type": "don d'origine",
+    "featDescription": "Augmentez deux scores de caractéristiques différents de votre choix de 1 (max 20). Vous apprenez une compétence supplémentaire de votre choix."
+  },
+  {
+    "name": "Force forgée",
+    "type": "don d'origine",
+    "featDescription": "Augmentez votre score de Force de 2 (max 20). Vous avez avantage aux jets de Force (Athlétisme)."
+  },
+  {
+    "name": "Faveur du destin",
+    "type": "don de faveur épique",
+    "featDescription": "Une fois par repos long, vous pouvez relancer un jet de sauvegarde que vous avez échoué. Vous devez utiliser le nouveau résultat."
+  },
+  {
+    "name": "Pouvoir surhumain",
+    "type": "don de faveur épique",
+    "featDescription": "Augmentez deux scores de caractéristiques de votre choix de 2 (max 20)."
+  }
+]

@@ -12,7 +12,8 @@ enum ResourceType: String, CaseIterable {
     case items = "Objets"
     case classes = "Classes"
     case races = "Races"
-    case backgrounds = "Origines"  // ← ajouter
+    case backgrounds = "Origines"
+    case feats = "Dons"
 }
 
 struct ResourcesView: View {
@@ -33,6 +34,8 @@ struct ResourcesView: View {
                     RaceListView(resourceSelector: AnyView(resourceSelectorView))
                 case .backgrounds:
                     BackgroundListView(resourceSelector: AnyView(resourceSelectorView))
+                case .feats:
+                    FeatListView(resourceSelector: AnyView(resourceSelectorView))
                 }
             }
         }

@@ -231,6 +231,26 @@ struct MockData {
         isOffensive: false
     )
     
+    // MARK: - Feats (Dons)
+    
+    static let alertFeat = Feat(
+        name: "Alerte",
+        type: .general,
+        featDescription: "Augmentez votre score de Sagesse ou d'Intelligence de 1 (max 20). Vous gagnez +5 à l'initiative. Les créatures n'obtiennent pas d'avantage aux jets d'attaque contre vous du fait d'être invisibles."
+    )
+    
+    static let toughnessFeat = Feat(
+        name: "Robustesse",
+        type: .general,
+        featDescription: "Votre maximum de points de vie augmente de 1 pour chaque niveau. Chaque fois que vous gagnez un niveau, votre maximum de points de vie augmente de 1 supplémentaire."
+    )
+    
+    static let defensiveStyleFeat = Feat(
+        name: "Attaque défensive",
+        type: .styleDeCombat,
+        featDescription: "Quand vous remplissez l'action Attaquer, vous pouvez sacrifier un jet d'attaque pour bénéficier d'un bonus de +2 à la CA jusqu'à la fin de votre tour."
+    )
+    
     // MARK: - Helper pour créer des PreparedSpells
     
     /// Crée un PreparedSpell à partir d'un Spell
@@ -249,7 +269,6 @@ struct MockData {
         name: "Gandalf",
         level: 3,
         dndClass: wizardClass,
-        origin: nil,
         strength: 10,
         dexterity: 14,
         constitution: 12,
@@ -271,7 +290,6 @@ struct MockData {
         name: "Conan",
         level: 5,
         dndClass: fighterClass,
-        origin: nil,
         strength: 18,
         dexterity: 14,
         constitution: 16,

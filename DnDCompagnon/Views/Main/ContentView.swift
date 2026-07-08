@@ -55,7 +55,7 @@ private struct PreviewHelper: View {
     
     init() {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        container = try! ModelContainer(for: Character.self, Spell.self, Item.self,  DnDClass.self, configurations: config)
+        container = try! ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, Feat.self, configurations: config)
         SpellSeeder.seedIfNeeded(context: container.mainContext)
         ClassSeeder.seedIfNeeded(context: container.mainContext)
     }

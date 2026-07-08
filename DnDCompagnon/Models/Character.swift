@@ -49,6 +49,9 @@ final class Character {
     @Relationship(deleteRule: .nullify) var inventory: [Item]
     var gold: Double = 0.0
     
+    // Dons du personnage
+    @Relationship(deleteRule: .nullify) var feats: [Feat] = []
+    
     @Attribute(.externalStorage) var profileImageData: Data?
     
     // MARK: - Computed Properties - Stats de base
@@ -360,5 +363,26 @@ extension Character {
     /// Vérifie si un sort est déjà préparé
     func isSpellPrepared(_ spell: Spell) -> Bool {
         preparedSpells.contains { $0.baseSpell?.persistentModelID == spell.persistentModelID }
+    }
+}
+
+// MARK: - Feats Management
+
+extension Character {
+    /// Ajoute un don au personnage
+    func addFeat(_ feat: Feat) {
+        if !feats.contains(feat) {
+            feats.append(feat)
+        }
+    }
+    
+    /// Retire un don du personnage
+    func removeFeat(_ feat: Feat) {
+        feats.removeAll { $0.id == feat.id }
+    }
+    
+    /// Vérifie si un don est déjà attribué au personnage
+    func hasFeat(_ feat: Feat) -> Bool {
+        feats.contains { $0.id == feat.id }
     }
 }

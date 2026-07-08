@@ -1,12 +1,19 @@
 import SwiftUI
+import SwiftData
 
 /// Page affichant les aptitudes de classe et de race du personnage
 struct AbilitiesPage: View {
     @Bindable var character: Character
     @State private var selectedClassAbility: ClassAbility?
     @State private var selectedRaceAbility: RaceAbility?
+    @State private var selectedFeat: Feat?
     @State private var isRaceSectionExpanded = true
     @State private var isClassSectionExpanded = true
+    @State private var isFeatSectionExpanded = true
+    @State private var isShowingFeatPicker = false
+    
+    @Environment(\.modelContext) private var modelContext
+    @Query private var allFeats: [Feat]
     
     // Aptitudes de race
     var raceAbilities: [RaceAbility] {
@@ -125,6 +132,72 @@ struct AbilitiesPage: View {
                         }
                     }
                 }
+                
+                // Section Dons
+                VStack(alignment: .leading, spacing: 12) {
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isFeatSectionExpanded.toggle()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "sparkles")
+                                .foregroundColor(.purple)
+                            Text("Dons")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            Text("(\(character.feats.count))")
+                                .font(.title3)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.purple)
+                                .rotationEffect(.degrees(isFeatSectionExpanded ? 0 : -90))
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    
+                    if isFeatSectionExpanded {
+                        if character.feats.isEmpty {
+                            VStack(alignment: .center, spacing: 12) {
+                                Image(systemName: "sparkles")
+                                    .font(.title2)
+                                    .foregroundColor(.secondary)
+                                Text("Aucun don")
+                                    .font(.body)
+                                    .foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                        } else {
+                            VStack(spacing: 8) {
+                                ForEach(character.feats) { feat in
+                                    FeatRow(feat: feat)
+                                        .onTapGesture {
+                                            selectedFeat = feat
+                                        }
+                                }
+                            }
+                            .padding()
+                            .background(Color.purple.opacity(0.05))
+                            .cornerRadius(10)
+                        }
+                        
+                        // Bouton pour ajouter un don
+                        Button(action: { isShowingFeatPicker = true }) {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                Text("Ajouter un don")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.purple.opacity(0.1))
+                            .foregroundColor(.purple)
+                            .cornerRadius(8)
+                        }
+                    }
+                }
             }
             .padding()
         }
@@ -133,6 +206,12 @@ struct AbilitiesPage: View {
         }
         .sheet(item: $selectedRaceAbility) { ability in
             RaceAbilityDetailSheet(ability: ability)
+        }
+        .sheet(item: $selectedFeat) { feat in
+            FeatDetailSheet(feat: feat)
+        }
+        .sheet(isPresented: $isShowingFeatPicker) {
+            FeatPickerView(character: character, allFeats: allFeats)
         }
     }
 }
