@@ -77,6 +77,7 @@ struct AddClassView: View {
     @State private var showingAddAbility = false
     @State private var newAbilityLevel = 1
     @State private var newAbilityName = ""
+    @State private var newAbilityDescription = ""
     
     let availableStats = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
     let availableSkills = [
@@ -195,6 +196,11 @@ struct AddClassView: View {
                         }
                         
                         TextField("Nom de l'aptitude", text: $newAbilityName)
+                        
+                        Section(header: Text("Description")) {
+                            TextEditor(text: $newAbilityDescription)
+                                .frame(minHeight: 80)
+                        }
                     }
                     .navigationTitle("Nouvelle Aptitude")
                     .navigationBarTitleDisplayMode(.inline)
@@ -203,14 +209,20 @@ struct AddClassView: View {
                             Button("Annuler") {
                                 showingAddAbility = false
                                 newAbilityName = ""
+                                newAbilityDescription = ""
                                 newAbilityLevel = 1
                             }
                         }
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Ajouter") {
-                                abilities.append(ClassAbility(level: newAbilityLevel, name: newAbilityName))
+                                abilities.append(ClassAbility(
+                                    level: newAbilityLevel,
+                                    name: newAbilityName,
+                                    description: newAbilityDescription.isEmpty ? nil : newAbilityDescription
+                                ))
                                 showingAddAbility = false
                                 newAbilityName = ""
+                                newAbilityDescription = ""
                                 newAbilityLevel = 1
                             }
                             .disabled(newAbilityName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -246,6 +258,7 @@ struct ClassDetailView: View {
     @State private var showingAddAbility = false
     @State private var newAbilityLevel = 1
     @State private var newAbilityName = ""
+    @State private var newAbilityDescription = ""
     
     let availableStats = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
     let availableSkills = [
@@ -340,12 +353,21 @@ struct ClassDetailView: View {
             Section(header: Text("Aptitudes par Niveau")) {
                 if isEditing {
                     ForEach(editingAbilities.sorted(by: { $0.level < $1.level }), id: \.self) { ability in
-                        HStack {
-                            Text("Niv. \(ability.level)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .frame(width: 50, alignment: .leading)
-                            Text(ability.name)
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text("Niv. \(ability.level)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .frame(width: 50, alignment: .leading)
+                                Text(ability.name)
+                                    .fontWeight(.semibold)
+                            }
+                            if let description = ability.description, !description.isEmpty {
+                                Text(description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .italic()
+                            }
                         }
                     }
                     .onDelete { indexSet in
@@ -369,12 +391,21 @@ struct ClassDetailView: View {
                             .italic()
                     } else {
                         ForEach(dndClass.abilities.sorted(by: { $0.level < $1.level }), id: \.self) { ability in
-                            HStack {
-                                Text("Niv. \(ability.level)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .frame(width: 50, alignment: .leading)
-                                Text(ability.name)
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text("Niv. \(ability.level)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .frame(width: 50, alignment: .leading)
+                                    Text(ability.name)
+                                        .fontWeight(.semibold)
+                                }
+                                if let description = ability.description, !description.isEmpty {
+                                    Text(description)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .italic()
+                                }
                             }
                         }
                     }
@@ -426,6 +457,11 @@ struct ClassDetailView: View {
                     }
                     
                     TextField("Nom de l'aptitude", text: $newAbilityName)
+                    
+                    Section(header: Text("Description")) {
+                        TextEditor(text: $newAbilityDescription)
+                            .frame(minHeight: 80)
+                    }
                 }
                 .navigationTitle("Nouvelle Aptitude")
                 .navigationBarTitleDisplayMode(.inline)
@@ -434,14 +470,20 @@ struct ClassDetailView: View {
                         Button("Annuler") {
                             showingAddAbility = false
                             newAbilityName = ""
+                            newAbilityDescription = ""
                             newAbilityLevel = 1
                         }
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Ajouter") {
-                            editingAbilities.append(ClassAbility(level: newAbilityLevel, name: newAbilityName))
+                            editingAbilities.append(ClassAbility(
+                                level: newAbilityLevel,
+                                name: newAbilityName,
+                                description: newAbilityDescription.isEmpty ? nil : newAbilityDescription
+                            ))
                             showingAddAbility = false
                             newAbilityName = ""
+                            newAbilityDescription = ""
                             newAbilityLevel = 1
                         }
                         .disabled(newAbilityName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

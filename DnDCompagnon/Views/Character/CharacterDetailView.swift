@@ -7,21 +7,15 @@
 
 import SwiftUI
 import SwiftData
-import UniformTypeIdentifiers
 
 struct CharacterDetailView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var classes: [DnDClass]
-    @Query private var races: [Race] // Ajouter la query pour les races
-    
+    @State private var viewModel: CharacterDetailViewModel
     @Bindable var character: Character
 
-    @State private var isShowingEditSheet = false
-    @State private var currentPage = 0
-    @State private var showingExportDialog = false
-    @State private var exportError: Error?
-    @State private var showingExportError = false
-    @State private var exportData: Data?
+    init(character: Character) {
+        self.character = character
+        _viewModel = State(initialValue: CharacterDetailViewModel(character: character))
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -30,17 +24,28 @@ struct CharacterDetailView: View {
             
             // Indicateur de page
             HStack(spacing: 8) {
-                PageIndicator(title: "Caractéristiques", isActive: currentPage == 0)
-                PageIndicator(title: "Combat", isActive: currentPage == 1)
-                PageIndicator(title: "Sorts", isActive: currentPage == 2)
-                PageIndicator(title: "Aptitudes", isActive: currentPage == 3)
-                PageIndicator(title: "Inventaire", isActive: currentPage == 4)
+                PageIndicator(title: "Caractéristiques", isActive: viewModel.currentPage == 0) {
+                    viewModel.currentPage = 0
+                }
+                PageIndicator(title: "Combat", isActive: viewModel.currentPage == 1) {
+                    viewModel.currentPage = 1
+                }
+                PageIndicator(title: "Sorts", isActive: viewModel.currentPage == 2) {
+                    viewModel.currentPage = 2
+                }
+                PageIndicator(title: "Aptitudes", isActive: viewModel.currentPage == 3) {
+                    viewModel.currentPage = 3
+                }
+                PageIndicator(title: "Inventaire", isActive: viewModel.currentPage == 4) {
+                    viewModel.currentPage = 4
+                }
             }
             .padding(.vertical, 8)
+            .animation(.easeInOut(duration: 0.3), value: viewModel.currentPage)
 
             
             // TabView avec pages scrollables
-            TabView(selection: $currentPage) {
+            TabView(selection: $viewModel.currentPage) {
                 StatsAndSkillsPage(character: character)
                     .tag(0)
                 
@@ -61,54 +66,13 @@ struct CharacterDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button("Éditer") {
-                        isShowingEditSheet = true
-                    }
-                    
-                    Divider()
-                    
-                    Button {
-                        exportCharacter()
-                    } label: {
-                        Label("Exporter", systemImage: "square.and.arrow.up")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
+                Button("Éditer") {
+                    viewModel.isShowingEditSheet = true
                 }
             }
         }
-        .sheet(isPresented: $isShowingEditSheet) {
+        .sheet(isPresented: $viewModel.isShowingEditSheet) {
             CharacterEditView(character: character)
-        }
-        .fileExporter(
-            isPresented: $showingExportDialog,
-            document: exportData.map { CharacterDocument(data: $0) },
-            contentType: .json,
-            defaultFilename: "\(character.name).json"
-        ) { result in
-            switch result {
-            case .success(let url):
-                print("Personnage exporté vers: \(url)")
-            case .failure(let error):
-                exportError = error
-                showingExportError = true
-            }
-        }
-        .alert("Erreur d'export", isPresented: $showingExportError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(exportError?.localizedDescription ?? "Une erreur est survenue lors de l'export")
-        }
-    }
-    
-    private func exportCharacter() {
-        do {
-            exportData = try CharacterImportExportService.exportCharacter(character)
-            showingExportDialog = true
-        } catch {
-            exportError = error
-            showingExportError = true
         }
     }
 }

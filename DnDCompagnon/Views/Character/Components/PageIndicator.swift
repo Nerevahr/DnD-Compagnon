@@ -11,18 +11,23 @@ import SwiftUI
 struct PageIndicator: View {
     let title: String
     let isActive: Bool
+    let action: () -> Void
     
     var body: some View {
-        VStack(spacing: 4) {
-            Text(title)
-                .font(.caption2)
-                .fontWeight(isActive ? .bold : .regular)
-                .foregroundColor(isActive ? .blue : .secondary)
-            
-            Rectangle()
-                .fill(isActive ? Color.blue : Color.clear)
-                .frame(height: 2)
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Text(title)
+                    .font(.caption2)
+                    .fontWeight(isActive ? .bold : .regular)
+                    .foregroundColor(isActive ? .blue : .secondary)
+                
+                Rectangle()
+                    .fill(isActive ? Color.blue : Color.clear)
+                    .frame(height: 2)
+            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.plain)
+        .accessibilityLabel("Naviguer vers \(title)")
     }
 }
