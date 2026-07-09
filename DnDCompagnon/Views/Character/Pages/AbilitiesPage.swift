@@ -10,7 +10,7 @@ struct AbilitiesPage: View {
     @State private var isRaceSectionExpanded = true
     @State private var isClassSectionExpanded = true
     @State private var isFeatSectionExpanded = true
-    @State private var isShowingFeatPicker = false
+    @State private var isShowingFeatManager = false
     
     @Environment(\.modelContext) private var modelContext
     @Query private var allFeats: [Feat]
@@ -30,6 +30,11 @@ struct AbilitiesPage: View {
     // Grouper les aptitudes par niveau
     var abilitiesByLevel: [Int: [ClassAbility]] {
         Dictionary(grouping: availableAbilities, by: { $0.level })
+    }
+    
+    // Don lié au background (à protéger de la suppression)
+    var backgroundFeat: Feat? {
+        character.origin?.originFeat
     }
     
     var body: some View {
@@ -173,7 +178,7 @@ struct AbilitiesPage: View {
                         } else {
                             VStack(spacing: 8) {
                                 ForEach(character.feats) { feat in
-                                    FeatRow(feat: feat)
+                                    FeatRow(feat: feat, isLocked: feat.id == backgroundFeat?.id)
                                         .onTapGesture {
                                             selectedFeat = feat
                                         }
@@ -184,11 +189,11 @@ struct AbilitiesPage: View {
                             .cornerRadius(10)
                         }
                         
-                        // Bouton pour ajouter un don
-                        Button(action: { isShowingFeatPicker = true }) {
+                        // Bouton pour gérer les dons
+                        Button(action: { isShowingFeatManager = true }) {
                             HStack {
-                                Image(systemName: "plus.circle.fill")
-                                Text("Ajouter un don")
+                                Image(systemName: "pencil.circle.fill")
+                                Text("Gérer les dons")
                             }
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -210,8 +215,8 @@ struct AbilitiesPage: View {
         .sheet(item: $selectedFeat) { feat in
             FeatDetailSheet(feat: feat)
         }
-        .sheet(isPresented: $isShowingFeatPicker) {
-            FeatPickerView(character: character, allFeats: allFeats)
+        .sheet(isPresented: $isShowingFeatManager) {
+            FeatManageView(character: character, allFeats: allFeats, backgroundFeat: backgroundFeat)
         }
     }
 }

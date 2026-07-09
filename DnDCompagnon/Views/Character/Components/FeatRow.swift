@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FeatRow: View {
     let feat: Feat
+    var isLocked: Bool = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -19,9 +20,17 @@ struct FeatRow: View {
                     .frame(width: 12, height: 12)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(feat.name)
-                        .font(.headline)
-                        .fontWeight(.semibold)
+                    HStack(spacing: 6) {
+                        Text(feat.name)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                        
+                        if isLocked {
+                            Image(systemName: "lock.fill")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                     
                     Text(feat.type.displayName)
                         .font(.caption)
