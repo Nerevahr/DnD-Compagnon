@@ -54,6 +54,12 @@ struct ItemListView: View {
                                             .scaledToFill()
                                             .frame(width: 40, height: 40)
                                             .cornerRadius(4)
+                                    } else if item.type == .arme {
+                                        Image("ic_sword.svg")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 40, height: 40)
+                                            .foregroundColor(.gray)
                                     } else {
                                         Image(systemName: "cube.fill")
                                             .font(.title3)
