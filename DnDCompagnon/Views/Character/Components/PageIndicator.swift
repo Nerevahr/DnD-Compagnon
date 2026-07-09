@@ -9,15 +9,16 @@ import SwiftUI
 
 /// Indicateur de page pour le TabView
 struct PageIndicator: View {
-    let title: String
+    let icon: String
+    let label: String
     let isActive: Bool
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
-                Text(title)
-                    .font(.caption2)
+                Image(systemName: icon)
+                    .font(.title3)
                     .fontWeight(isActive ? .bold : .regular)
                     .foregroundColor(isActive ? .blue : .secondary)
                 
@@ -28,6 +29,6 @@ struct PageIndicator: View {
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Naviguer vers \(title)")
+        .accessibilityLabel("Naviguer vers \(label)")
     }
 }

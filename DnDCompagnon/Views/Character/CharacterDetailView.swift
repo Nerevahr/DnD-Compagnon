@@ -30,19 +30,19 @@ struct CharacterDetailView: View {
             
             // Indicateur de page
             HStack(spacing: 8) {
-                PageIndicator(title: "Caractéristiques", isActive: viewModel.currentPage == 0) {
+                PageIndicator(icon: "list.bullet.rectangle.portrait", label: "Caractéristiques", isActive: viewModel.currentPage == 0) {
                     viewModel.currentPage = 0
                 }
-                PageIndicator(title: "Combat", isActive: viewModel.currentPage == 1) {
+                PageIndicator(icon: "figure.fencing", label: "Combat", isActive: viewModel.currentPage == 1) {
                     viewModel.currentPage = 1
                 }
-                PageIndicator(title: "Sorts", isActive: viewModel.currentPage == 2) {
+                PageIndicator(icon: "wand.and.stars", label: "Sorts", isActive: viewModel.currentPage == 2) {
                     viewModel.currentPage = 2
                 }
-                PageIndicator(title: "Aptitudes", isActive: viewModel.currentPage == 3) {
+                PageIndicator(icon: "seal.fill", label: "Aptitudes", isActive: viewModel.currentPage == 3) {
                     viewModel.currentPage = 3
                 }
-                PageIndicator(title: "Inventaire", isActive: viewModel.currentPage == 4) {
+                PageIndicator(icon: "backpack.fill", label: "Inventaire", isActive: viewModel.currentPage == 4) {
                     viewModel.currentPage = 4
                 }
             }
