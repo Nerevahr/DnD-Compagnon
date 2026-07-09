@@ -38,6 +38,12 @@ final class Character {
     // Compétences maîtrisées par le personnage (liste des noms)
     var proficientSkills: [String]
     
+    // Bonus personnalisés pour les compétences
+    // skilFixedBonuses : clé = nom compétence, valeur = bonus fixe additif
+    var skillFixedBonuses: [String: Int] = [:]
+    // skillStatBonuses : clé = nom compétence, valeur = nom de la caractéristique à utiliser à la place de baseStat
+    var skillStatBonuses: [String: String] = [:]
+    
     // Emplacements de sorts utilisés par niveau
     var usedSpellSlots: [Int: Int] = [:]
     
@@ -203,10 +209,18 @@ final class Character {
     }
     
     /// Méthode pour calculer le modificateur d'une compétence
+    /// Incorpore les bonus personnalisés de manière additive
     func skillModifier(for skill: DnDSkill) -> Int {
         let statModifier = getModifier(for: skill.baseStat)
         let isProficient = proficientSkills.contains(skill.name)
-        return statModifier + (isProficient ? proficiencyBonus : 0)
+        
+        // Bonus fixe : valeur directement ajoutée
+        let fixedBonus = skillFixedBonuses[skill.name] ?? 0
+        
+        // Bonus stat : modificateur de la caractéristique choisie, ajouté en plus
+        let statBonus = skillStatBonuses[skill.name].map { getModifier(for: $0) } ?? 0
+        
+        return statModifier + (isProficient ? proficiencyBonus : 0) + fixedBonus + statBonus
     }
     
     /// Méthode pour obtenir le modificateur d'une stat par nom

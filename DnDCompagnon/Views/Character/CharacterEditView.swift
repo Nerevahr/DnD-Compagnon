@@ -67,6 +67,19 @@ struct CharacterEditView: View {
                 }
             )
         }
+        .sheet(item: Binding(
+            get: { viewModel.selectedSkillForBonus },
+            set: { _ in viewModel.closeBonusSheet() }
+        )) { skill in
+            SkillBonusEditSheet(
+                skill: skill,
+                character: character,
+                bonusMode: $viewModel.skillBonusMode,
+                onApplyFixed: viewModel.applyFixedBonus,
+                onApplyStat: viewModel.applyStatBonus,
+                onClear: { viewModel.clearBonus(skill) }
+            )
+        }
     }
     
     // MARK: - Sub-views
@@ -202,8 +215,21 @@ struct CharacterEditView: View {
                 } label: {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(skill.name)
-                                .foregroundColor(.primary)
+                            HStack(spacing: 4) {
+                                Text(skill.name)
+                                    .foregroundColor(.primary)
+                                
+                                // Indicateur de bonus personnalisé
+                                if viewModel.character.skillFixedBonuses[skill.name] != nil {
+                                    Image(systemName: "sparkles")
+                                        .font(.caption)
+                                        .foregroundColor(.blue)
+                                } else if viewModel.character.skillStatBonuses[skill.name] != nil {
+                                    Image(systemName: "star.fill")
+                                        .font(.caption)
+                                        .foregroundColor(.orange)
+                                }
+                            }
                             Text(skill.baseStat)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
@@ -219,12 +245,19 @@ struct CharacterEditView: View {
                     }
                 }
                 .buttonStyle(.plain)
+                .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded { _ in
+                    viewModel.selectSkillForBonus(skill)
+                })
             }
         } header: {
             Text("Maîtrise des compétences")
         } footer: {
-            Text("Sélectionnez les compétences que votre personnage maîtrise.")
+            Text("Sélectionnez les compétences que votre personnage maîtrise. Maintenez une compétence pour ajouter un bonus personnalisé.")
                 .font(.caption)
         }
     }
+}
+
+#Preview {
+    CharacterEditView(character: MockData.fighter)
 }
