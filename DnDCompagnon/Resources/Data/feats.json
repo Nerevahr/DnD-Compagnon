@@ -30,14 +30,9 @@
     "featDescription": "Quand vous blessez une créature au combat rapproché pendant votre tour, elle subit un désavantage au prochain jet d'attaque qu'elle effectue avant la fin de votre tour suivant."
   },
   {
-    "name": "Héritage humain",
+    "name": "Initié à la magie",
     "type": "don d'origine",
-    "featDescription": "Augmentez deux scores de caractéristiques différents de votre choix de 1 (max 20). Vous apprenez une compétence supplémentaire de votre choix."
-  },
-  {
-    "name": "Force forgée",
-    "type": "don d'origine",
-    "featDescription": "Augmentez votre score de Force de 2 (max 20). Vous avez avantage aux jets de Force (Athlétisme)."
+    "featDescription": "Vous bénéficiez des avantages suivants. \n**Deux sorts mineurs.** Vous apprenez deux sorts mineurs de votre choix parmi la liste de sorts de Clerc, Druide ou Magicien. L'Intelligence, la Sagesse ou le Charisme est votre caractéristique d'incantation pour les sorts de ce don (à choisir lors de la sélection de ce don). \n**Sort de niveau 1.** Choisissez un sort de niveau 1 dans la liste que vous avez sélectionnée pour les sorts mineurs de ce don. Ce sort est toujours prêt. Vous pouvez le lancer une fois sans emplacement de sort, et vous récupérez la possibilité de le lancer de cette manière à la fin d'un Repos long. Vous pouvez également lancer le sort en utilisant un emplacement de sort que vous possédez. \n**Changement de sort.** Chaque fois que vous gagnez un niveau, vous pouvez remplacer l'un des sorts choisis pour ce don par un autre sort de même niveau, choisi dans la liste de sorts choisis. \n**Répétable.** Vous pouvez prendre ce don plusieurs fois, mais vous devez choisir une liste de sorts différente à chaque fois."
   },
   {
     "name": "Faveur du destin",

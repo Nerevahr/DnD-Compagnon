@@ -41,7 +41,7 @@ enum SpellSeeder {
         guard count == 0 else { return }
 
         // Liste des fichiers JSON à charger
-        let jsonFiles = ["cleric_spells", "druid_spells"]
+        let jsonFiles = ["spells_0", "spells_1", "spells_2", "spells_8", "spells_9"]
         
         // Charger les sorts depuis les JSON
         guard let spells = loadSpellsFromJSON(fileNames: jsonFiles) else {

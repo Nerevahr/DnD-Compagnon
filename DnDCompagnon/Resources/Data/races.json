@@ -1,67 +1,22 @@
 [
   {
-    "name": "Humain",
-    "abilities": [
-      {
-        "name": "Polyvalence",
-        "description": "+1 à toutes les caractéristiques"
-      }
-    ],
-    "abilityBonuses": {
-      "Force": 1,
-      "Dextérité": 1,
-      "Constitution": 1,
-      "Intelligence": 1,
-      "Sagesse": 1,
-      "Charisme": 1
-    },
-    "speed": 30,
-    "defaultSize": "Moyen"
-  },
-  {
-    "name": "Elfe",
-    "abilities": [
-      {
-        "name": "Vision dans le noir",
-        "description": "Vision à 60 pieds dans le noir"
-      },
-      {
-        "name": "Sens aiguisés",
-        "description": "Maîtrise de la compétence Perception"
-      },
-      {
-        "name": "Ascendance féerique",
-        "description": "Avantage aux jets de sauvegarde contre la magie de charme et immunité au sommeil magique"
-      },
-      {
-        "name": "Transe",
-        "description": "Les elves n'ont pas besoin de dormir. Ils méditent 4 heures par jour au lieu de dormir 8 heures"
-      }
-    ],
-    "abilityBonuses": {
-      "Dextérité": 2
-    },
-    "speed": 30,
-    "defaultSize": "Moyen"
-  },
-  {
     "name": "Nain",
     "abilities": [
       {
         "name": "Vision dans le noir",
-        "description": "Vision à 60 pieds dans le noir"
+        "description": "Vous possédez la Vision dans le noir sur 36 m."
       },
       {
         "name": "Résistance naine",
-        "description": "Avantage aux jets de sauvegarde contre le poison et résistance aux dégâts de poison"
+        "description": "Vous bénéficiez d'une Résistance aux dégâts de poison. Vous bénéficiez également d'un Avantage aux jets de sauvegarde que vous effectuez pour éviter ou mettre fin à l'état Empoisonné."
       },
       {
         "name": "Connaissance de la pierre",
-        "description": "Chaque fois que vous effectuez un test d'Intelligence (Histoire) lié à l'origine d'un travail lié à la pierre, vous êtes considéré comme maîtrisant la compétence Histoire et vous ajoutez le double de votre bonus de maîtrise au test"
+        "description": "Par une action Bonus, vous obtenez Perceptions des vibrations à 18 mètres pendant 10 minutes. Vous devez être sur une surface rocheuse ou en toucher une pour utiliser ce trait. La pierre peut être naturelle ou travaillée. Vous pouvez prendre cette action Bonus un nombre de fois égal à votre bonus de maîtrise, et vous récupérez toutes les utilisations dépensées lorsque vous terminez un Repos long."
       },
       {
-        "name": "Formation aux armes naines",
-        "description": "Maîtrise des haches de guerre, hachettes, marteaux légers et marteaux de guerre"
+        "name": "Ténacité naine",
+        "description": "Votre maximum de points de vie augmente de 1, et il augmente à nouveau de 1 à chaque fois que vous gagnez un niveau."
       }
     ],
     "abilityBonuses": {

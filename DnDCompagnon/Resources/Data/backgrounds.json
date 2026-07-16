@@ -1,69 +1,13 @@
 [
   {
-    "name": "Acolyte",
-    "description": "Vous avez passé votre vie au service d'un temple dédié à une divinité spécifique.",
-    "suggestedStats": ["Intelligence", "Sagesse", "Charisme"],
-    "feature": {
-      "name": "Abri des fidèles",
-      "description": "Vous pouvez trouver un abri dans les temples et lieux sacrés de votre religion."
-    },
-    "toolProficiency": "Aucune",
-    "originFeatName": null
-  },
-  {
-    "name": "Criminel",
-    "description": "Vous avez un passé sombre impliquant des activités illégales.",
-    "suggestedStats": ["Dextérité", "Intelligence", "Charisme"],
-    "feature": {
-      "name": "Contact criminel",
-      "description": "Vous avez un contact fiable dans le milieu criminel qui peut vous fournir des informations."
-    },
-    "toolProficiency": "Outils de voleur",
-    "originFeatName": null
-  },
-  {
-    "name": "Soldat",
-    "description": "Vous avez combattu dans une armée organisée et connu les rigueurs de la vie militaire.",
-    "suggestedStats": ["Force", "Constitution", "Sagesse"],
-    "feature": {
-      "name": "Rang militaire",
-      "description": "Vous possédez un rang militaire qui vous permet d'être reconnu par vos anciens pairs."
-    },
-    "toolProficiency": "Véhicules terrestres",
-    "originFeatName": "Force forgée"
-  },
-  {
-    "name": "Sage",
-    "description": "Vous avez passé des années à étudier dans une bibliothèque, scriptorium ou université.",
-    "suggestedStats": ["Intelligence", "Sagesse", "Charisme"],
-    "feature": {
-      "name": "Chercheur",
-      "description": "Quand vous ne trouvez pas une information, vous savez où et auprès de qui la chercher."
-    },
-    "toolProficiency": "Aucune",
-    "originFeatName": "Héritage humain"
-  },
-  {
-    "name": "Noble",
-    "description": "Vous comprenez la richesse, le pouvoir et le privilège.",
-    "suggestedStats": ["Force", "Intelligence", "Charisme"],
-    "feature": {
-      "name": "Position de privilège",
-      "description": "Les gens de haute société vous traitent comme l'un des leurs et vous accordent leur confiance."
-    },
-    "toolProficiency": "Jeu d'échecs tridimensionnel",
-    "originFeatName": "Héritage humain"
-  },
-  {
     "name": "Guide",
     "description": "Vous êtes un expert des chemins et des lieux, capable de guider les autres à travers les territoires les plus dangereux.",
-    "suggestedStats": ["Constitution", "Intelligence", "Sagesse"],
+    "suggestedStats": ["Constitution", "Dexterité", "Sagesse"],
     "feature": {
       "name": "Initié à la Magie (druide)",
       "description": "Vous avez appris les secrets de la nature et pouvez utiliser la magie druidique pour protéger et guider."
     },
-    "toolProficiency": "Jeu d'échecs tridimensionnel",
-    "originFeatName": null
+    "toolProficiency": "Outils de cartographe",
+    "originFeatName": "Initié à la magie"
   }
 ]
-
