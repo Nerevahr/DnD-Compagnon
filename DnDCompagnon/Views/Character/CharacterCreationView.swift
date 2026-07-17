@@ -44,7 +44,13 @@ struct CharacterCreationView: View {
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     
+    // États pour le don "Initié à la magie"
+    @State private var selectedMagicInitiateClass: String = "Druide"
+    @State private var selectedCantripIDs: Set<PersistentIdentifier> = []
+    @State private var selectedLevel1SpellID: PersistentIdentifier?
+    
     @Query(sort: \Background.name) private var backgrounds: [Background]
+    @Query(sort: \Spell.name) private var allSpells: [Spell]
 
     private var selectedBackground: Background? {
         backgrounds.first { $0.id == selectedBackgroundID }
@@ -79,6 +85,32 @@ struct CharacterCreationView: View {
         return !backgroundPlusTwoStat.isEmpty && !backgroundPlusOneStat.isEmpty && backgroundPlusTwoStat != backgroundPlusOneStat
     }
     
+    /// Vérifie que la sélection du don "Initié à la magie" est valide
+    private var isMagicInitiateSelectionValid: Bool {
+        guard let background = selectedBackground, background.grantsMagicInitiate else {
+            return true // Pas applicable
+        }
+        
+        // Doit avoir 2 cantrips et 1 sort de niveau 1
+        return selectedCantripIDs.count == 2 && selectedLevel1SpellID != nil
+    }
+    
+    /// Sorts de niveau 0 disponibles pour la classe sélectionnée
+    private var availableCantrips: [Spell] {
+        allSpells.filter { spell in
+            spell.niveau == 0 && spell.classes.contains(selectedMagicInitiateClass)
+        }
+        .sorted { $0.name < $1.name }
+    }
+    
+    /// Sorts de niveau 1 disponibles pour la classe sélectionnée
+    private var availableLevel1Spells: [Spell] {
+        allSpells.filter { spell in
+            spell.niveau == 1 && spell.classes.contains(selectedMagicInitiateClass)
+        }
+        .sorted { $0.name < $1.name }
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -110,6 +142,15 @@ struct CharacterCreationView: View {
                         backgroundBonusMode = .triplePlusOne
                         backgroundPlusTwoStat = ""
                         backgroundPlusOneStat = ""
+                        
+                        // Réinitialiser les sélections du don "Initié à la magie"
+                        if let background = selectedBackground, background.grantsMagicInitiate {
+                            selectedMagicInitiateClass = background.defaultMagicClass ?? "Druide"
+                        } else {
+                            selectedMagicInitiateClass = "Druide"
+                        }
+                        selectedCantripIDs = []
+                        selectedLevel1SpellID = nil
                     }
                     Stepper("Niveau: \(level)", value: $level, in: 1...20)
                 }
@@ -161,6 +202,89 @@ struct CharacterCreationView: View {
                                 }
                             }
                         }
+                    }
+                }
+                
+                // Section pour le don "Initié à la magie"
+                if let background = selectedBackground, background.grantsMagicInitiate {
+                    Section("Don : Initié à la magie") {
+                        Picker("Classe de magie", selection: $selectedMagicInitiateClass) {
+                            ForEach(background.magicInitiateClasses, id: \.self) { magicClass in
+                                Text(magicClass).tag(magicClass)
+                            }
+                        }
+                        
+                        // Sélection des sorts mineurs
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Sélectionnez 2 sorts mineurs")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            
+                            ForEach(availableCantrips) { spell in
+                                Button {
+                                    if selectedCantripIDs.contains(spell.id) {
+                                        selectedCantripIDs.remove(spell.id)
+                                    } else if selectedCantripIDs.count < 2 {
+                                        selectedCantripIDs.insert(spell.id)
+                                    }
+                                } label: {
+                                    HStack {
+                                        Text(spell.name)
+                                            .foregroundColor(.primary)
+                                        Spacer()
+                                        if selectedCantripIDs.contains(spell.id) {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(.accentColor)
+                                        } else {
+                                            Image(systemName: "circle")
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(selectedCantripIDs.count == 2 && !selectedCantripIDs.contains(spell.id))
+                            }
+                            
+                            if selectedCantripIDs.isEmpty {
+                                Text("\(2 - selectedCantripIDs.count) sort mineur à sélectionner")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            } else if selectedCantripIDs.count < 2 {
+                                Text("\(2 - selectedCantripIDs.count) sort mineur à sélectionner")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            } else {
+                                Text("2 sorts mineurs sélectionnés ✓")
+                                    .font(.caption)
+                                    .foregroundColor(.green)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                        
+                        // Sélection du sort de niveau 1
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Sélectionnez 1 sort de niveau 1")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            
+                            Picker("Sort de niveau 1", selection: $selectedLevel1SpellID) {
+                                Text("Aucun").tag(nil as PersistentIdentifier?)
+                                ForEach(availableLevel1Spells) { spell in
+                                    Text(spell.name).tag(spell.id as PersistentIdentifier?)
+                                }
+                            }
+                            
+                            if selectedLevel1SpellID != nil {
+                                Text("Sort de niveau 1 sélectionné ✓")
+                                    .font(.caption)
+                                    .foregroundColor(.green)
+                            } else {
+                                Text("Sélectionnez un sort de niveau 1")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 8)
                     }
                 }
                 
@@ -227,7 +351,11 @@ struct CharacterCreationView: View {
                     Button("Créer") {
                         createCharacter()
                     }
-                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !isBackgroundBonusValid)
+                    .disabled(
+                        name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                        !isBackgroundBonusValid ||
+                        !isMagicInitiateSelectionValid
+                    )
                 }
             }
             .alert("Erreur", isPresented: $showErrorAlert) {
@@ -259,6 +387,25 @@ struct CharacterCreationView: View {
                 proficientSkills: Array(proficientSkills),
                 context: modelContext
             )
+            
+            // Ajouter les sorts du don "Initié à la magie" s'il est applicable
+            if let background = selectedBackground, background.grantsMagicInitiate {
+                // Ajouter les sorts mineurs
+                for cantripID in selectedCantripIDs {
+                    if let spell = allSpells.first(where: { $0.id == cantripID }) {
+                        character.prepareSpell(spell)
+                    }
+                }
+                
+                // Ajouter le sort de niveau 1
+                if let level1SpellID = selectedLevel1SpellID,
+                   let spell = allSpells.first(where: { $0.id == level1SpellID }) {
+                    character.prepareSpell(spell)
+                }
+                
+                // Sauvegarder après ajout des sorts
+                try modelContext.save()
+            }
             
             onSuccess()
             dismiss()

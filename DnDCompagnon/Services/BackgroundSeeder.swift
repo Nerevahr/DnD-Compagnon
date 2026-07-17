@@ -19,6 +19,7 @@ enum BackgroundSeeder {
         let feature: FeatureData
         let toolProficiency: String
         let originFeatName: String?
+        let defaultMagicClass: String?
 
         struct FeatureData: Codable {
             let name: String
@@ -55,7 +56,8 @@ enum BackgroundSeeder {
                 suggestedStats: data.suggestedStats,
                 feature: feature,
                 toolProficiency: data.toolProficiency,
-                originFeat: originFeat
+                originFeat: originFeat,
+                defaultMagicClass: data.defaultMagicClass
             )
             context.insert(background)
         }

@@ -8,6 +8,7 @@
       "description": "Vous avez appris les secrets de la nature et pouvez utiliser la magie druidique pour protéger et guider."
     },
     "toolProficiency": "Outils de cartographe",
-    "originFeatName": "Initié à la magie"
+    "originFeatName": "Initié à la magie",
+    "defaultMagicClass": "Druide"
   }
 ]

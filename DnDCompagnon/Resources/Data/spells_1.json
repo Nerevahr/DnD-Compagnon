@@ -21,8 +21,8 @@
        "savingThrowStat":"",
        "damageAmount":"",
        "alternateDamageAmount":""
-    }
-   {
+    },
+    {
       "name":"Bénédiction",
       "portee":"9 mètres",
       "ecole":"Enchantement",
