@@ -83,7 +83,7 @@ struct AddClassView: View {
     let availableSkills = [
         "Acrobaties", "Arcanes", "Athlétisme", "Discrétion", "Dressage",
         "Escamotage", "Histoire", "Intimidation", "Investigation", "Médecine",
-        "Nature", "Perception", "Perspicacité", "Persuasion", "Religion",
+        "Nature", "Perception", "Intuition", "Persuasion", "Religion",
         "Représentation", "Survie", "Tromperie"
     ]
     let spellcastingAbilities = ["", "Intelligence", "Sagesse", "Charisme"]
@@ -264,7 +264,7 @@ struct ClassDetailView: View {
     let availableSkills = [
         "Acrobaties", "Arcanes", "Athlétisme", "Discrétion", "Dressage",
         "Escamotage", "Histoire", "Intimidation", "Investigation", "Médecine",
-        "Nature", "Perception", "Perspicacité", "Persuasion", "Religion",
+        "Nature", "Perception", "Intuition", "Persuasion", "Religion",
         "Représentation", "Survie", "Tromperie"
     ]
     let spellcastingAbilities = ["", "Intelligence", "Sagesse", "Charisme"]

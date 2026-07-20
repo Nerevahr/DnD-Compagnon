@@ -27,7 +27,7 @@ struct DnDSkill: Codable, Hashable, Identifiable {
         DnDSkill(name: "Médecine", baseStat: "Sagesse"),
         DnDSkill(name: "Nature", baseStat: "Intelligence"),
         DnDSkill(name: "Perception", baseStat: "Sagesse"),
-        DnDSkill(name: "Perspicacité", baseStat: "Sagesse"),
+        DnDSkill(name: "Intuition", baseStat: "Sagesse"),
         DnDSkill(name: "Persuasion", baseStat: "Charisme"),
         DnDSkill(name: "Religion", baseStat: "Intelligence"),
         DnDSkill(name: "Représentation", baseStat: "Charisme"),
