@@ -141,6 +141,7 @@ struct CharacterEditView: View {
     private var hitPointsSection: some View {
         Section {
             Stepper("PV actuels: \(character.currentHitPoints)", value: $character.currentHitPoints, in: 0...character.maximumHitPoints)
+            Stepper("PV temporaires: \(character.temporaryHitPoints)", value: $character.temporaryHitPoints, in: 0...999)
             Stepper("PV maximum: \(character.maximumHitPoints)", value: $character.maximumHitPoints, in: 1...999)
 
             HStack {

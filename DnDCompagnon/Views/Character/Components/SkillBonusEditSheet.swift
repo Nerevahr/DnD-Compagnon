@@ -123,16 +123,3 @@ struct SkillBonusEditSheet: View {
         }
     }
 }
-
-#Preview {
-    @State var bonusMode: SkillBonusMode = .none
-    
-    return SkillBonusEditSheet(
-        skill: DnDSkill.allSkills[0],
-        character: MockData.fighter,
-        bonusMode: $bonusMode,
-        onApplyFixed: { _ in },
-        onApplyStat: { _ in },
-        onClear: { }
-    )
-}

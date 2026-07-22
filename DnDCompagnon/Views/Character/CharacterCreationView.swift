@@ -459,7 +459,7 @@ struct CharacterCreationView: View {
     }
     
     private func sortedSkills() -> [DnDSkill] {
-        let statOrder = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
+        let statOrder = Character.abilityScores
         return Character.allSkills.sorted { skill1, skill2 in
             let index1 = statOrder.firstIndex(of: skill1.baseStat) ?? 999
             let index2 = statOrder.firstIndex(of: skill2.baseStat) ?? 999

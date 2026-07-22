@@ -106,14 +106,46 @@ struct CharacterHeader: View {
                         .font(.subheadline)
                         .foregroundColor(hpColor)
                     Spacer()
-                    Text("\(character.currentHitPoints) / \(character.maximumHitPoints)")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                    if character.temporaryHitPoints > 0 {
+                        Text("\(character.currentHitPoints) / \(character.maximumHitPoints)")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Text("(+\(character.temporaryHitPoints) temp)")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.yellow)
+                    } else {
+                        Text("\(character.currentHitPoints) / \(character.maximumHitPoints)")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
                 }
-                
-                ProgressView(value: hpPercentage)
-                    .tint(hpColor)
-                    .scaleEffect(x: 1, y: 2, anchor: .center)
+
+                if character.temporaryHitPoints > 0 {
+                    GeometryReader { geo in
+                        let total = CGFloat(character.maximumHitPoints + character.temporaryHitPoints)
+                        let mainWidth = geo.size.width * CGFloat(character.maximumHitPoints) / total
+                        let tempWidth = geo.size.width * CGFloat(character.temporaryHitPoints) / total - 2
+                        HStack(spacing: 2) {
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 2)
+                                    .fill(Color.gray.opacity(0.3))
+                                    .frame(width: mainWidth)
+                                RoundedRectangle(cornerRadius: 2)
+                                    .fill(hpColor)
+                                    .frame(width: mainWidth * hpPercentage)
+                            }
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(Color.yellow)
+                                .frame(width: max(0, tempWidth))
+                        }
+                    }
+                    .frame(height: 8)
+                } else {
+                    ProgressView(value: hpPercentage)
+                        .tint(hpColor)
+                        .scaleEffect(x: 1, y: 2, anchor: .center)
+                }
             }
         }
         .padding()

@@ -79,15 +79,10 @@ struct AddClassView: View {
     @State private var newAbilityName = ""
     @State private var newAbilityDescription = ""
     
-    let availableStats = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
-    let availableSkills = [
-        "Acrobaties", "Arcanes", "Athlétisme", "Discrétion", "Dressage",
-        "Escamotage", "Histoire", "Intimidation", "Investigation", "Médecine",
-        "Nature", "Perception", "Intuition", "Persuasion", "Religion",
-        "Représentation", "Survie", "Tromperie"
-    ]
+    let availableStats = Character.abilityScores
+    let availableSkills = DnDSkill.allSkills.map { $0.name }
     let spellcastingAbilities = ["", "Intelligence", "Sagesse", "Charisme"]
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -260,15 +255,10 @@ struct ClassDetailView: View {
     @State private var newAbilityName = ""
     @State private var newAbilityDescription = ""
     
-    let availableStats = ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]
-    let availableSkills = [
-        "Acrobaties", "Arcanes", "Athlétisme", "Discrétion", "Dressage",
-        "Escamotage", "Histoire", "Intimidation", "Investigation", "Médecine",
-        "Nature", "Perception", "Intuition", "Persuasion", "Religion",
-        "Représentation", "Survie", "Tromperie"
-    ]
+    let availableStats = Character.abilityScores
+    let availableSkills = DnDSkill.allSkills.map { $0.name }
     let spellcastingAbilities = ["", "Intelligence", "Sagesse", "Charisme"]
-    
+
     var body: some View {
         Form {
             Section(header: Text("Informations Générales")) {

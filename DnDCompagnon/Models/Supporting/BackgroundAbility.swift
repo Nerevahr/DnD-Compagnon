@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Structure pour représenter l'aptitude unique d'une origine
+
 struct BackgroundAbility: Codable, Hashable, Identifiable, Sendable {
     var id = UUID()
     var name: String

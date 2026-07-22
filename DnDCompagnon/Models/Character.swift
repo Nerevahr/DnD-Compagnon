@@ -31,6 +31,7 @@ final class Character {
     // Points de vie
     var currentHitPoints: Int
     var maximumHitPoints: Int
+    var temporaryHitPoints: Int = 0
     
     // Historique des PV gagnés par niveau (clé: niveau, valeur: PV gagnés)
     var hpLevelHistory: [Int: Int] = [:]
