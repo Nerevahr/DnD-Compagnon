@@ -7,8 +7,8 @@
     "skillProficiencies": ["Discrétion", "Survie"],
     "originFeatName": "Initié à la magie",
     "equipmentOptions": [
-      { "label": "Équipement d'explorateur", "itemNames": ["Bâton de combat", "Arc court"], "goldPieces": 10 },
-      { "label": "Bourse du marchand", "itemNames": [], "goldPieces": 50 }
+      { "itemNames": ["Bâton de combat", "Arc court"], "goldPieces": 10 },
+      { "itemNames": [], "goldPieces": 50 }
     ],
     "defaultMagicClass": "Druide"
   }

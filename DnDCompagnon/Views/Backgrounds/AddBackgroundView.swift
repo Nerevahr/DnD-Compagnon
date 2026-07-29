@@ -13,7 +13,6 @@ import SwiftData
 /// Option d'équipement en cours de construction dans le formulaire d'ajout
 private struct DraftEquipmentOption: Identifiable {
     let id = UUID()
-    var label: String
     var itemIDs: Set<PersistentIdentifier>
     var goldPieces: Double
 }
@@ -31,7 +30,6 @@ struct AddBackgroundView: View {
 
     // Pour ajouter une nouvelle option d'équipement
     @State private var showingAddEquipmentOption = false
-    @State private var newOptionLabel = ""
     @State private var newOptionItemIDs: Set<PersistentIdentifier> = []
     @State private var newOptionGoldPieces: Double = 0
 
@@ -89,13 +87,7 @@ struct AddBackgroundView: View {
 
                 Section("Options d'équipement") {
                     ForEach(equipmentOptions) { option in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(option.label)
-                                .fontWeight(.medium)
-                            Text("\(Int(option.goldPieces)) po · \(option.itemIDs.count) objet(s)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                        Text("\(option.itemIDs.count) objet(s) · \(Int(option.goldPieces)) po")
                     }
                     .onDelete { indexSet in
                         equipmentOptions.remove(atOffsets: indexSet)
@@ -119,7 +111,6 @@ struct AddBackgroundView: View {
                         let resolvedOptions = equipmentOptions.map { draft -> BackgroundEquipmentOption in
                             let items = allItems.filter { draft.itemIDs.contains($0.id) }
                             let option = BackgroundEquipmentOption(
-                                label: draft.label,
                                 items: items,
                                 goldPieces: draft.goldPieces
                             )
@@ -143,8 +134,6 @@ struct AddBackgroundView: View {
             .sheet(isPresented: $showingAddEquipmentOption) {
                 NavigationStack {
                     Form {
-                        TextField("Libellé", text: $newOptionLabel)
-
                         Section("Or de départ") {
                             TextField("Or", value: $newOptionGoldPieces, format: .number)
                                 .keyboardType(.numberPad)
@@ -183,14 +172,12 @@ struct AddBackgroundView: View {
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Ajouter") {
                                 equipmentOptions.append(DraftEquipmentOption(
-                                    label: newOptionLabel,
                                     itemIDs: newOptionItemIDs,
                                     goldPieces: newOptionGoldPieces
                                 ))
                                 resetNewOptionState()
                                 showingAddEquipmentOption = false
                             }
-                            .disabled(newOptionLabel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         }
                     }
                 }
@@ -199,7 +186,6 @@ struct AddBackgroundView: View {
     }
 
     private func resetNewOptionState() {
-        newOptionLabel = ""
         newOptionItemIDs = []
         newOptionGoldPieces = 0
     }

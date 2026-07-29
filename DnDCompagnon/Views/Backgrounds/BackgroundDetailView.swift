@@ -20,7 +20,6 @@ struct BackgroundDetailView: View {
 
     // Pour ajouter une nouvelle option d'équipement
     @State private var showingAddEquipmentOption = false
-    @State private var newOptionLabel = ""
     @State private var newOptionItemIDs: Set<PersistentIdentifier> = []
     @State private var newOptionGoldPieces: Double = 0
 
@@ -170,8 +169,6 @@ struct BackgroundDetailView: View {
         .sheet(isPresented: $showingAddEquipmentOption) {
             NavigationStack {
                 Form {
-                    TextField("Libellé", text: $newOptionLabel)
-
                     Section("Or de départ") {
                         TextField("Or", value: $newOptionGoldPieces, format: .number)
                             .keyboardType(.numberPad)
@@ -211,7 +208,6 @@ struct BackgroundDetailView: View {
                         Button("Ajouter") {
                             let items = allItems.filter { newOptionItemIDs.contains($0.id) }
                             let option = BackgroundEquipmentOption(
-                                label: newOptionLabel,
                                 items: items,
                                 goldPieces: newOptionGoldPieces
                             )
@@ -220,7 +216,6 @@ struct BackgroundDetailView: View {
                             resetNewOptionState()
                             showingAddEquipmentOption = false
                         }
-                        .disabled(newOptionLabel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                 }
             }
@@ -230,11 +225,8 @@ struct BackgroundDetailView: View {
     @ViewBuilder
     private func equipmentOptionRow(_ option: BackgroundEquipmentOption) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(option.label)
-                .font(.headline)
             Text("\(Int(option.goldPieces)) po")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.headline)
             if !option.items.isEmpty {
                 Text(option.items.map(\.name).joined(separator: ", "))
                     .font(.caption)
@@ -250,5 +242,10 @@ struct BackgroundDetailView: View {
         for option in optionsToDelete {
             modelContext.delete(option)
         }
+    }
+
+    private func resetNewOptionState() {
+        newOptionItemIDs = []
+        newOptionGoldPieces = 0
     }
 }
