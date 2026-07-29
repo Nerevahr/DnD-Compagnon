@@ -42,7 +42,8 @@ struct MockData {
         abilities: [
             RaceAbility(name: "Vision dans le noir", description: "Vision à 60 pieds dans le noir"),
             RaceAbility(name: "Résistance naine", description: "Avantage aux jets de sauvegarde contre le poison"),
-            RaceAbility(name: "Formation aux armes naines", description: "Maîtrise des armes naines")
+            RaceAbility(name: "Formation aux armes naines", description: "Maîtrise des armes naines"),
+            RaceAbility(name: "Ténacité naine", description: "Votre maximum de points de vie augmente de 1, et il augmente à nouveau de 1 à chaque fois que vous gagnez un niveau.")
         ],
         abilityBonuses: ["Constitution": 2],
         speed: 25,

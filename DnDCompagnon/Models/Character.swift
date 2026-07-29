@@ -185,7 +185,12 @@ final class Character {
     }
     
     // MARK: - Points de vie
-    
+
+    /// Vérifie si la race du personnage possède l'aptitude "Ténacité naine"
+    var hasDwarvenToughness: Bool {
+        race?.abilities.contains { $0.name == "Ténacité naine" } ?? false
+    }
+
     /// Points de vie maximum
     /// TODO: Implémenter le calcul basé sur la classe et le niveau
     var maxHitPoints: Int {
@@ -283,9 +288,10 @@ final class Character {
         self.equippedArmor = equippedArmor
         self.equippedWeapon = equippedWeapon
         self.equippedShield = equippedShield
-        // Calcul des PV par défaut : 8 + modificateur de Constitution
+        // Calcul des PV par défaut : 8 + modificateur de Constitution (+1 si Ténacité naine)
         let constitutionMod = (constitution - 10) / 2
-        let defaultMaxHP = 8 + constitutionMod
+        let dwarvenToughnessBonus = (race?.abilities.contains { $0.name == "Ténacité naine" } ?? false) ? 1 : 0
+        let defaultMaxHP = 8 + constitutionMod + dwarvenToughnessBonus
         let finalMaxHP = maximumHitPoints ?? defaultMaxHP
 
         // Initialiser les deux propriétés sans référence à self
@@ -434,8 +440,9 @@ extension Character {
         // Sauvegarder l'ancien niveau pour la validation
         let previousLevel = level
         
-        // Calculer le gain de PV : dé + modificateur de Constitution, minimum 1
-        let hpGain = max(1, dieRoll + constitutionModifier)
+        // Calculer le gain de PV : dé + modificateur de Constitution (+1 si Ténacité naine), minimum 1
+        let racialBonus = hasDwarvenToughness ? 1 : 0
+        let hpGain = max(1, dieRoll + constitutionModifier + racialBonus)
         
         // Augmenter le niveau
         level += 1
