@@ -225,7 +225,7 @@ struct CharacterCreationView: View {
                         Picker("Choix d'équipement", selection: $selectedEquipmentOptionID) {
                             Text("Sélectionner...").tag(nil as PersistentIdentifier?)
                             ForEach(background.equipmentOptions) { option in
-                                Text("\(option.label) (\(Int(option.goldPieces)) po)")
+                                Text(equipmentOptionLabel(option))
                                     .tag(option.id as PersistentIdentifier?)
                             }
                         }
@@ -497,6 +497,12 @@ struct CharacterCreationView: View {
         )
     }
     
+    private func equipmentOptionLabel(_ option: BackgroundEquipmentOption) -> String {
+        let goldText = "\(Int(option.goldPieces)) po"
+        guard !option.items.isEmpty else { return goldText }
+        return "\(option.items.map(\.name).joined(separator: ", ")) (\(goldText))"
+    }
+
     private func sortedSkills() -> [DnDSkill] {
         let statOrder = Character.abilityScores
         return Character.allSkills.sorted { skill1, skill2 in

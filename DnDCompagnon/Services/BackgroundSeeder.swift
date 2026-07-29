@@ -23,7 +23,6 @@ enum BackgroundSeeder {
         let defaultMagicClass: String?
 
         struct EquipmentOptionData: Codable {
-            let label: String
             let itemNames: [String]
             let goldPieces: Double
         }
@@ -65,7 +64,6 @@ enum BackgroundSeeder {
                     }
                 }
                 let option = BackgroundEquipmentOption(
-                    label: optionData.label,
                     items: resolvedItems,
                     goldPieces: optionData.goldPieces
                 )
