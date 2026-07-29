@@ -16,14 +16,16 @@ enum BackgroundSeeder {
         let name: String
         let description: String
         let suggestedStats: [String]
-        let feature: FeatureData
         let toolProficiency: String
+        let skillProficiencies: [String]
         let originFeatName: String?
+        let equipmentOptions: [EquipmentOptionData]
         let defaultMagicClass: String?
 
-        struct FeatureData: Codable {
-            let name: String
-            let description: String
+        struct EquipmentOptionData: Codable {
+            let label: String
+            let itemNames: [String]
+            let goldPieces: Double
         }
     }
 
@@ -39,8 +41,6 @@ enum BackgroundSeeder {
         }
 
         for data in backgrounds {
-            let feature = BackgroundAbility(name: data.feature.name, abilityDescription: data.feature.description)
-            
             // Rechercher le don d'origine par son nom
             var originFeat: Feat? = nil
             if let featName = data.originFeatName {
@@ -49,14 +49,38 @@ enum BackgroundSeeder {
                 )
                 originFeat = try? context.fetch(featDescriptor).first
             }
-            
+
+            // Résoudre les options d'équipement (objets du catalogue par nom)
+            var equipmentOptions: [BackgroundEquipmentOption] = []
+            for optionData in data.equipmentOptions {
+                var resolvedItems: [Item] = []
+                for itemName in optionData.itemNames {
+                    let itemDescriptor = FetchDescriptor<Item>(
+                        predicate: #Predicate<Item> { $0.name == itemName }
+                    )
+                    if let item = try? context.fetch(itemDescriptor).first {
+                        resolvedItems.append(item)
+                    } else {
+                        print("⚠️ Objet introuvable pour l'option d'équipement: \(itemName)")
+                    }
+                }
+                let option = BackgroundEquipmentOption(
+                    label: optionData.label,
+                    items: resolvedItems,
+                    goldPieces: optionData.goldPieces
+                )
+                context.insert(option)
+                equipmentOptions.append(option)
+            }
+
             let background = Background(
                 name: data.name,
                 description: data.description,
                 suggestedStats: data.suggestedStats,
-                feature: feature,
                 toolProficiency: data.toolProficiency,
+                skillProficiencies: data.skillProficiencies,
                 originFeat: originFeat,
+                equipmentOptions: equipmentOptions,
                 defaultMagicClass: data.defaultMagicClass
             )
             context.insert(background)
