@@ -10,6 +10,8 @@ import SwiftData
 
 @Model
 final class Character {
+    private static let dwarvenToughnessAbilityName = "Ténacité naine"
+
     var timestamp: Date
     var name: String
     var level: Int
@@ -188,7 +190,7 @@ final class Character {
 
     /// Vérifie si la race du personnage possède l'aptitude "Ténacité naine"
     var hasDwarvenToughness: Bool {
-        race?.abilities.contains { $0.name == "Ténacité naine" } ?? false
+        race?.abilities.contains { $0.name == Self.dwarvenToughnessAbilityName } ?? false
     }
 
     /// Points de vie maximum
@@ -290,7 +292,7 @@ final class Character {
         self.equippedShield = equippedShield
         // Calcul des PV par défaut : 8 + modificateur de Constitution (+1 si Ténacité naine)
         let constitutionMod = (constitution - 10) / 2
-        let dwarvenToughnessBonus = (race?.abilities.contains { $0.name == "Ténacité naine" } ?? false) ? 1 : 0
+        let dwarvenToughnessBonus = (race?.abilities.contains { $0.name == Self.dwarvenToughnessAbilityName } ?? false) ? 1 : 0
         let defaultMaxHP = 8 + constitutionMod + dwarvenToughnessBonus
         let finalMaxHP = maximumHitPoints ?? defaultMaxHP
 
