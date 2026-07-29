@@ -3,12 +3,13 @@
     "name": "Guide",
     "description": "Vous êtes un expert des chemins et des lieux, capable de guider les autres à travers les territoires les plus dangereux.",
     "suggestedStats": ["Constitution", "Dexterité", "Sagesse"],
-    "feature": {
-      "name": "Initié à la Magie (druide)",
-      "description": "Vous avez appris les secrets de la nature et pouvez utiliser la magie druidique pour protéger et guider."
-    },
     "toolProficiency": "Outils de cartographe",
+    "skillProficiencies": ["Discrétion", "Survie"],
     "originFeatName": "Initié à la magie",
+    "equipmentOptions": [
+      { "label": "Équipement d'explorateur", "itemNames": ["Bâton de combat", "Arc court"], "goldPieces": 10 },
+      { "label": "Bourse du marchand", "itemNames": [], "goldPieces": 50 }
+    ],
     "defaultMagicClass": "Druide"
   }
 ]

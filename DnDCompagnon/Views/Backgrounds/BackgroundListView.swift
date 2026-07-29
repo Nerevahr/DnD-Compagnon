@@ -62,9 +62,11 @@ private struct BackgroundRowView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(background.name)
                 .font(.headline)
-            Text(background.feature.name)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            if !background.skillProficiencies.isEmpty {
+                Text(background.skillProficiencies.joined(separator: ", "))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }

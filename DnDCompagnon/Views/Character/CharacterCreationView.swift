@@ -40,6 +40,7 @@ struct CharacterCreationView: View {
     @State private var backgroundBonusMode: BackgroundStatBonusMode = .triplePlusOne
     @State private var backgroundPlusTwoStat: String = ""
     @State private var backgroundPlusOneStat: String = ""
+    @State private var selectedEquipmentOptionID: PersistentIdentifier?
     
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
@@ -68,7 +69,19 @@ struct CharacterCreationView: View {
     private var selectedRace: Race? {
         availableRaces.first { $0.id == selectedRaceID }
     }
-    
+
+    private var selectedEquipmentOption: BackgroundEquipmentOption? {
+        selectedBackground?.equipmentOptions.first { $0.id == selectedEquipmentOptionID }
+    }
+
+    /// Vérifie que le choix d'équipement de départ est valide
+    private var isEquipmentOptionValid: Bool {
+        guard let background = selectedBackground, !background.equipmentOptions.isEmpty else {
+            return true
+        }
+        return selectedEquipmentOptionID != nil
+    }
+
     /// Vérifie que le choix de bonus d'origine est valide
     private var isBackgroundBonusValid: Bool {
         // Si pas d'origine, c'est valide (pas de bonus à choisir)
@@ -142,7 +155,8 @@ struct CharacterCreationView: View {
                         backgroundBonusMode = .triplePlusOne
                         backgroundPlusTwoStat = ""
                         backgroundPlusOneStat = ""
-                        
+                        selectedEquipmentOptionID = nil
+
                         // Réinitialiser les sélections du don "Initié à la magie"
                         if let background = selectedBackground, background.grantsMagicInitiate {
                             selectedMagicInitiateClass = background.defaultMagicClass ?? "Druide"
@@ -204,7 +218,26 @@ struct CharacterCreationView: View {
                         }
                     }
                 }
-                
+
+                // Section pour le choix d'équipement de départ (Background)
+                if let background = selectedBackground, !background.equipmentOptions.isEmpty {
+                    Section("Équipement de départ") {
+                        Picker("Choix d'équipement", selection: $selectedEquipmentOptionID) {
+                            Text("Sélectionner...").tag(nil as PersistentIdentifier?)
+                            ForEach(background.equipmentOptions) { option in
+                                Text("\(option.label) (\(Int(option.goldPieces)) po)")
+                                    .tag(option.id as PersistentIdentifier?)
+                            }
+                        }
+
+                        if let option = selectedEquipmentOption, !option.items.isEmpty {
+                            Text(option.items.map(\.name).joined(separator: ", "))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+
                 // Section pour le don "Initié à la magie"
                 if let background = selectedBackground, background.grantsMagicInitiate {
                     Section("Don : Initié à la magie") {
@@ -354,7 +387,8 @@ struct CharacterCreationView: View {
                     .disabled(
                         name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
                         !isBackgroundBonusValid ||
-                        !isMagicInitiateSelectionValid
+                        !isMagicInitiateSelectionValid ||
+                        !isEquipmentOptionValid
                     )
                 }
             }
@@ -396,17 +430,22 @@ struct CharacterCreationView: View {
                         character.prepareSpell(spell)
                     }
                 }
-                
+
                 // Ajouter le sort de niveau 1
                 if let level1SpellID = selectedLevel1SpellID,
                    let spell = allSpells.first(where: { $0.id == level1SpellID }) {
                     character.prepareSpell(spell)
                 }
-                
-                // Sauvegarder après ajout des sorts
-                try modelContext.save()
             }
-            
+
+            // Ajouter l'équipement de départ choisi
+            if let option = selectedEquipmentOption {
+                character.inventory.append(contentsOf: option.items)
+                character.gold += option.goldPieces
+            }
+
+            try modelContext.save()
+
             onSuccess()
             dismiss()
         } catch CharacterCreationError.invalidName {
