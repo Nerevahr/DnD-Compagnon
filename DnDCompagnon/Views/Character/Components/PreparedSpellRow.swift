@@ -25,12 +25,19 @@ struct PreparedSpellRow: View {
                         Text(spell?.name ?? "Sort inconnu")
                             .font(.body)
                             .foregroundColor(.primary)
-                        
+
                         // Indicateur de personnalisation
                         if preparedSpell.hasCustomizations {
                             Image(systemName: "pencil.circle")
                                 .font(.caption2)
                                 .foregroundColor(.blue)
+                        }
+
+                        // Indicateur "toujours préparé" (non retirable)
+                        if preparedSpell.isAlwaysPrepared {
+                            Image(systemName: "lock.fill")
+                                .font(.caption2)
+                                .foregroundColor(.purple)
                         }
                     }
                     

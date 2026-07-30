@@ -31,7 +31,10 @@ final class PreparedSpell {
     
     // Notes personnelles pour ce sort préparé
     var notes: String?
-    
+
+    // Sort toujours préparé (ex. octroyé par un don comme "Initié à la magie"), non retirable
+    var isAlwaysPrepared: Bool = false
+
     init(
         timestamp: Date = Date(),
         baseSpell: Spell? = nil,
@@ -39,7 +42,8 @@ final class PreparedSpell {
         customAlternateDamageAmount: String? = nil,
         customSavingThrowStat: String? = nil,
         customDescription: String? = nil,
-        notes: String? = nil
+        notes: String? = nil,
+        isAlwaysPrepared: Bool = false
     ) {
         self.timestamp = timestamp
         self.baseSpell = baseSpell
@@ -48,6 +52,7 @@ final class PreparedSpell {
         self.customSavingThrowStat = customSavingThrowStat
         self.customDescription = customDescription
         self.notes = notes
+        self.isAlwaysPrepared = isAlwaysPrepared
     }
 }
 
