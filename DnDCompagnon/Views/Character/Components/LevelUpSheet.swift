@@ -14,23 +14,44 @@ struct LevelUpSheet: View {
     
     @Bindable var character: Character
     let newLevel: Int
-    
+
+    @Query private var allSpells: [Spell]
+
     @State private var dieRoll: Int = 1
-    
+    @State private var cantripToForget: Spell?
+    @State private var cantripToLearn: Spell?
+
     var expectedMinHP: Int {
         1
     }
-    
+
     var expectedMaxHP: Int {
         10 + newLevel
     }
-    
+
     var racialHPBonus: Int {
         character.hasDwarvenToughness ? 1 : 0
     }
 
     var hpGain: Int {
         max(1, dieRoll + character.constitutionModifier + racialHPBonus)
+    }
+
+    /// Sorts mineurs connus par le personnage et pouvant être remplacés
+    var knownCantrips: [Spell] {
+        character.preparedSpells
+            .filter { !$0.isAlwaysPrepared && $0.baseSpell?.niveau == 0 }
+            .compactMap { $0.baseSpell }
+            .sorted { $0.name < $1.name }
+    }
+
+    /// Sorts mineurs de la classe du personnage qu'il ne connaît pas encore
+    var learnableCantrips: [Spell] {
+        guard let className = character.dndClass?.name else { return [] }
+        let knownIds = Set(character.preparedSpells.compactMap { $0.baseSpell?.persistentModelID })
+        return allSpells
+            .filter { $0.niveau == 0 && $0.classes.contains(className) && !knownIds.contains($0.persistentModelID) }
+            .sorted { $0.name < $1.name }
     }
     
     var body: some View {
@@ -138,9 +159,49 @@ struct LevelUpSheet: View {
             .padding()
             .background(Color.gray.opacity(0.05))
             .cornerRadius(12)
-            
+
+            // Remplacement d'un sort mineur (aptitude "Sorts")
+            if character.dndClass?.hasSorts == true {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Remplacer un sort mineur")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Sort mineur oublié")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        Picker("Sort mineur oublié", selection: $cantripToForget) {
+                            Text("Aucun").tag(nil as Spell?)
+                            ForEach(knownCantrips, id: \.persistentModelID) { spell in
+                                Text(spell.name).tag(spell as Spell?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Nouveau sort mineur")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        Picker("Nouveau sort mineur", selection: $cantripToLearn) {
+                            Text("Aucun").tag(nil as Spell?)
+                            ForEach(learnableCantrips, id: \.persistentModelID) { spell in
+                                Text(spell.name).tag(spell as Spell?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                }
+                .padding()
+                .background(Color.gray.opacity(0.05))
+                .cornerRadius(12)
+            }
+
             Spacer()
-            
+
             // Boutons
             HStack(spacing: 12) {
                 Button("Annuler") {
@@ -167,7 +228,16 @@ struct LevelUpSheet: View {
     
     private func confirmLevelUp() {
         character.levelUp(dieRoll: dieRoll)
-        
+
+        if let forgottenSpell = cantripToForget, let learnedSpell = cantripToLearn {
+            if let preparedSpell = character.preparedSpells.first(where: {
+                $0.baseSpell?.persistentModelID == forgottenSpell.persistentModelID
+            }) {
+                character.unprepareSpell(preparedSpell)
+            }
+            character.prepareSpell(learnedSpell)
+        }
+
         // Valider que les données sont cohérentes après la montée
         if let error = character.validateIntegrity() {
             print("⚠️  VALIDATION ERROR after levelUp: \(error)")

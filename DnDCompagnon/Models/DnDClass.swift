@@ -66,6 +66,11 @@ extension DnDClass {
     var hasOrdreDivin: Bool {
         abilities.contains { $0.name == "Ordre divin" }
     }
+
+    /// Vérifie si cette classe possède l'aptitude "Sorts"
+    var hasSorts: Bool {
+        abilities.contains { $0.name == "Sorts" }
+    }
     
     /// Retourne les emplacements de sorts disponibles pour un niveau de personnage donné
     /// - Parameter characterLevel: Le niveau du personnage
