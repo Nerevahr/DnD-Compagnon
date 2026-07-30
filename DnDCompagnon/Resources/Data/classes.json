@@ -68,7 +68,7 @@
       {
         "level": 1,
         "name": "Ordre divin",
-        "description": "en cours d'implémentation"
+        "description": "Vous choisissez l'ordre divin qui reflète votre approche de la puissance divine et de votre vocation : Protecteur ou Thaumaturge. Le Thaumaturge ajoute son modificateur de Sagesse aux tests de compétence Religion et Arcanes, en plus du modificateur habituel."
       },
       {
         "level": 2,

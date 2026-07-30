@@ -61,6 +61,11 @@ extension DnDClass {
     func abilityNames(at level: Int) -> [String] {
         abilities.filter { $0.level == level }.map { $0.name }
     }
+
+    /// Vérifie si cette classe possède l'aptitude "Ordre divin" (Clerc niv. 1)
+    var hasOrdreDivin: Bool {
+        abilities.contains { $0.name == "Ordre divin" }
+    }
     
     /// Retourne les emplacements de sorts disponibles pour un niveau de personnage donné
     /// - Parameter characterLevel: Le niveau du personnage

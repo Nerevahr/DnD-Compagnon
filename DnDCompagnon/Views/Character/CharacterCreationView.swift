@@ -45,6 +45,9 @@ struct CharacterCreationView: View {
     // Équipement de départ (Classe)
     @State private var selectedClassEquipmentOptionID: PersistentIdentifier?
 
+    // Choix de l'aptitude "Ordre divin" (Clerc)
+    @State private var divineOrderChoice: DivineOrderChoice = .protecteur
+
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     
@@ -158,6 +161,7 @@ struct CharacterCreationView: View {
                     }
                     .onChange(of: selectedClassID) { oldValue, newValue in
                         selectedClassEquipmentOptionID = nil
+                        divineOrderChoice = .protecteur
                     }
 
                     Picker("Race", selection: $selectedRaceID) {
@@ -171,20 +175,36 @@ struct CharacterCreationView: View {
                 }
 
                 // Section regroupant tout ce qui concerne la classe
-                if let dndClass = selectedClass, !dndClass.equipmentOptions.isEmpty {
+                if let dndClass = selectedClass, !dndClass.equipmentOptions.isEmpty || dndClass.hasOrdreDivin {
                     Section("Classe") {
-                        Picker("Équipement de départ", selection: $selectedClassEquipmentOptionID) {
-                            Text("Sélectionner...").tag(nil as PersistentIdentifier?)
-                            ForEach(dndClass.equipmentOptions) { option in
-                                Text(equipmentOptionLabel(items: option.items, goldPieces: option.goldPieces))
-                                    .tag(option.id as PersistentIdentifier?)
+                        if !dndClass.equipmentOptions.isEmpty {
+                            Picker("Équipement de départ", selection: $selectedClassEquipmentOptionID) {
+                                Text("Sélectionner...").tag(nil as PersistentIdentifier?)
+                                ForEach(dndClass.equipmentOptions) { option in
+                                    Text(equipmentOptionLabel(items: option.items, goldPieces: option.goldPieces))
+                                        .tag(option.id as PersistentIdentifier?)
+                                }
+                            }
+
+                            if let option = selectedClassEquipmentOption, !option.items.isEmpty {
+                                Text(option.items.map(\.name).joined(separator: ", "))
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                         }
 
-                        if let option = selectedClassEquipmentOption, !option.items.isEmpty {
-                            Text(option.items.map(\.name).joined(separator: ", "))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                        if dndClass.hasOrdreDivin {
+                            Picker("Ordre divin", selection: $divineOrderChoice) {
+                                ForEach(DivineOrderChoice.allCases, id: \.self) { choice in
+                                    Text(choice.displayName).tag(choice)
+                                }
+                            }
+
+                            if divineOrderChoice == .thaumaturge {
+                                Text("Ajoute votre modificateur de Sagesse aux tests de compétence Religion et Arcanes.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                 }
@@ -484,6 +504,12 @@ struct CharacterCreationView: View {
                    let spell = allSpells.first(where: { $0.id == level1SpellID }) {
                     character.prepareSpell(spell, isAlwaysPrepared: true)
                 }
+            }
+
+            // Appliquer le bonus du Thaumaturge (aptitude "Ordre divin" du Clerc)
+            if let dndClass = selectedClass, dndClass.hasOrdreDivin, divineOrderChoice == .thaumaturge {
+                character.skillStatBonuses["Religion"] = "Sagesse"
+                character.skillStatBonuses["Arcanes"] = "Sagesse"
             }
 
             // Ajouter l'équipement de départ choisi (Origine)
