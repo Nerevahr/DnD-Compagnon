@@ -15,6 +15,7 @@ struct SpellsPage: View {
     
     @Bindable var character: Character
     @State private var isShowingSpellPicker = false
+    @State private var isShowingSpellSheetSelector = false
     
     var availableSpells: [Spell] {
         guard let className = character.dndClass?.name else { return [] }
@@ -41,6 +42,11 @@ struct SpellsPage: View {
                     
                     Spacer()
                     
+                    Button(action: { isShowingSpellSheetSelector = true }) {
+                        Label("Fiche de sorts", systemImage: "list.bullet.rectangle.portrait")
+                            .font(.headline)
+                    }
+
                     Button(action: { isShowingSpellPicker = true }) {
                         Label("Préparer", systemImage: "book")
                             .font(.headline)
@@ -64,6 +70,9 @@ struct SpellsPage: View {
         }
         .sheet(isPresented: $isShowingSpellPicker) {
             SpellPickerView(character: character, availableSpells: availableSpells)
+        }
+        .sheet(isPresented: $isShowingSpellSheetSelector) {
+            SpellSheetSelectorView(character: character)
         }
     }
 }

@@ -396,6 +396,20 @@ extension Character {
     func isSpellAlwaysPrepared(_ spell: Spell) -> Bool {
         preparedSpells.contains { $0.baseSpell?.persistentModelID == spell.persistentModelID && $0.isAlwaysPrepared }
     }
+
+    /// Remplace les sorts préparés par ceux d'une fiche de sorts, en conservant
+    /// les sorts mineurs (niveau 0) et les sorts toujours préparés
+    func applySpellSheet(_ spellSheet: SpellSheet) {
+        preparedSpells.removeAll { preparedSpell in
+            let isMinorSpell = preparedSpell.baseSpell?.niveau == 0
+            return !isMinorSpell && !preparedSpell.isAlwaysPrepared
+        }
+
+        for sheetSpell in spellSheet.preparedSpells {
+            guard let spell = sheetSpell.baseSpell, !isSpellPrepared(spell) else { continue }
+            prepareSpell(spell)
+        }
+    }
 }
 
 // MARK: - Feats Management
