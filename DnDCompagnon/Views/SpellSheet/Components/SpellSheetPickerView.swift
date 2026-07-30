@@ -55,6 +55,7 @@ struct SpellSheetPickerView: View {
                         spellsByLevel: spellsByLevel,
                         showAllClasses: true,
                         selectedSpellIds: addedSpellIds,
+                        lockedSpellIds: [],
                         onToggleSpell: toggleSpell
                     )
                 }

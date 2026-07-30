@@ -15,19 +15,11 @@ struct DnDCompagnonApp: App {
     init() {
         do {
             let config = ModelConfiguration(
-<<<<<<< Updated upstream
-                schema: Schema([Character.self, Spell.self, Item.self, DnDClass.self, Race.self, Background.self, BackgroundEquipmentOption.self, Feat.self, PreparedSpell.self, Weapon.self, Armor.self, SpellSheet.self]),
+                schema: Schema([Character.self, Spell.self, Item.self, DnDClass.self, ClassEquipmentOption.self, Race.self, Background.self, BackgroundEquipmentOption.self, Feat.self, PreparedSpell.self, Weapon.self, Armor.self, SpellSheet.self]),
                 isStoredInMemoryOnly: false
             )
-            container = try ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, Race.self, Background.self, BackgroundEquipmentOption.self, Feat.self, PreparedSpell.self, Weapon.self, Armor.self, SpellSheet.self, configurations: config)
-            
-=======
-                schema: Schema([Character.self, Spell.self, Item.self, DnDClass.self, ClassEquipmentOption.self, Race.self, Background.self, BackgroundEquipmentOption.self, Feat.self, PreparedSpell.self, Weapon.self, Armor.self]),
-                isStoredInMemoryOnly: false
-            )
-            container = try ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, ClassEquipmentOption.self, Race.self, Background.self, BackgroundEquipmentOption.self, Feat.self, PreparedSpell.self, Weapon.self, Armor.self, configurations: config)
+            container = try ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, ClassEquipmentOption.self, Race.self, Background.self, BackgroundEquipmentOption.self, Feat.self, PreparedSpell.self, Weapon.self, Armor.self, SpellSheet.self, configurations: config)
 
->>>>>>> Stashed changes
             SpellSeeder.seedIfNeeded(context: container.mainContext)
             ItemSeeder.seedIfNeeded(context: container.mainContext)
             ClassSeeder.seedIfNeeded(context: container.mainContext)
