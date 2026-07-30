@@ -24,6 +24,12 @@ struct ContentView: View {
                 .tabItem {
                     Label("Ressources", systemImage:"book.fill")
                 }
+
+            // Troisième onglet : Fiches de sorts
+            SpellSheetListView()
+                .tabItem {
+                    Label("Fiche de sorts", systemImage: "list.bullet.rectangle.portrait")
+                }
         }
         .overlay(alignment: .bottomTrailing) {
             // Bouton de recherche flottant
@@ -55,7 +61,7 @@ private struct PreviewHelper: View {
     
     init() {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        container = try! ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, Feat.self, configurations: config)
+        container = try! ModelContainer(for: Character.self, Spell.self, Item.self, DnDClass.self, Feat.self, SpellSheet.self, configurations: config)
         SpellSeeder.seedIfNeeded(context: container.mainContext)
         ClassSeeder.seedIfNeeded(context: container.mainContext)
     }
