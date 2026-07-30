@@ -15,10 +15,7 @@ final class Race {
     
     /// Aptitudes raciales avec leur description
     var abilities: [RaceAbility]
-    
-    /// Bonus de caractéristiques (optionnel)
-    var abilityBonuses: [String: Int] = [:]
-    
+
     /// Vitesse de déplacement en pieds (optionnel)
     var speed: Int?
     
@@ -28,13 +25,11 @@ final class Race {
     init(
         name: String,
         abilities: [RaceAbility] = [],
-        abilityBonuses: [String: Int] = [:],
         speed: Int? = nil,
         defaultSize: String = "Moyen"
     ) {
         self.name = name
         self.abilities = abilities
-        self.abilityBonuses = abilityBonuses
         self.speed = speed
         self.defaultSize = defaultSize
     }

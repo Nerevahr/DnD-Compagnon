@@ -14,7 +14,6 @@ enum RaceSeeder {
     private struct RaceData: Codable {
         let name: String
         let abilities: [RaceAbilityData]
-        let abilityBonuses: [String: Int]
         let speed: Int?
         let defaultSize: String?
         
@@ -53,7 +52,6 @@ enum RaceSeeder {
             let race = Race(
                 name: raceData.name,
                 abilities: abilities,
-                abilityBonuses: raceData.abilityBonuses,
                 speed: raceData.speed,
                 defaultSize: raceData.defaultSize ?? "Moyen"
             )
