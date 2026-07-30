@@ -10,8 +10,6 @@ import SwiftData
 
 @Model
 final class Character {
-    private static let dwarvenToughnessAbilityName = "Ténacité naine"
-
     var timestamp: Date
     var name: String
     var level: Int
@@ -190,7 +188,7 @@ final class Character {
 
     /// Vérifie si la race du personnage possède l'aptitude "Ténacité naine"
     var hasDwarvenToughness: Bool {
-        race?.abilities.contains { $0.name == Self.dwarvenToughnessAbilityName } ?? false
+        race?.abilities.contains { $0.name == CharacterRulesEngine.AbilityName.dwarvenToughness } ?? false
     }
 
     /// Points de vie maximum
@@ -292,8 +290,7 @@ final class Character {
         self.equippedShield = equippedShield
         // Calcul des PV par défaut : 8 + modificateur de Constitution (+1 si Ténacité naine)
         let constitutionMod = (constitution - 10) / 2
-        let dwarvenToughnessBonus = (race?.abilities.contains { $0.name == Self.dwarvenToughnessAbilityName } ?? false) ? 1 : 0
-        let defaultMaxHP = 8 + constitutionMod + dwarvenToughnessBonus
+        let defaultMaxHP = 8 + constitutionMod + CharacterRulesEngine.racialHPBonus(for: race)
         let finalMaxHP = maximumHitPoints ?? defaultMaxHP
 
         // Initialiser les deux propriétés sans référence à self
@@ -463,8 +460,7 @@ extension Character {
         let previousLevel = level
         
         // Calculer le gain de PV : dé + modificateur de Constitution (+1 si Ténacité naine), minimum 1
-        let racialBonus = hasDwarvenToughness ? 1 : 0
-        let hpGain = max(1, dieRoll + constitutionModifier + racialBonus)
+        let hpGain = CharacterRulesEngine.levelUpHPGain(dieRoll: dieRoll, constitutionModifier: constitutionModifier, race: race)
         
         // Augmenter le niveau
         level += 1

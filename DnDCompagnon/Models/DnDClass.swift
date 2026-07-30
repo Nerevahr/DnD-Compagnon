@@ -64,7 +64,7 @@ extension DnDClass {
 
     /// Vérifie si cette classe possède l'aptitude "Ordre divin" (Clerc niv. 1)
     var hasOrdreDivin: Bool {
-        abilities.contains { $0.name == "Ordre divin" }
+        abilities.contains { $0.name == CharacterRulesEngine.AbilityName.ordreDivin }
     }
 
     /// Vérifie si cette classe possède l'aptitude "Sorts"
