@@ -19,9 +19,6 @@
         "description": "Votre maximum de points de vie augmente de 1, et il augmente à nouveau de 1 à chaque fois que vous gagnez un niveau."
       }
     ],
-    "abilityBonuses": {
-      "Constitution": 2
-    },
     "speed": 25,
     "defaultSize": "Moyen"
   }

@@ -17,10 +17,6 @@ struct MockData {
         abilities: [
             RaceAbility(name: "Polyvalence", description: "+1 à toutes les caractéristiques")
         ],
-        abilityBonuses: [
-            "Force": 1, "Dextérité": 1, "Constitution": 1,
-            "Intelligence": 1, "Sagesse": 1, "Charisme": 1
-        ],
         speed: 30,
         defaultSize: "Moyen"
     )
@@ -32,7 +28,6 @@ struct MockData {
             RaceAbility(name: "Sens aiguisés", description: "Maîtrise de la compétence Perception"),
             RaceAbility(name: "Ascendance féerique", description: "Avantage aux jets de sauvegarde contre la magie de charme")
         ],
-        abilityBonuses: ["Dextérité": 2],
         speed: 30,
         defaultSize: "Moyen"
     )
@@ -45,7 +40,6 @@ struct MockData {
             RaceAbility(name: "Formation aux armes naines", description: "Maîtrise des armes naines"),
             RaceAbility(name: "Ténacité naine", description: "Votre maximum de points de vie augmente de 1, et il augmente à nouveau de 1 à chaque fois que vous gagnez un niveau.")
         ],
-        abilityBonuses: ["Constitution": 2],
         speed: 25,
         defaultSize: "Moyen"
     )

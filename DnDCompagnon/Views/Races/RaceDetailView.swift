@@ -29,14 +29,6 @@ struct RaceDetailView: View {
                 }
             }
 
-            if !race.abilityBonuses.isEmpty {
-                Section("Bonus de caractéristiques") {
-                    ForEach(race.abilityBonuses.sorted(by: { $0.key < $1.key }), id: \.key) { stat, bonus in
-                        LabeledContent(stat, value: bonus >= 0 ? "+\(bonus)" : "\(bonus)")
-                    }
-                }
-            }
-
             Section("Aptitudes raciales") {
                 if race.abilities.isEmpty {
                     Text("Aucune aptitude")
