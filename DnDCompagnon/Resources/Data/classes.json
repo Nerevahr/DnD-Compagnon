@@ -21,7 +21,12 @@
     ],
     "masteredStats": ["Force", "Constitution"],
     "spellcastingAbility": "",
-    "masteredSkills": ["Acrobaties", "Athlétisme", "Dressage", "Histoire", "Intimidation", "Intuition", "Perception", "Survie"]
+    "masteredSkills": ["Acrobaties", "Athlétisme", "Dressage", "Histoire", "Intimidation", "Intuition", "Perception", "Survie"],
+    "equipmentOptions": [
+      { "itemNames": ["Chemise de maille", "Bâton de combat"], "goldPieces": 7 },
+      { "itemNames": ["Arc court"], "goldPieces": 75 },
+      { "itemNames": [], "goldPieces": 150 }
+    ]
   },
   {
     "name": "Magicien",
@@ -45,7 +50,11 @@
     ],
     "masteredStats": ["Intelligence", "Sagesse"],
     "spellcastingAbility": "Intelligence",
-    "masteredSkills": ["Arcanes", "Histoire", "Intuition", "Investigation", "Médecine", "Religion"]
+    "masteredSkills": ["Arcanes", "Histoire", "Intuition", "Investigation", "Médecine", "Religion"],
+    "equipmentOptions": [
+      { "itemNames": ["Bâton de combat"], "goldPieces": 0 },
+      { "itemNames": [], "goldPieces": 100 }
+    ]
   },
   {
     "name": "Clerc",
@@ -53,33 +62,27 @@
     "abilities": [
       {
         "level": 1,
-        "name": "Incantation",
-        "description": "Vous pouvez lancer des sorts de clerc. La Sagesse est votre caractéristique d'incantation."
+        "name": "Sorts",
+        "description": "en cours d'implémentation"
       },
       {
         "level": 1,
-        "name": "Domaine divin",
-        "description": "Vous choisissez un domaine lié à votre divinité : Vie, Lumière, Guerre, Tromperie, etc."
+        "name": "Ordre divin",
+        "description": "en cours d'implémentation"
       },
       {
         "level": 2,
         "name": "Canalisation d'énergie divine",
-        "description": "Vous pouvez canaliser l'énergie divine directement depuis votre divinité pour alimenter des effets magiques."
-      },
-      {
-        "level": 2,
-        "name": "Aptitude de domaine",
-        "description": "Vous gagnez une aptitude supplémentaire de votre Domaine divin."
-      },
-      {
-        "level": 5,
-        "name": "Destruction des morts-vivants",
-        "description": "Lorsque un mort-vivant rate son jet de sauvegarde contre votre Canalisation d'énergie divine, il est immédiatement détruit si son facteur de puissance est suffisamment faible."
+        "description": "en cours d'implémentation"
       }
     ],
     "masteredStats": ["Sagesse", "Charisme"],
     "spellcastingAbility": "Sagesse",
     "masteredSkills": ["Histoire", "Intuition", "Médecine", "Persuasion", "Religion"],
+    "equipmentOptions": [
+      { "itemNames": ["Chemise de maille", "Symbole sacré", "Bouclier", "Bâton de combat"], "goldPieces": 7 },
+      { "itemNames": [], "goldPieces": 75 }
+    ],
     "spellSlots": {
         "1": {"1": 2},
         "2": {"1": 3},

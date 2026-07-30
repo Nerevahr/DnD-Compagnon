@@ -7,7 +7,7 @@
     "skillProficiencies": ["Discrétion", "Survie"],
     "originFeatName": "Initié à la magie",
     "equipmentOptions": [
-      { "itemNames": ["Bâton de combat", "Arc court"], "goldPieces": 10 },
+      { "itemNames": ["Arc court"], "goldPieces": 3 },
       { "itemNames": [], "goldPieces": 50 }
     ],
     "defaultMagicClass": "Druide"

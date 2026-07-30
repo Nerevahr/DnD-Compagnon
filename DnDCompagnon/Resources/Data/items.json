@@ -38,5 +38,15 @@
     "weaponType": null,
     "damageDice": null,
     "damageType": null
+  },
+  {
+    "name": "Bouclier",
+    "itemDescription": "",
+    "type": "Bouclier",
+    "armorCategory": null,
+    "baseArmorClass": null,
+    "weaponType": null,
+    "damageDice": null,
+    "damageType": null
   }
 ]

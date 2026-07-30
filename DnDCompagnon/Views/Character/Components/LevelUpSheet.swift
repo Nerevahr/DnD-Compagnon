@@ -25,8 +25,12 @@ struct LevelUpSheet: View {
         10 + newLevel
     }
     
+    var racialHPBonus: Int {
+        character.hasDwarvenToughness ? 1 : 0
+    }
+
     var hpGain: Int {
-        max(1, dieRoll + character.constitutionModifier)
+        max(1, dieRoll + character.constitutionModifier + racialHPBonus)
     }
     
     var body: some View {
@@ -90,14 +94,26 @@ struct LevelUpSheet: View {
                 // Calcul des PV gagnés
                 VStack(spacing: 8) {
                     Divider()
-                    
+
+                    if character.hasDwarvenToughness {
+                        HStack {
+                            Text("Ténacité naine")
+                                .font(.subheadline)
+                            Spacer()
+                            Text("+1 PV")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue)
+                        }
+                    }
+
                     HStack {
                         Text("Gain de PV")
                             .font(.subheadline)
                             .fontWeight(.semibold)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 2) {
-                            Text("\(dieRoll) + \(character.constitutionModifier > 0 ? "+" : "")\(character.constitutionModifier) = \(hpGain)")
+                            Text("\(dieRoll) + \(character.constitutionModifier > 0 ? "+" : "")\(character.constitutionModifier)\(racialHPBonus > 0 ? " + \(racialHPBonus)" : "") = \(hpGain)")
                                 .font(.subheadline)
                             Text("(minimum 1 PV)")
                                 .font(.caption)

@@ -26,25 +26,24 @@ enum ItemSeeder {
         let damageType: String?
     }
     
-    /// Insère les objets de base uniquement si la base est vide.
+    /// Insère les objets du catalogue manquants (par nom), sans dupliquer ceux déjà présents.
     @MainActor
     static func seedIfNeeded(context: ModelContext) {
-        // On vérifie s'il existe déjà des objets
-        let descriptor = FetchDescriptor<Item>()
-        let count = (try? context.fetchCount(descriptor)) ?? 0
-        guard count == 0 else { return }
-
         // Liste des fichiers JSON à charger
         let jsonFiles = ["items"] // Ajoutez ici d'autres fichiers si nécessaire
-        
+
         // Charger les objets depuis les JSON
         guard let items = loadItemsFromJSON(fileNames: jsonFiles) else {
             print("❌ Impossible de charger les objets depuis les JSON")
             return
         }
 
-        // Insertion des objets
-        for itemData in items {
+        // Ne pas réinsérer les objets déjà présents dans le catalogue
+        let existingNames = Set((try? context.fetch(FetchDescriptor<Item>()))?.map(\.name) ?? [])
+
+        // Insertion des objets manquants
+        var insertedCount = 0
+        for itemData in items where !existingNames.contains(itemData.name) {
             let item = Item(
                 timestamp: Date(),
                 name: itemData.name,
@@ -58,8 +57,10 @@ enum ItemSeeder {
                 damageType: itemData.damageType.flatMap { DamageType(rawValue: $0) }
             )
             context.insert(item)
+            insertedCount += 1
         }
 
+        guard insertedCount > 0 else { return }
         try? context.save()
     }
 

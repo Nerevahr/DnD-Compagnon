@@ -19,11 +19,17 @@ enum ClassSeeder {
         let spellcastingAbility: String
         let masteredSkills: [String]
         let spellSlots: [String: [String: Int]]? // ⬅️ AJOUT
-        
+        let equipmentOptions: [EquipmentOptionData]?
+
         struct AbilityData: Codable {
             let level: Int
             let name: String
             let description: String?
+        }
+
+        struct EquipmentOptionData: Codable {
+            let itemNames: [String]
+            let goldPieces: Double
         }
     }
     
@@ -67,6 +73,28 @@ enum ClassSeeder {
                 }
             }
             
+            // Résoudre les options d'équipement (objets du catalogue par nom)
+            var equipmentOptions: [ClassEquipmentOption] = []
+            for optionData in classData.equipmentOptions ?? [] {
+                var resolvedItems: [Item] = []
+                for itemName in optionData.itemNames {
+                    let itemDescriptor = FetchDescriptor<Item>(
+                        predicate: #Predicate<Item> { $0.name == itemName }
+                    )
+                    if let item = try? context.fetch(itemDescriptor).first {
+                        resolvedItems.append(item)
+                    } else {
+                        print("⚠️ Objet introuvable pour l'option d'équipement: \(itemName)")
+                    }
+                }
+                let option = ClassEquipmentOption(
+                    items: resolvedItems,
+                    goldPieces: optionData.goldPieces
+                )
+                context.insert(option)
+                equipmentOptions.append(option)
+            }
+
             let dndClass = DnDClass(
                 timestamp: Date(),
                 name: classData.name,
@@ -75,7 +103,8 @@ enum ClassSeeder {
                 masteredStats: classData.masteredStats,
                 spellcastingAbility: classData.spellcastingAbility,
                 masteredSkills: classData.masteredSkills,
-                spellSlots: spellSlots // ⬅️ AJOUT
+                spellSlots: spellSlots, // ⬅️ AJOUT
+                equipmentOptions: equipmentOptions
             )
             context.insert(dndClass)
         }

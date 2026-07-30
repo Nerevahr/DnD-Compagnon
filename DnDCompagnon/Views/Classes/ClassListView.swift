@@ -243,18 +243,26 @@ struct AddClassView: View {
 
 // MARK: - Vue de Détail de Classe
 struct ClassDetailView: View {
+    @Environment(\.modelContext) private var modelContext
     @Bindable var dndClass: DnDClass
     @State private var isEditing = false
     @State private var editingMasteredStats: Set<String> = []
     @State private var editingMasteredSkills: Set<String> = []
     @State private var editingAbilities: [ClassAbility] = []
-    
+    @Query(sort: \Item.name) private var allItems: [Item]
+
     // Pour ajouter une nouvelle aptitude
     @State private var showingAddAbility = false
     @State private var newAbilityLevel = 1
     @State private var newAbilityName = ""
     @State private var newAbilityDescription = ""
-    
+
+    // Pour ajouter/modifier une option d'équipement
+    @State private var showingEquipmentOptionSheet = false
+    @State private var editingEquipmentOption: ClassEquipmentOption?
+    @State private var equipmentOptionItemIDs: Set<PersistentIdentifier> = []
+    @State private var equipmentOptionGoldPieces: Double = 0
+
     let availableStats = Character.abilityScores
     let availableSkills = DnDSkill.allSkills.map { $0.name }
     let spellcastingAbilities = ["", "Intelligence", "Sagesse", "Charisme"]
@@ -416,6 +424,35 @@ struct ClassDetailView: View {
                     }
                 }
             }
+
+            Section(header: Text("Options d'équipement")) {
+                if dndClass.equipmentOptions.isEmpty {
+                    Text("Aucune option définie")
+                        .foregroundColor(.secondary)
+                        .italic()
+                } else if isEditing {
+                    ForEach(dndClass.equipmentOptions) { option in
+                        equipmentOptionRow(option)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                beginEditingEquipmentOption(option)
+                            }
+                    }
+                    .onDelete(perform: deleteEquipmentOptions)
+                } else {
+                    ForEach(dndClass.equipmentOptions) { option in
+                        equipmentOptionRow(option)
+                    }
+                }
+
+                if isEditing {
+                    Button {
+                        beginAddingEquipmentOption()
+                    } label: {
+                        Label("Ajouter une option", systemImage: "plus.circle")
+                    }
+                }
+            }
         }
         .navigationTitle(dndClass.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -481,5 +518,107 @@ struct ClassDetailView: View {
                 }
             }
         }
+        .sheet(isPresented: $showingEquipmentOptionSheet) {
+            NavigationStack {
+                Form {
+                    Section("Or de départ") {
+                        TextField("Or", value: $equipmentOptionGoldPieces, format: .number)
+                            .keyboardType(.numberPad)
+                    }
+
+                    Section("Objets") {
+                        ForEach(allItems) { item in
+                            HStack {
+                                Text(item.name)
+                                Spacer()
+                                if equipmentOptionItemIDs.contains(item.id) {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                if equipmentOptionItemIDs.contains(item.id) {
+                                    equipmentOptionItemIDs.remove(item.id)
+                                } else {
+                                    equipmentOptionItemIDs.insert(item.id)
+                                }
+                            }
+                        }
+                    }
+                }
+                .navigationTitle(editingEquipmentOption == nil ? "Nouvelle Option" : "Modifier l'Option")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Annuler") {
+                            resetEquipmentOptionState()
+                            showingEquipmentOptionSheet = false
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(editingEquipmentOption == nil ? "Ajouter" : "Enregistrer") {
+                            saveEquipmentOption()
+                            showingEquipmentOptionSheet = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func equipmentOptionRow(_ option: ClassEquipmentOption) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("\(Int(option.goldPieces)) po")
+                .font(.headline)
+            if !option.items.isEmpty {
+                Text(option.items.map(\.name).joined(separator: ", "))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func beginAddingEquipmentOption() {
+        editingEquipmentOption = nil
+        equipmentOptionItemIDs = []
+        equipmentOptionGoldPieces = 0
+        showingEquipmentOptionSheet = true
+    }
+
+    private func beginEditingEquipmentOption(_ option: ClassEquipmentOption) {
+        editingEquipmentOption = option
+        equipmentOptionItemIDs = Set(option.items.map(\.id))
+        equipmentOptionGoldPieces = option.goldPieces
+        showingEquipmentOptionSheet = true
+    }
+
+    private func saveEquipmentOption() {
+        let items = allItems.filter { equipmentOptionItemIDs.contains($0.id) }
+        if let option = editingEquipmentOption {
+            option.items = items
+            option.goldPieces = equipmentOptionGoldPieces
+        } else {
+            let option = ClassEquipmentOption(items: items, goldPieces: equipmentOptionGoldPieces)
+            modelContext.insert(option)
+            dndClass.equipmentOptions.append(option)
+        }
+        resetEquipmentOptionState()
+    }
+
+    private func deleteEquipmentOptions(at offsets: IndexSet) {
+        let optionsToDelete = offsets.map { dndClass.equipmentOptions[$0] }
+        dndClass.equipmentOptions.remove(atOffsets: offsets)
+        for option in optionsToDelete {
+            modelContext.delete(option)
+        }
+    }
+
+    private func resetEquipmentOptionState() {
+        editingEquipmentOption = nil
+        equipmentOptionItemIDs = []
+        equipmentOptionGoldPieces = 0
     }
 }

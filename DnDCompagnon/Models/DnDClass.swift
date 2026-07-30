@@ -17,12 +17,15 @@ final class DnDClass {
     var masteredStats: [String]
     var spellcastingAbility: String
     var masteredSkills: [String]
-    
+
     // Nouveau : Table des emplacements de sorts
     // Dictionnaire : [niveau de personnage: [niveau de sort: nombre d'emplacements]]
     // Exemple: [1: [1: 2], 2: [1: 3], 3: [1: 4, 2: 2]]
     var spellSlots: [Int: [Int: Int]]
-    
+
+    @Relationship(deleteRule: .cascade, inverse: \ClassEquipmentOption.dndClass)
+    var equipmentOptions: [ClassEquipmentOption] = []
+
     init(
         timestamp: Date = Date(),
         name: String,
@@ -31,7 +34,8 @@ final class DnDClass {
         masteredStats: [String] = [],
         spellcastingAbility: String = "",
         masteredSkills: [String] = [],
-        spellSlots: [Int: [Int: Int]] = [:] // Nouveau paramètre
+        spellSlots: [Int: [Int: Int]] = [:], // Nouveau paramètre
+        equipmentOptions: [ClassEquipmentOption] = []
     ) {
         self.timestamp = timestamp
         self.name = name
@@ -41,6 +45,7 @@ final class DnDClass {
         self.spellcastingAbility = spellcastingAbility
         self.masteredSkills = masteredSkills
         self.spellSlots = spellSlots
+        self.equipmentOptions = equipmentOptions
     }
 }
 

@@ -13,7 +13,7 @@ struct CharacterCreationView: View {
     @Environment(\.modelContext) private var modelContext
     
     let availableClasses: [DnDClass]
-    let availableRaces: [Race] // Ajouter la liste des races disponibles
+    let availableRaces: [Race]
     let onSuccess: () -> Void
     
     @State private var name: String = ""
@@ -23,11 +23,11 @@ struct CharacterCreationView: View {
     @State private var level: Int = 1
     
     // Statistiques
-    @State private var strength: Int = 10
-    @State private var dexterity: Int = 10
-    @State private var constitution: Int = 10
-    @State private var intelligence: Int = 10
-    @State private var wisdom: Int = 10
+    @State private var strength: Int = 13
+    @State private var dexterity: Int = 14
+    @State private var constitution: Int = 15
+    @State private var intelligence: Int = 6
+    @State private var wisdom: Int = 17
     @State private var charisma: Int = 10
     
     // Compétences maîtrisées
@@ -41,7 +41,10 @@ struct CharacterCreationView: View {
     @State private var backgroundPlusTwoStat: String = ""
     @State private var backgroundPlusOneStat: String = ""
     @State private var selectedEquipmentOptionID: PersistentIdentifier?
-    
+
+    // Équipement de départ (Classe)
+    @State private var selectedClassEquipmentOptionID: PersistentIdentifier?
+
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     
@@ -74,12 +77,29 @@ struct CharacterCreationView: View {
         selectedBackground?.equipmentOptions.first { $0.id == selectedEquipmentOptionID }
     }
 
+    private var selectedClassEquipmentOption: ClassEquipmentOption? {
+        selectedClass?.equipmentOptions.first { $0.id == selectedClassEquipmentOptionID }
+    }
+
+    /// Compétences automatiquement maîtrisées grâce à l'origine (non déselectionnables)
+    private var backgroundGrantedSkills: Set<String> {
+        Set(selectedBackground?.skillProficiencies ?? [])
+    }
+
     /// Vérifie que le choix d'équipement de départ est valide
     private var isEquipmentOptionValid: Bool {
         guard let background = selectedBackground, !background.equipmentOptions.isEmpty else {
             return true
         }
         return selectedEquipmentOptionID != nil
+    }
+
+    /// Vérifie que le choix d'équipement de départ de la classe est valide
+    private var isClassEquipmentOptionValid: Bool {
+        guard let dndClass = selectedClass, !dndClass.equipmentOptions.isEmpty else {
+            return true
+        }
+        return selectedClassEquipmentOptionID != nil
     }
 
     /// Vérifie que le choix de bonus d'origine est valide
@@ -136,14 +156,41 @@ struct CharacterCreationView: View {
                             Text(dndClass.name).tag(dndClass.id as PersistentIdentifier?)
                         }
                     }
-                    
+                    .onChange(of: selectedClassID) { oldValue, newValue in
+                        selectedClassEquipmentOptionID = nil
+                    }
+
                     Picker("Race", selection: $selectedRaceID) {
                         Text("Aucune race").tag(nil as PersistentIdentifier?)
                         ForEach(availableRaces) { race in
                             Text(race.name).tag(race.id as PersistentIdentifier?)
                         }
                     }
-                    
+
+                    Stepper("Niveau: \(level)", value: $level, in: 1...20)
+                }
+
+                // Section regroupant tout ce qui concerne la classe
+                if let dndClass = selectedClass, !dndClass.equipmentOptions.isEmpty {
+                    Section("Classe") {
+                        Picker("Équipement de départ", selection: $selectedClassEquipmentOptionID) {
+                            Text("Sélectionner...").tag(nil as PersistentIdentifier?)
+                            ForEach(dndClass.equipmentOptions) { option in
+                                Text(equipmentOptionLabel(items: option.items, goldPieces: option.goldPieces))
+                                    .tag(option.id as PersistentIdentifier?)
+                            }
+                        }
+
+                        if let option = selectedClassEquipmentOption, !option.items.isEmpty {
+                            Text(option.items.map(\.name).joined(separator: ", "))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+
+                // Section regroupant tout ce qui concerne l'origine (Background)
+                Section("Origine") {
                     Picker("Origine", selection: $selectedBackgroundID) {
                         Text("Aucune origine").tag(nil as PersistentIdentifier?)
                         ForEach(backgrounds) { background in
@@ -166,161 +213,151 @@ struct CharacterCreationView: View {
                         selectedCantripIDs = []
                         selectedLevel1SpellID = nil
                     }
-                    Stepper("Niveau: \(level)", value: $level, in: 1...20)
-                }
-                
-                // Section pour afficher les aptitudes de la race sélectionnée
-                if let race = selectedRace, !race.abilities.isEmpty {
-                    Section("Aptitudes raciales") {
-                        ForEach(race.abilities) { ability in
+
+                    if let background = selectedBackground {
+                        if !background.skillProficiencies.isEmpty {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(ability.name)
+                                Text("Compétences accordées")
                                     .font(.subheadline)
                                     .fontWeight(.medium)
-                                Text(ability.description)
+                                Text(background.skillProficiencies.joined(separator: ", "))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                             .padding(.vertical, 4)
                         }
-                    }
-                }
-                
-                // Section pour les bonus d'origine (Background)
-                if let background = selectedBackground, !background.suggestedStats.isEmpty {
-                    Section("Bonus d'origine") {
-                        Picker("Mode de répartition", selection: $backgroundBonusMode) {
-                            ForEach(BackgroundStatBonusMode.allCases, id: \.self) { mode in
-                                Text(mode.displayName).tag(mode)
-                            }
-                        }
-                        
-                        if backgroundBonusMode == .triplePlusOne {
-                            Text("+1 en \(background.suggestedStats.joined(separator: ", "))")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        } else {
-                            VStack(spacing: 16) {
-                                Picker("Stat +2", selection: $backgroundPlusTwoStat) {
-                                    Text("Sélectionner...").tag("")
-                                    ForEach(background.suggestedStats.filter { $0 != backgroundPlusOneStat }, id: \.self) { stat in
-                                        Text(stat).tag(stat)
-                                    }
-                                }
-                                
-                                Picker("Stat +1", selection: $backgroundPlusOneStat) {
-                                    Text("Sélectionner...").tag("")
-                                    ForEach(background.suggestedStats.filter { $0 != backgroundPlusTwoStat }, id: \.self) { stat in
-                                        Text(stat).tag(stat)
-                                    }
+
+                        // Bonus d'origine
+                        if !background.suggestedStats.isEmpty {
+                            Picker("Mode de répartition", selection: $backgroundBonusMode) {
+                                ForEach(BackgroundStatBonusMode.allCases, id: \.self) { mode in
+                                    Text(mode.displayName).tag(mode)
                                 }
                             }
-                        }
-                    }
-                }
 
-                // Section pour le choix d'équipement de départ (Background)
-                if let background = selectedBackground, !background.equipmentOptions.isEmpty {
-                    Section("Équipement de départ") {
-                        Picker("Choix d'équipement", selection: $selectedEquipmentOptionID) {
-                            Text("Sélectionner...").tag(nil as PersistentIdentifier?)
-                            ForEach(background.equipmentOptions) { option in
-                                Text(equipmentOptionLabel(option))
-                                    .tag(option.id as PersistentIdentifier?)
-                            }
-                        }
-
-                        if let option = selectedEquipmentOption, !option.items.isEmpty {
-                            Text(option.items.map(\.name).joined(separator: ", "))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-
-                // Section pour le don "Initié à la magie"
-                if let background = selectedBackground, background.grantsMagicInitiate {
-                    Section("Don : Initié à la magie") {
-                        Picker("Classe de magie", selection: $selectedMagicInitiateClass) {
-                            ForEach(background.magicInitiateClasses, id: \.self) { magicClass in
-                                Text(magicClass).tag(magicClass)
-                            }
-                        }
-                        
-                        // Sélection des sorts mineurs
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Sélectionnez 2 sorts mineurs")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                            
-                            ForEach(availableCantrips) { spell in
-                                Button {
-                                    if selectedCantripIDs.contains(spell.id) {
-                                        selectedCantripIDs.remove(spell.id)
-                                    } else if selectedCantripIDs.count < 2 {
-                                        selectedCantripIDs.insert(spell.id)
+                            if backgroundBonusMode == .triplePlusOne {
+                                Text("+1 en \(background.suggestedStats.joined(separator: ", "))")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            } else {
+                                VStack(spacing: 16) {
+                                    Picker("Stat +2", selection: $backgroundPlusTwoStat) {
+                                        Text("Sélectionner...").tag("")
+                                        ForEach(background.suggestedStats.filter { $0 != backgroundPlusOneStat }, id: \.self) { stat in
+                                            Text(stat).tag(stat)
+                                        }
                                     }
-                                } label: {
-                                    HStack {
-                                        Text(spell.name)
-                                            .foregroundColor(.primary)
-                                        Spacer()
-                                        if selectedCantripIDs.contains(spell.id) {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .foregroundColor(.accentColor)
-                                        } else {
-                                            Image(systemName: "circle")
-                                                .foregroundColor(.secondary)
+
+                                    Picker("Stat +1", selection: $backgroundPlusOneStat) {
+                                        Text("Sélectionner...").tag("")
+                                        ForEach(background.suggestedStats.filter { $0 != backgroundPlusTwoStat }, id: \.self) { stat in
+                                            Text(stat).tag(stat)
                                         }
                                     }
                                 }
-                                .buttonStyle(.plain)
-                                .disabled(selectedCantripIDs.count == 2 && !selectedCantripIDs.contains(spell.id))
-                            }
-                            
-                            if selectedCantripIDs.isEmpty {
-                                Text("\(2 - selectedCantripIDs.count) sort mineur à sélectionner")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            } else if selectedCantripIDs.count < 2 {
-                                Text("\(2 - selectedCantripIDs.count) sort mineur à sélectionner")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            } else {
-                                Text("2 sorts mineurs sélectionnés ✓")
-                                    .font(.caption)
-                                    .foregroundColor(.green)
                             }
                         }
-                        .padding(.vertical, 8)
-                        
-                        // Sélection du sort de niveau 1
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Sélectionnez 1 sort de niveau 1")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                            
-                            Picker("Sort de niveau 1", selection: $selectedLevel1SpellID) {
-                                Text("Aucun").tag(nil as PersistentIdentifier?)
-                                ForEach(availableLevel1Spells) { spell in
-                                    Text(spell.name).tag(spell.id as PersistentIdentifier?)
+
+                        // Équipement de départ
+                        if !background.equipmentOptions.isEmpty {
+                            Picker("Choix d'équipement", selection: $selectedEquipmentOptionID) {
+                                Text("Sélectionner...").tag(nil as PersistentIdentifier?)
+                                ForEach(background.equipmentOptions) { option in
+                                    Text(equipmentOptionLabel(items: option.items, goldPieces: option.goldPieces))
+                                        .tag(option.id as PersistentIdentifier?)
                                 }
                             }
-                            
-                            if selectedLevel1SpellID != nil {
-                                Text("Sort de niveau 1 sélectionné ✓")
-                                    .font(.caption)
-                                    .foregroundColor(.green)
-                            } else {
-                                Text("Sélectionnez un sort de niveau 1")
+
+                            if let option = selectedEquipmentOption, !option.items.isEmpty {
+                                Text(option.items.map(\.name).joined(separator: ", "))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                         }
-                        .padding(.vertical, 8)
+
+                        // Don "Initié à la magie"
+                        if background.grantsMagicInitiate {
+                            Picker("Classe de magie", selection: $selectedMagicInitiateClass) {
+                                ForEach(background.magicInitiateClasses, id: \.self) { magicClass in
+                                    Text(magicClass).tag(magicClass)
+                                }
+                            }
+
+                            // Sélection des sorts mineurs
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Sélectionnez 2 sorts mineurs")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+
+                                ForEach(availableCantrips) { spell in
+                                    Button {
+                                        if selectedCantripIDs.contains(spell.id) {
+                                            selectedCantripIDs.remove(spell.id)
+                                        } else if selectedCantripIDs.count < 2 {
+                                            selectedCantripIDs.insert(spell.id)
+                                        }
+                                    } label: {
+                                        HStack {
+                                            Text(spell.name)
+                                                .foregroundColor(.primary)
+                                            Spacer()
+                                            if selectedCantripIDs.contains(spell.id) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .foregroundColor(.accentColor)
+                                            } else {
+                                                Image(systemName: "circle")
+                                                    .foregroundColor(.secondary)
+                                            }
+                                        }
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(selectedCantripIDs.count == 2 && !selectedCantripIDs.contains(spell.id))
+                                }
+
+                                if selectedCantripIDs.isEmpty {
+                                    Text("\(2 - selectedCantripIDs.count) sort mineur à sélectionner")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                } else if selectedCantripIDs.count < 2 {
+                                    Text("\(2 - selectedCantripIDs.count) sort mineur à sélectionner")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                } else {
+                                    Text("2 sorts mineurs sélectionnés ✓")
+                                        .font(.caption)
+                                        .foregroundColor(.green)
+                                }
+                            }
+                            .padding(.vertical, 8)
+
+                            // Sélection du sort de niveau 1
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Sélectionnez 1 sort de niveau 1")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+
+                                Picker("Sort de niveau 1", selection: $selectedLevel1SpellID) {
+                                    Text("Aucun").tag(nil as PersistentIdentifier?)
+                                    ForEach(availableLevel1Spells) { spell in
+                                        Text(spell.name).tag(spell.id as PersistentIdentifier?)
+                                    }
+                                }
+
+                                if selectedLevel1SpellID != nil {
+                                    Text("Sort de niveau 1 sélectionné ✓")
+                                        .font(.caption)
+                                        .foregroundColor(.green)
+                                } else {
+                                    Text("Sélectionnez un sort de niveau 1")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .padding(.vertical, 8)
+                        }
                     }
                 }
-                
+
 
                 Section {
                     StatRow(name: "Force", value: $strength)
@@ -337,8 +374,12 @@ struct CharacterCreationView: View {
                 }
                 
                 Section {
-                    ForEach(sortedSkills(), id: \.name) { skill in
+                    ForEach(selectableSkills(), id: \.name) { skill in
+                        let isGrantedByBackground = backgroundGrantedSkills.contains(skill.name)
+                        let isProficient = isGrantedByBackground || proficientSkills.contains(skill.name)
+
                         Button {
+                            guard !isGrantedByBackground else { return }
                             if proficientSkills.contains(skill.name) {
                                 proficientSkills.remove(skill.name)
                             } else {
@@ -354,9 +395,14 @@ struct CharacterCreationView: View {
                                         .foregroundColor(.secondary)
                                 }
                                 Spacer()
-                                if proficientSkills.contains(skill.name) {
+                                if isGrantedByBackground {
+                                    Text("Origine")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                if isProficient {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.accentColor)
+                                        .foregroundColor(isGrantedByBackground ? .secondary : .accentColor)
                                 } else {
                                     Image(systemName: "circle")
                                         .foregroundColor(.secondary)
@@ -364,11 +410,12 @@ struct CharacterCreationView: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .disabled(isGrantedByBackground)
                     }
                 } header: {
                     Text("Maîtrise des compétences")
                 } footer: {
-                    Text("Sélectionnez les compétences que votre personnage maîtrise.")
+                    Text("Sélectionnez les compétences que votre personnage maîtrise. Les compétences accordées par l'origine sont automatiquement sélectionnées.")
                         .font(.caption)
                 }
             }
@@ -388,7 +435,8 @@ struct CharacterCreationView: View {
                         name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
                         !isBackgroundBonusValid ||
                         !isMagicInitiateSelectionValid ||
-                        !isEquipmentOptionValid
+                        !isEquipmentOptionValid ||
+                        !isClassEquipmentOptionValid
                     )
                 }
             }
@@ -418,7 +466,7 @@ struct CharacterCreationView: View {
                 intelligence: finalIntelligence,
                 wisdom: finalWisdom,
                 charisma: finalCharisma,
-                proficientSkills: Array(proficientSkills),
+                proficientSkills: Array(proficientSkills.union(backgroundGrantedSkills)),
                 context: modelContext
             )
             
@@ -438,8 +486,14 @@ struct CharacterCreationView: View {
                 }
             }
 
-            // Ajouter l'équipement de départ choisi
+            // Ajouter l'équipement de départ choisi (Origine)
             if let option = selectedEquipmentOption {
+                character.inventory.append(contentsOf: option.items)
+                character.gold += option.goldPieces
+            }
+
+            // Ajouter l'équipement de départ choisi (Classe)
+            if let option = selectedClassEquipmentOption {
                 character.inventory.append(contentsOf: option.items)
                 character.gold += option.goldPieces
             }
@@ -497,10 +551,19 @@ struct CharacterCreationView: View {
         )
     }
     
-    private func equipmentOptionLabel(_ option: BackgroundEquipmentOption) -> String {
-        let goldText = "\(Int(option.goldPieces)) po"
-        guard !option.items.isEmpty else { return goldText }
-        return "\(option.items.map(\.name).joined(separator: ", ")) (\(goldText))"
+    private func equipmentOptionLabel(items: [Item], goldPieces: Double) -> String {
+        let goldText = "\(Int(goldPieces)) po"
+        guard !items.isEmpty else { return goldText }
+        return "\(items.map(\.name).joined(separator: ", ")) (\(goldText))"
+    }
+
+    /// Compétences que le joueur peut choisir : celles de la classe sélectionnée,
+    /// plus celles accordées par l'origine (toujours affichées, même hors liste de classe).
+    private func selectableSkills() -> [DnDSkill] {
+        guard let selectedClass else { return sortedSkills() }
+        return sortedSkills().filter { skill in
+            selectedClass.masteredSkills.contains(skill.name) || backgroundGrantedSkills.contains(skill.name)
+        }
     }
 
     private func sortedSkills() -> [DnDSkill] {
