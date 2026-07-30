@@ -45,6 +45,10 @@ struct CharacterJSON: Codable {
     
     // Sorts préparés (juste les noms)
     var preparedSpellNames: [String]
+
+    // Sorts "toujours préparés" parmi les sorts préparés (non retirables)
+    // Optionnel pour rester compatible avec les exports antérieurs à ce champ
+    var alwaysPreparedSpellNames: [String]?
     
     // Inventaire (simplifié - juste les noms)
     var inventoryItemNames: [String]
@@ -113,6 +117,7 @@ enum CharacterImportExportService {
             proficientSkills: character.proficientSkills,
             usedSpellSlots: usedSpellSlotsStringKeys,
             preparedSpellNames: character.preparedSpells.compactMap { $0.baseSpell?.name },
+            alwaysPreparedSpellNames: character.preparedSpells.filter { $0.isAlwaysPrepared }.compactMap { $0.baseSpell?.name },
             inventoryItemNames: character.inventory.map { $0.name },
             equippedArmorName: character.equippedArmor?.name,
             equippedWeaponName: character.equippedWeapon?.name,
@@ -216,12 +221,13 @@ enum CharacterImportExportService {
         character.hpLevelHistory = hpLevelHistory
         
         // Récupérer les sorts préparés par leurs noms
+        let alwaysPreparedSpellNames = Set(characterJSON.alwaysPreparedSpellNames ?? [])
         for spellName in characterJSON.preparedSpellNames {
             let spellDescriptor = FetchDescriptor<Spell>(
                 predicate: #Predicate<Spell> { $0.name == spellName }
             )
             if let spell = try? context.fetch(spellDescriptor).first {
-                character.prepareSpell(spell)
+                character.prepareSpell(spell, isAlwaysPrepared: alwaysPreparedSpellNames.contains(spellName))
             }
         }
         

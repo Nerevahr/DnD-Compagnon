@@ -24,6 +24,11 @@ struct SpellPickerView: View {
     private var preparedSpellIds: Set<PersistentIdentifier> {
         Set(character.preparedSpells.compactMap { $0.baseSpell?.persistentModelID })
     }
+
+    // Set d'identifiants des sorts toujours préparés (non retirables)
+    private var alwaysPreparedSpellIds: Set<PersistentIdentifier> {
+        Set(character.preparedSpells.filter { $0.isAlwaysPrepared }.compactMap { $0.baseSpell?.persistentModelID })
+    }
     
     var spellsToDisplay: [Spell] {
         if showAllClasses {
@@ -87,6 +92,7 @@ struct SpellPickerView: View {
                         spellsByLevel: spellsByLevel,
                         showAllClasses: showAllClasses,
                         selectedSpellIds: preparedSpellIds,
+                        lockedSpellIds: alwaysPreparedSpellIds,
                         onToggleSpell: toggleSpell
                     )
                 }
@@ -109,6 +115,8 @@ struct SpellPickerView: View {
             if let index = character.preparedSpells.firstIndex(where: {
                 $0.baseSpell?.persistentModelID == spell.persistentModelID
             }) {
+                // Un sort "toujours préparé" ne peut pas être retiré
+                guard !character.preparedSpells[index].isAlwaysPrepared else { return }
                 // Le sort est déjà préparé, le retirer
                 character.preparedSpells.remove(at: index)
             } else {
@@ -127,8 +135,9 @@ struct SpellSelectionList: View {
     let spellsByLevel: [Int: [Spell]]
     let showAllClasses: Bool
     let selectedSpellIds: Set<PersistentIdentifier>
+    let lockedSpellIds: Set<PersistentIdentifier>
     let onToggleSpell: (Spell) -> Void
-    
+
     var body: some View {
         List {
             ForEach(spellsByLevel.keys.sorted(), id: \.self) { level in
@@ -138,6 +147,7 @@ struct SpellSelectionList: View {
                             spell: spell,
                             showClasses: showAllClasses,
                             isSelected: selectedSpellIds.contains(spell.persistentModelID),
+                            isLocked: lockedSpellIds.contains(spell.persistentModelID),
                             onToggle: { onToggleSpell(spell) }
                         )
                     }
@@ -154,31 +164,45 @@ struct SpellSelectionRow: View {
     let spell: Spell
     let showClasses: Bool
     let isSelected: Bool
+    let isLocked: Bool
     let onToggle: () -> Void
-    
+
     // Propriété calculée pour simplifier l'expression
     private var classesText: String {
         spell.classes.prefix(2).joined(separator: ", ")
     }
-    
+
     var body: some View {
         Button(action: onToggle) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(spell.name)
-                        .font(.body)
-                    
+                    HStack(spacing: 6) {
+                        Text(spell.name)
+                            .font(.body)
+
+                        if isLocked {
+                            Text("Toujours préparé")
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.purple)
+                                .cornerRadius(4)
+                        }
+                    }
+
                     HStack(spacing: 8) {
                         Text(spell.ecole)
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         if spell.concentration {
                             Label("C", systemImage: "circle.fill")
                                 .font(.caption2)
                                 .foregroundColor(.orange)
                         }
-                        
+
                         // Afficher les classes si mode "tous les sorts"
                         if showClasses {
                             Text("•")
@@ -191,15 +215,22 @@ struct SpellSelectionRow: View {
                         }
                     }
                 }
-                
+
                 Spacer()
-                
-                // Checkbox au lieu du bouton +
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .purple : .gray)
-                    .font(.title3)
+
+                // Cadenas pour un sort toujours préparé, sinon checkbox habituelle
+                if isLocked {
+                    Image(systemName: "lock.fill")
+                        .foregroundColor(.purple)
+                        .font(.title3)
+                } else {
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(isSelected ? .purple : .gray)
+                        .font(.title3)
+                }
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .disabled(isLocked)
     }
 }

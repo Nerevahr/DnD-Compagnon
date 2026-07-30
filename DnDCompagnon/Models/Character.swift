@@ -374,21 +374,27 @@ extension Character {
     }
     
     /// Ajoute un sort à la liste des sorts préparés
-    func prepareSpell(_ spell: Spell) {
-        let preparedSpell = PreparedSpell(baseSpell: spell)
+    func prepareSpell(_ spell: Spell, isAlwaysPrepared: Bool = false) {
+        let preparedSpell = PreparedSpell(baseSpell: spell, isAlwaysPrepared: isAlwaysPrepared)
         preparedSpells.append(preparedSpell)
     }
-    
-    /// Retire un sort préparé
+
+    /// Retire un sort préparé (sans effet si le sort est "toujours préparé")
     func unprepareSpell(_ preparedSpell: PreparedSpell) {
+        guard !preparedSpell.isAlwaysPrepared else { return }
         if let index = preparedSpells.firstIndex(of: preparedSpell) {
             preparedSpells.remove(at: index)
         }
     }
-    
+
     /// Vérifie si un sort est déjà préparé
     func isSpellPrepared(_ spell: Spell) -> Bool {
         preparedSpells.contains { $0.baseSpell?.persistentModelID == spell.persistentModelID }
+    }
+
+    /// Vérifie si un sort est "toujours préparé" (non retirable)
+    func isSpellAlwaysPrepared(_ spell: Spell) -> Bool {
+        preparedSpells.contains { $0.baseSpell?.persistentModelID == spell.persistentModelID && $0.isAlwaysPrepared }
     }
 }
 

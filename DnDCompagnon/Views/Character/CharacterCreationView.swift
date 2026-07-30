@@ -431,10 +431,10 @@ struct CharacterCreationView: View {
                     }
                 }
 
-                // Ajouter le sort de niveau 1
+                // Ajouter le sort de niveau 1 (toujours préparé, cf. règles du don)
                 if let level1SpellID = selectedLevel1SpellID,
                    let spell = allSpells.first(where: { $0.id == level1SpellID }) {
-                    character.prepareSpell(spell)
+                    character.prepareSpell(spell, isAlwaysPrepared: true)
                 }
             }
 
