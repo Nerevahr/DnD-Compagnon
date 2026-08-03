@@ -30,11 +30,11 @@ struct LevelUpSheet: View {
     }
 
     var racialHPBonus: Int {
-        character.hasDwarvenToughness ? 1 : 0
+        CharacterRulesEngine.racialHPBonus(for: character.race)
     }
 
     var hpGain: Int {
-        max(1, dieRoll + character.constitutionModifier + racialHPBonus)
+        CharacterRulesEngine.levelUpHPGain(dieRoll: dieRoll, constitutionModifier: character.constitutionModifier, race: character.race)
     }
 
     /// Sorts mineurs connus par le personnage et pouvant être remplacés

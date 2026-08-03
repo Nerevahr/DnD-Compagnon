@@ -43,7 +43,7 @@ final class Background {
 
     /// Vérifie si cette origine octroie le don "Initié à la magie"
     var grantsMagicInitiate: Bool {
-        originFeat?.name == "Initié à la magie"
+        originFeat?.name == CharacterRulesEngine.FeatName.magicInitiate
     }
 
     /// Classes de magie disponibles pour ce don (Druide, Magicien, Clerc)

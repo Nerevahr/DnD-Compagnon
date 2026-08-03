@@ -491,26 +491,16 @@ struct CharacterCreationView: View {
             )
             
             // Ajouter les sorts du don "Initié à la magie" s'il est applicable
-            if let background = selectedBackground, background.grantsMagicInitiate {
-                // Ajouter les sorts mineurs
-                for cantripID in selectedCantripIDs {
-                    if let spell = allSpells.first(where: { $0.id == cantripID }) {
-                        character.prepareSpell(spell)
-                    }
-                }
-
-                // Ajouter le sort de niveau 1 (toujours préparé, cf. règles du don)
-                if let level1SpellID = selectedLevel1SpellID,
-                   let spell = allSpells.first(where: { $0.id == level1SpellID }) {
-                    character.prepareSpell(spell, isAlwaysPrepared: true)
-                }
-            }
+            CharacterRulesEngine.applyMagicInitiate(
+                to: character,
+                background: selectedBackground,
+                cantripIDs: selectedCantripIDs,
+                level1SpellID: selectedLevel1SpellID,
+                allSpells: allSpells
+            )
 
             // Appliquer le bonus du Thaumaturge (aptitude "Ordre divin" du Clerc)
-            if let dndClass = selectedClass, dndClass.hasOrdreDivin, divineOrderChoice == .thaumaturge {
-                character.skillStatBonuses["Religion"] = "Sagesse"
-                character.skillStatBonuses["Arcanes"] = "Sagesse"
-            }
+            CharacterRulesEngine.applyDivineOrder(to: character, dndClass: selectedClass, choice: divineOrderChoice)
 
             // Ajouter l'équipement de départ choisi (Origine)
             if let option = selectedEquipmentOption {
