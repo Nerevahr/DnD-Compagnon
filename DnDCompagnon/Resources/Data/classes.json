@@ -63,17 +63,57 @@
       {
         "level": 1,
         "name": "Sorts",
-        "description": "en cours d'implémentation"
+        "description": "Vous savez lancer des sorts grâce à la prière et à la méditation. Vous connaissez trois sorts mineurs de clerc de votre choix (un sort mineur supplémentaire aux niveaux 4 et 10) et vous pouvez en remplacer un à chaque niveau. Vous préparez une liste de sorts de niveau 1 et plus dont le nombre augmente avec votre niveau, et vous pouvez la modifier à la fin d'un Repos long. La Sagesse est votre caractéristique d'incantation et vous pouvez utiliser un symbole sacré comme focaliseur."
       },
       {
         "level": 1,
         "name": "Ordre divin",
-        "description": "Vous choisissez l'ordre divin qui reflète votre approche de la puissance divine et de votre vocation : Protecteur ou Thaumaturge. Le Thaumaturge ajoute son modificateur de Sagesse aux tests de compétence Religion et Arcanes, en plus du modificateur habituel."
+        "description": "Vous choisissez l'ordre divin qui reflète votre approche de la puissance divine et de votre vocation : Protecteur ou Thaumaturge. Le Protecteur gagne la maîtrise des armes de guerre et la formation aux armures lourdes. Le Thaumaturge connaît un sort mineur de clerc supplémentaire et ajoute son modificateur de Sagesse (minimum +1) à ses jets d'Intelligence (Arcanes ou Religion)."
       },
       {
         "level": 2,
         "name": "Canalisation d'énergie divine",
-        "description": "en cours d'implémentation"
+        "description": "Vous pouvez canaliser l'énergie divine des plans Extérieurs pour produire des effets magiques, deux fois entre vos repos (une utilisation récupérée à la fin d'un Repos court, toutes à la fin d'un Repos long, et davantage d'utilisations aux niveaux supérieurs). Vous commencez avec deux effets. Étincelle divine : par une action Magie, vous lancez 1d8 + votre modificateur de Sagesse sur une créature visible dans un rayon de 9 mètres, pour soit lui rendre autant de points de vie, soit l'obliger à effectuer un jet de sauvegarde de Constitution et lui infliger ces dégâts nécrotiques ou radiants (moitié en cas de réussite) ; un d8 supplémentaire est ajouté aux niveaux 7, 13 et 18. Renvoi des morts-vivants : par une action Magie, chaque Mort-vivant dans un rayon de 9 mètres doit réussir un jet de sauvegarde de Sagesse ou subir les états Effrayé et Incapable d'agir pendant 1 minute."
+      },
+      {
+        "level": 3,
+        "name": "Sous-classe de clerc",
+        "description": "Vous obtenez la sous-classe de clerc de votre choix, qui vous confère des capacités supplémentaires à ce niveau et aux niveaux suivants."
+      },
+      {
+        "level": 4,
+        "name": "Amélioration de caractéristique",
+        "description": "Vous obtenez le don Amélioration de caractéristiques ou un autre don de votre choix pour lequel vous êtes qualifié. Vous obtenez de nouveau cette capacité aux niveaux 8, 12 et 16."
+      },
+      {
+        "level": 5,
+        "name": "Calcination de mort-vivant",
+        "description": "Chaque fois que vous utilisez Renvoi des morts-vivants, vous pouvez lancer un nombre de d8 égal à votre modificateur de Sagesse (minimum 1d8) : chaque Mort-vivant qui rate son jet de sauvegarde contre cette utilisation subit des dégâts radiants égaux au total obtenu, sans que cela mette fin à l'effet de renvoi."
+      },
+      {
+        "level": 7,
+        "name": "Frappes bénies",
+        "description": "Vous obtenez l'une des options suivantes, au choix. Frappe divine : une fois à chacun de vos tours, lorsque vous touchez une créature avec un jet d'attaque utilisant une arme, vous pouvez lui infliger 1d8 dégâts nécrotiques ou radiants supplémentaires. Incantation puissante : vous ajoutez votre modificateur de Sagesse aux dégâts que vous infligez avec n'importe quel sort mineur de clerc."
+      },
+      {
+        "level": 10,
+        "name": "Intervention divine",
+        "description": "Par une action Magie, vous choisissez un sort de clerc de niveau 5 ou inférieur ne nécessitant pas de Réaction et vous le lancez sans dépenser d'emplacement de sort ni de composantes matérielles. Vous ne pouvez pas réutiliser cette capacité avant d'avoir terminé un Repos long."
+      },
+      {
+        "level": 14,
+        "name": "Frappes bénies améliorées",
+        "description": "L'option retenue pour Frappes bénies se renforce. Frappe divine : les dégâts supplémentaires passent à 2d8. Incantation puissante : lorsque vous infligez des dégâts à une créature avec un sort mineur de clerc, vous pouvez octroyer des points de vie temporaires égaux au double de votre modificateur de Sagesse à une créature dans un rayon de 18 mètres ou à vous-même."
+      },
+      {
+        "level": 19,
+        "name": "Faveur épique",
+        "description": "Vous recevez le don Faveur épique ou un autre don de votre choix pour lequel vous remplissez les conditions."
+      },
+      {
+        "level": 20,
+        "name": "Intervention divine suprême",
+        "description": "Lorsque vous recourez à la capacité Intervention divine, vous pouvez opter pour souhait comme choix de sort. Dans un tel cas, vous devez terminer 2d4 Repos longs avant de pouvoir réutiliser Intervention divine."
       }
     ],
     "masteredStats": ["Sagesse", "Charisme"],
