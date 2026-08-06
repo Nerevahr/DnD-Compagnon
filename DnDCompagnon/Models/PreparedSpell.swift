@@ -35,6 +35,15 @@ final class PreparedSpell {
     // Sort toujours préparé (ex. octroyé par un don comme "Initié à la magie"), non retirable
     var isAlwaysPrepared: Bool = false
 
+    // Origine du sort préparé (classe, don, aptitude)
+    var source: PreparedSpellSource = PreparedSpellSource.classe
+
+    // Si source == .don : le don précis qui a octroyé ce sort
+    @Relationship(deleteRule: .nullify) var sourceFeat: Feat?
+
+    // Si source == .aptitude : le nom de l'aptitude de classe qui a octroyé ce sort
+    var sourceAbilityName: String?
+
     init(
         timestamp: Date = Date(),
         baseSpell: Spell? = nil,
@@ -43,7 +52,10 @@ final class PreparedSpell {
         customSavingThrowStat: String? = nil,
         customDescription: String? = nil,
         notes: String? = nil,
-        isAlwaysPrepared: Bool = false
+        isAlwaysPrepared: Bool = false,
+        source: PreparedSpellSource = .classe,
+        sourceFeat: Feat? = nil,
+        sourceAbilityName: String? = nil
     ) {
         self.timestamp = timestamp
         self.baseSpell = baseSpell
@@ -53,6 +65,9 @@ final class PreparedSpell {
         self.customDescription = customDescription
         self.notes = notes
         self.isAlwaysPrepared = isAlwaysPrepared
+        self.source = source
+        self.sourceFeat = sourceFeat
+        self.sourceAbilityName = sourceAbilityName
     }
 }
 
@@ -86,5 +101,23 @@ extension PreparedSpell {
         customSavingThrowStat != nil ||
         customDescription != nil ||
         notes != nil
+    }
+
+    /// Texte affichable décrivant l'origine du sort (ex. "Don — Initié à la magie")
+    var sourceDisplayName: String {
+        switch source {
+        case .classe:
+            return source.displayName
+        case .don:
+            if let featName = sourceFeat?.name {
+                return "\(source.displayName) — \(featName)"
+            }
+            return source.displayName
+        case .aptitude:
+            if let abilityName = sourceAbilityName {
+                return "\(source.displayName) — \(abilityName)"
+            }
+            return source.displayName
+        }
     }
 }

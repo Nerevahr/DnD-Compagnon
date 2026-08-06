@@ -121,8 +121,7 @@ struct SpellPickerView: View {
                 character.preparedSpells.remove(at: index)
             } else {
                 // Le sort n'est pas préparé, l'ajouter
-                let preparedSpell = PreparedSpell(baseSpell: spell)
-                character.preparedSpells.append(preparedSpell)
+                character.prepareSpell(spell)
             }
         }
     }

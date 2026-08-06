@@ -63,7 +63,7 @@ struct SpellsPage: View {
                 if character.preparedSpells.isEmpty {
                     EmptySpellsView()
                 } else {
-                    PreparedSpellsList(spellsByLevel: spellsByLevel)
+                    PreparedSpellsList(spellsByLevel: spellsByLevel, character: character)
                 }
             }
             .padding()

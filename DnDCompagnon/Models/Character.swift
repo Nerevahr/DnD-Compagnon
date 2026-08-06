@@ -374,8 +374,20 @@ extension Character {
     }
     
     /// Ajoute un sort à la liste des sorts préparés
-    func prepareSpell(_ spell: Spell, isAlwaysPrepared: Bool = false) {
-        let preparedSpell = PreparedSpell(baseSpell: spell, isAlwaysPrepared: isAlwaysPrepared)
+    func prepareSpell(
+        _ spell: Spell,
+        isAlwaysPrepared: Bool = false,
+        source: PreparedSpellSource = .classe,
+        sourceFeat: Feat? = nil,
+        sourceAbilityName: String? = nil
+    ) {
+        let preparedSpell = PreparedSpell(
+            baseSpell: spell,
+            isAlwaysPrepared: isAlwaysPrepared,
+            source: source,
+            sourceFeat: sourceFeat,
+            sourceAbilityName: sourceAbilityName
+        )
         preparedSpells.append(preparedSpell)
     }
 
@@ -422,9 +434,10 @@ extension Character {
         }
     }
     
-    /// Retire un don du personnage
+    /// Retire un don du personnage, ainsi que les sorts qu'il a octroyés (même verrouillés)
     func removeFeat(_ feat: Feat) {
         feats.removeAll { $0.id == feat.id }
+        preparedSpells.removeAll { $0.source == .don && $0.sourceFeat?.id == feat.id }
     }
     
     /// Vérifie si un don est déjà attribué au personnage

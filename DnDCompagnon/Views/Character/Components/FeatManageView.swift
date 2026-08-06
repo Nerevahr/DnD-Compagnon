@@ -16,6 +16,7 @@ struct FeatManageView: View {
     let backgroundFeat: Feat?
     
     @State private var searchText = ""
+    @State private var pendingMagicInitiateFeat: Feat?
     
     private var filteredFeats: [Feat] {
         allFeats.filter { feat in
@@ -53,14 +54,20 @@ struct FeatManageView: View {
                     }
                 }
             }
+            .sheet(item: $pendingMagicInitiateFeat) { feat in
+                MagicInitiateGrantView(character: character, feat: feat)
+            }
         }
     }
-    
+
     private func toggleFeat(_ feat: Feat) {
         if character.feats.contains(where: { $0.id == feat.id }) {
             character.removeFeat(feat)
         } else {
             character.addFeat(feat)
+            if feat.name == "Initié à la magie" {
+                pendingMagicInitiateFeat = feat
+            }
         }
     }
 }
