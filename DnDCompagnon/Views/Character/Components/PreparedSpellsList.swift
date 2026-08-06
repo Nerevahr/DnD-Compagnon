@@ -10,16 +10,17 @@ import SwiftData
 
 struct PreparedSpellsList: View {
     let spellsByLevel: [Int: [PreparedSpell]]
-    
+    var character: Character? = nil
+
     var body: some View {
         ForEach(spellsByLevel.keys.sorted(), id: \.self) { level in
             VStack(alignment: .leading, spacing: 8) {
                 Text(level == 0 ? "Tours de magie" : "Niveau \(level)")
                     .font(.headline)
                     .foregroundColor(.purple)
-                
+
                 ForEach(spellsByLevel[level] ?? [], id: \.persistentModelID) { preparedSpell in
-                    PreparedSpellRow(preparedSpell: preparedSpell)
+                    PreparedSpellRow(preparedSpell: preparedSpell, character: character)
                 }
             }
             .padding()

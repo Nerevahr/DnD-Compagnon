@@ -49,6 +49,16 @@ struct CharacterJSON: Codable {
     // Sorts "toujours préparés" parmi les sorts préparés (non retirables)
     // Optionnel pour rester compatible avec les exports antérieurs à ce champ
     var alwaysPreparedSpellNames: [String]?
+
+    // Origine de chaque sort préparé, par nom de sort (rawValue de PreparedSpellSource)
+    // Optionnel pour rester compatible avec les exports antérieurs à ce champ
+    var preparedSpellSourceByName: [String: String]?
+
+    // Nom du don d'origine pour les sorts dont la source est "don"
+    var preparedSpellSourceFeatNameByName: [String: String]?
+
+    // Nom de l'aptitude d'origine pour les sorts dont la source est "aptitude"
+    var preparedSpellSourceAbilityNameByName: [String: String]?
     
     // Inventaire (simplifié - juste les noms)
     var inventoryItemNames: [String]
@@ -118,6 +128,17 @@ enum CharacterImportExportService {
             usedSpellSlots: usedSpellSlotsStringKeys,
             preparedSpellNames: character.preparedSpells.compactMap { $0.baseSpell?.name },
             alwaysPreparedSpellNames: character.preparedSpells.filter { $0.isAlwaysPrepared }.compactMap { $0.baseSpell?.name },
+            preparedSpellSourceByName: Dictionary(uniqueKeysWithValues: character.preparedSpells.compactMap { ps in
+                ps.baseSpell.map { ($0.name, ps.source.rawValue) }
+            }),
+            preparedSpellSourceFeatNameByName: Dictionary(uniqueKeysWithValues: character.preparedSpells.compactMap { ps in
+                guard let name = ps.baseSpell?.name, let featName = ps.sourceFeat?.name else { return nil }
+                return (name, featName)
+            }),
+            preparedSpellSourceAbilityNameByName: Dictionary(uniqueKeysWithValues: character.preparedSpells.compactMap { ps in
+                guard let name = ps.baseSpell?.name, let abilityName = ps.sourceAbilityName else { return nil }
+                return (name, abilityName)
+            }),
             inventoryItemNames: character.inventory.map { $0.name },
             equippedArmorName: character.equippedArmor?.name,
             equippedWeaponName: character.equippedWeapon?.name,
@@ -222,12 +243,29 @@ enum CharacterImportExportService {
         
         // Récupérer les sorts préparés par leurs noms
         let alwaysPreparedSpellNames = Set(characterJSON.alwaysPreparedSpellNames ?? [])
+        let sourceByName = characterJSON.preparedSpellSourceByName ?? [:]
+        let sourceFeatNameByName = characterJSON.preparedSpellSourceFeatNameByName ?? [:]
+        let sourceAbilityNameByName = characterJSON.preparedSpellSourceAbilityNameByName ?? [:]
         for spellName in characterJSON.preparedSpellNames {
             let spellDescriptor = FetchDescriptor<Spell>(
                 predicate: #Predicate<Spell> { $0.name == spellName }
             )
             if let spell = try? context.fetch(spellDescriptor).first {
-                character.prepareSpell(spell, isAlwaysPrepared: alwaysPreparedSpellNames.contains(spellName))
+                let source = sourceByName[spellName].flatMap(PreparedSpellSource.init(rawValue:)) ?? .classe
+                var sourceFeat: Feat?
+                if let featName = sourceFeatNameByName[spellName] {
+                    let featDescriptor = FetchDescriptor<Feat>(
+                        predicate: #Predicate<Feat> { $0.name == featName }
+                    )
+                    sourceFeat = try? context.fetch(featDescriptor).first
+                }
+                character.prepareSpell(
+                    spell,
+                    isAlwaysPrepared: alwaysPreparedSpellNames.contains(spellName),
+                    source: source,
+                    sourceFeat: sourceFeat,
+                    sourceAbilityName: sourceAbilityNameByName[spellName]
+                )
             }
         }
         

@@ -46,8 +46,11 @@ final class Background {
         originFeat?.name == "Initié à la magie"
     }
 
+    /// Classes de magie disponibles pour le don "Initié à la magie"
+    static let magicInitiateClasses = ["Druide", "Magicien", "Clerc"]
+
     /// Classes de magie disponibles pour ce don (Druide, Magicien, Clerc)
     var magicInitiateClasses: [String] {
-        ["Druide", "Magicien", "Clerc"]
+        Background.magicInitiateClasses
     }
 }

@@ -47,6 +47,7 @@ struct CharacterCreationView: View {
 
     // Choix de l'aptitude "Ordre divin" (Clerc)
     @State private var divineOrderChoice: DivineOrderChoice = .protecteur
+    @State private var selectedOrdreDivinCantripID: PersistentIdentifier?
 
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
@@ -146,6 +147,22 @@ struct CharacterCreationView: View {
         }
         .sorted { $0.name < $1.name }
     }
+
+    /// Sorts mineurs de Clerc disponibles pour le bonus de l'aptitude "Ordre divin" (Thaumaturge)
+    private var availableOrdreDivinCantrips: [Spell] {
+        allSpells.filter { spell in
+            spell.niveau == 0 && spell.classes.contains("Clerc")
+        }
+        .sorted { $0.name < $1.name }
+    }
+
+    /// Vérifie que la sélection du sort bonus de l'aptitude "Ordre divin" est valide
+    private var isOrdreDivinSelectionValid: Bool {
+        guard let dndClass = selectedClass, dndClass.hasOrdreDivin, divineOrderChoice == .thaumaturge else {
+            return true // Pas applicable
+        }
+        return selectedOrdreDivinCantripID != nil
+    }
     
     var body: some View {
         NavigationView {
@@ -162,6 +179,7 @@ struct CharacterCreationView: View {
                     .onChange(of: selectedClassID) { oldValue, newValue in
                         selectedClassEquipmentOptionID = nil
                         divineOrderChoice = .protecteur
+                        selectedOrdreDivinCantripID = nil
                     }
 
                     Picker("Race", selection: $selectedRaceID) {
@@ -199,9 +217,25 @@ struct CharacterCreationView: View {
                                     Text(choice.displayName).tag(choice)
                                 }
                             }
+                            .onChange(of: divineOrderChoice) { oldValue, newValue in
+                                if newValue != .thaumaturge {
+                                    selectedOrdreDivinCantripID = nil
+                                }
+                            }
 
                             if divineOrderChoice == .thaumaturge {
                                 Text("Ajoute votre modificateur de Sagesse aux tests de compétence Religion et Arcanes.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+
+                                Picker("Sort mineur (Clerc)", selection: $selectedOrdreDivinCantripID) {
+                                    Text("Sélectionner...").tag(nil as PersistentIdentifier?)
+                                    ForEach(availableOrdreDivinCantrips) { spell in
+                                        Text(spell.name).tag(spell.id as PersistentIdentifier?)
+                                    }
+                                }
+
+                                Text("Sort mineur de Clerc supplémentaire connu grâce à l'aptitude Ordre divin.")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -455,6 +489,7 @@ struct CharacterCreationView: View {
                         name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
                         !isBackgroundBonusValid ||
                         !isMagicInitiateSelectionValid ||
+                        !isOrdreDivinSelectionValid ||
                         !isEquipmentOptionValid ||
                         !isClassEquipmentOptionValid
                     )
@@ -492,17 +527,19 @@ struct CharacterCreationView: View {
             
             // Ajouter les sorts du don "Initié à la magie" s'il est applicable
             if let background = selectedBackground, background.grantsMagicInitiate {
+                let magicInitiateFeat = background.originFeat
+
                 // Ajouter les sorts mineurs
                 for cantripID in selectedCantripIDs {
                     if let spell = allSpells.first(where: { $0.id == cantripID }) {
-                        character.prepareSpell(spell)
+                        character.prepareSpell(spell, source: .don, sourceFeat: magicInitiateFeat)
                     }
                 }
 
                 // Ajouter le sort de niveau 1 (toujours préparé, cf. règles du don)
                 if let level1SpellID = selectedLevel1SpellID,
                    let spell = allSpells.first(where: { $0.id == level1SpellID }) {
-                    character.prepareSpell(spell, isAlwaysPrepared: true)
+                    character.prepareSpell(spell, isAlwaysPrepared: true, source: .don, sourceFeat: magicInitiateFeat)
                 }
             }
 
@@ -510,6 +547,10 @@ struct CharacterCreationView: View {
             if let dndClass = selectedClass, dndClass.hasOrdreDivin, divineOrderChoice == .thaumaturge {
                 character.skillStatBonuses["Religion"] = "Sagesse"
                 character.skillStatBonuses["Arcanes"] = "Sagesse"
+
+                if let spell = allSpells.first(where: { $0.id == selectedOrdreDivinCantripID }) {
+                    character.prepareSpell(spell, source: .aptitude, sourceAbilityName: "Ordre divin")
+                }
             }
 
             // Ajouter l'équipement de départ choisi (Origine)

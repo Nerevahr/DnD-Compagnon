@@ -9,7 +9,8 @@ import SwiftUI
 
 struct PreparedSpellRow: View {
     let preparedSpell: PreparedSpell
-    
+    var character: Character? = nil
+
     @State private var isShowingDetail = false
     @State private var isShowingEdit = false
     
@@ -38,6 +39,18 @@ struct PreparedSpellRow: View {
                             Image(systemName: "lock.fill")
                                 .font(.caption2)
                                 .foregroundColor(.purple)
+                        }
+
+                        // Badge d'origine (don, aptitude) - masqué pour la source par défaut "classe"
+                        if preparedSpell.source != .classe {
+                            Text(preparedSpell.source.displayName)
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(preparedSpell.source.color)
+                                .cornerRadius(4)
                         }
                     }
                     
@@ -115,7 +128,7 @@ struct PreparedSpellRow: View {
             }
         }
         .sheet(isPresented: $isShowingEdit) {
-            PreparedSpellEditView(preparedSpell: preparedSpell)
+            PreparedSpellEditView(preparedSpell: preparedSpell, character: character)
         }
     }
     

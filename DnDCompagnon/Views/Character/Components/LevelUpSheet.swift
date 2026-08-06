@@ -40,7 +40,7 @@ struct LevelUpSheet: View {
     /// Sorts mineurs connus par le personnage et pouvant être remplacés
     var knownCantrips: [Spell] {
         character.preparedSpells
-            .filter { !$0.isAlwaysPrepared && $0.baseSpell?.niveau == 0 }
+            .filter { !$0.isAlwaysPrepared && $0.baseSpell?.niveau == 0 && $0.source != .don }
             .compactMap { $0.baseSpell }
             .sorted { $0.name < $1.name }
     }
@@ -235,7 +235,7 @@ struct LevelUpSheet: View {
             }) {
                 character.unprepareSpell(preparedSpell)
             }
-            character.prepareSpell(learnedSpell)
+            character.prepareSpell(learnedSpell, source: .classe)
         }
 
         // Valider que les données sont cohérentes après la montée

@@ -20,34 +20,65 @@ import SwiftData
 struct PreparedSpellEditView: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var preparedSpell: PreparedSpell
-    
+    var character: Character? = nil
+
     @State private var customDamageAmount: String
     @State private var customAlternateDamageAmount: String
     @State private var customSavingThrowStat: String
     @State private var customDescription: String
     @State private var notes: String
-    
+
     // Toggle pour activer/désactiver les personnalisations
     @State private var useCustomDamage: Bool
     @State private var useCustomAlternateDamage: Bool
     @State private var useCustomSavingThrow: Bool
     @State private var useCustomDescription: Bool
-    
-    init(preparedSpell: PreparedSpell) {
+
+    // Origine du sort préparé
+    @State private var source: PreparedSpellSource
+    @State private var selectedSourceFeatID: UUID?
+    @State private var selectedSourceAbilityName: String?
+
+    /// Dons candidats pour l'origine "Don" : dons ajoutés + don d'origine, dédupliqués
+    private var candidateSourceFeats: [Feat] {
+        guard let character = character else { return [] }
+        var feats = character.feats
+        if let originFeat = character.origin?.originFeat, !feats.contains(where: { $0.id == originFeat.id }) {
+            feats.append(originFeat)
+        }
+        return feats.sorted { $0.name < $1.name }
+    }
+
+    /// Aptitudes candidates pour l'origine "Aptitude", dédupliquées par nom
+    private var candidateSourceAbilities: [ClassAbility] {
+        guard let abilities = character?.dndClass?.abilities else { return [] }
+        var seenNames = Set<String>()
+        return abilities
+            .filter { seenNames.insert($0.name).inserted }
+            .sorted { $0.name < $1.name }
+    }
+
+    init(preparedSpell: PreparedSpell, character: Character? = nil) {
         self.preparedSpell = preparedSpell
-        
+        self.character = character
+
         // Initialisation des états
         _customDamageAmount = State(initialValue: preparedSpell.customDamageAmount ?? preparedSpell.baseSpell?.damageAmount ?? "")
         _customAlternateDamageAmount = State(initialValue: preparedSpell.customAlternateDamageAmount ?? preparedSpell.baseSpell?.alternateDamageAmount ?? "")
         _customSavingThrowStat = State(initialValue: preparedSpell.customSavingThrowStat ?? preparedSpell.baseSpell?.savingThrowStat ?? "")
         _customDescription = State(initialValue: preparedSpell.customDescription ?? preparedSpell.baseSpell?.descriptionSort ?? "")
         _notes = State(initialValue: preparedSpell.notes ?? "")
-        
+
         // Initialisation des toggles
         _useCustomDamage = State(initialValue: preparedSpell.customDamageAmount != nil)
         _useCustomAlternateDamage = State(initialValue: preparedSpell.customAlternateDamageAmount != nil)
         _useCustomSavingThrow = State(initialValue: preparedSpell.customSavingThrowStat != nil)
         _useCustomDescription = State(initialValue: preparedSpell.customDescription != nil)
+
+        // Initialisation de l'origine
+        _source = State(initialValue: preparedSpell.source)
+        _selectedSourceFeatID = State(initialValue: preparedSpell.sourceFeat?.id)
+        _selectedSourceAbilityName = State(initialValue: preparedSpell.sourceAbilityName)
     }
     
     var body: some View {
@@ -85,7 +116,38 @@ struct PreparedSpellEditView: View {
                 } header: {
                     Text("Sort de base")
                 }
-                
+
+                // Section Origine
+                Section {
+                    Picker("Origine", selection: $source) {
+                        ForEach(PreparedSpellSource.allCases, id: \.self) { source in
+                            Text(source.displayName).tag(source)
+                        }
+                    }
+
+                    if source == .don {
+                        Picker("Don", selection: $selectedSourceFeatID) {
+                            Text("Aucun").tag(nil as UUID?)
+                            ForEach(candidateSourceFeats) { feat in
+                                Text(feat.name).tag(feat.id as UUID?)
+                            }
+                        }
+                    }
+
+                    if source == .aptitude {
+                        Picker("Aptitude", selection: $selectedSourceAbilityName) {
+                            Text("Aucune").tag(nil as String?)
+                            ForEach(candidateSourceAbilities) { ability in
+                                Text(ability.name).tag(ability.name as String?)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Origine")
+                } footer: {
+                    Text("Indique si ce sort vient de la progression normale de la classe, d'un don, ou d'une aptitude de classe.")
+                }
+
                 // Section Dégâts
                 if preparedSpell.baseSpell?.isOffensive == true {
                     Section {
@@ -237,6 +299,20 @@ struct PreparedSpellEditView: View {
     // MARK: - Actions
     
     private func saveChanges() {
+        // Sauvegarde de l'origine
+        preparedSpell.source = source
+        switch source {
+        case .classe:
+            preparedSpell.sourceFeat = nil
+            preparedSpell.sourceAbilityName = nil
+        case .don:
+            preparedSpell.sourceFeat = candidateSourceFeats.first { $0.id == selectedSourceFeatID }
+            preparedSpell.sourceAbilityName = nil
+        case .aptitude:
+            preparedSpell.sourceFeat = nil
+            preparedSpell.sourceAbilityName = selectedSourceAbilityName
+        }
+
         // Sauvegarde des dégâts
         preparedSpell.customDamageAmount = useCustomDamage ? customDamageAmount : nil
         
