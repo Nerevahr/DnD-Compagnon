@@ -22,6 +22,7 @@
     "masteredStats": ["Force", "Constitution"],
     "spellcastingAbility": "",
     "masteredSkills": ["Acrobaties", "Athlétisme", "Dressage", "Histoire", "Intimidation", "Intuition", "Perception", "Survie"],
+    "hitDie": 10,
     "equipmentOptions": [
       { "itemNames": ["Chemise de maille", "Bâton de combat"], "goldPieces": 7 },
       { "itemNames": ["Arc court"], "goldPieces": 75 },
@@ -51,6 +52,7 @@
     "masteredStats": ["Intelligence", "Sagesse"],
     "spellcastingAbility": "Intelligence",
     "masteredSkills": ["Arcanes", "Histoire", "Intuition", "Investigation", "Médecine", "Religion"],
+    "hitDie": 6,
     "equipmentOptions": [
       { "itemNames": ["Bâton de combat"], "goldPieces": 0 },
       { "itemNames": [], "goldPieces": 100 }
@@ -119,6 +121,7 @@
     "masteredStats": ["Sagesse", "Charisme"],
     "spellcastingAbility": "Sagesse",
     "masteredSkills": ["Histoire", "Intuition", "Médecine", "Persuasion", "Religion"],
+    "hitDie": 8,
     "equipmentOptions": [
       { "itemNames": ["Chemise de maille", "Symbole sacré", "Bouclier", "Bâton de combat"], "goldPieces": 7 },
       { "itemNames": [], "goldPieces": 75 }

@@ -21,6 +21,11 @@ struct LevelUpSheet: View {
     @State private var cantripToForget: Spell?
     @State private var cantripToLearn: Spell?
 
+    /// Dé de vie de la classe du personnage (d8 par défaut si la classe n'en définit pas).
+    var hitDie: HitDie {
+        character.dndClass?.hitDie ?? .d8
+    }
+
     var expectedMinHP: Int {
         1
     }
@@ -33,8 +38,13 @@ struct LevelUpSheet: View {
         character.hasDwarvenToughness ? 1 : 0
     }
 
+    /// Résultat du dé, borné entre 1 et la valeur maximale du dé de vie de la classe.
+    var clampedDieRoll: Int {
+        min(max(dieRoll, 1), hitDie.rawValue)
+    }
+
     var hpGain: Int {
-        max(1, dieRoll + character.constitutionModifier + racialHPBonus)
+        max(1, clampedDieRoll + character.constitutionModifier + racialHPBonus)
     }
 
     /// Sorts mineurs connus par le personnage et pouvant être remplacés
@@ -85,30 +95,35 @@ struct LevelUpSheet: View {
                 // Saisie du dé
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Résultat du dé")
+                        Text("Résultat du dé de vie (\(hitDie.label))")
                             .font(.subheadline)
                         Spacer()
-                        Text("(1-10, 1-12 ou 1-d'autres)")
+                        Text("(1-\(hitDie.rawValue))")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     HStack(spacing: 12) {
-                        Button(action: { if dieRoll > 1 { dieRoll -= 1 } }) {
+                        Button(action: { dieRoll = max(1, dieRoll - 1) }) {
                             Image(systemName: "minus.circle.fill")
                                 .font(.title3)
                         }
-                        
+                        .disabled(dieRoll <= 1)
+
                         TextField("Résultat", value: $dieRoll, format: .number)
                             .textFieldStyle(.roundedBorder)
                             .keyboardType(.numberPad)
                             .frame(height: 44)
                             .multilineTextAlignment(.center)
-                        
-                        Button(action: { dieRoll += 1 }) {
+                            .onChange(of: dieRoll) { _, newValue in
+                                dieRoll = min(max(newValue, 1), hitDie.rawValue)
+                            }
+
+                        Button(action: { dieRoll = min(hitDie.rawValue, dieRoll + 1) }) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title3)
                         }
+                        .disabled(dieRoll >= hitDie.rawValue)
                     }
                 }
                 
@@ -134,7 +149,7 @@ struct LevelUpSheet: View {
                             .fontWeight(.semibold)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 2) {
-                            Text("\(dieRoll) + \(character.constitutionModifier > 0 ? "+" : "")\(character.constitutionModifier)\(racialHPBonus > 0 ? " + \(racialHPBonus)" : "") = \(hpGain)")
+                            Text("\(clampedDieRoll) + \(character.constitutionModifier > 0 ? "+" : "")\(character.constitutionModifier)\(racialHPBonus > 0 ? " + \(racialHPBonus)" : "") = \(hpGain)")
                                 .font(.subheadline)
                             Text("(minimum 1 PV)")
                                 .font(.caption)
@@ -227,7 +242,7 @@ struct LevelUpSheet: View {
     }
     
     private func confirmLevelUp() {
-        character.levelUp(dieRoll: dieRoll)
+        character.levelUp(dieRoll: clampedDieRoll)
 
         if let forgottenSpell = cantripToForget, let learnedSpell = cantripToLearn {
             if let preparedSpell = character.preparedSpells.first(where: {

@@ -18,6 +18,7 @@ enum ClassSeeder {
         let masteredStats: [String]
         let spellcastingAbility: String
         let masteredSkills: [String]
+        let hitDie: Int?
         let spellSlots: [String: [String: Int]]? // ⬅️ AJOUT
         let equipmentOptions: [EquipmentOptionData]?
 
@@ -103,6 +104,7 @@ enum ClassSeeder {
                 masteredStats: classData.masteredStats,
                 spellcastingAbility: classData.spellcastingAbility,
                 masteredSkills: classData.masteredSkills,
+                hitDie: classData.hitDie.flatMap(HitDie.init(rawValue:)) ?? .d8,
                 spellSlots: spellSlots, // ⬅️ AJOUT
                 equipmentOptions: equipmentOptions
             )
