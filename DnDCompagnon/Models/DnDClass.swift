@@ -18,6 +18,10 @@ final class DnDClass {
     var spellcastingAbility: String
     var masteredSkills: [String]
 
+    /// Dé de vie de la classe (d4, d6, d8, d10, d12 ou d20).
+    /// Détermine le maximum du résultat pouvant être obtenu lors du gain de PV à la montée de niveau.
+    var hitDie: HitDie = HitDie.d8
+
     // Nouveau : Table des emplacements de sorts
     // Dictionnaire : [niveau de personnage: [niveau de sort: nombre d'emplacements]]
     // Exemple: [1: [1: 2], 2: [1: 3], 3: [1: 4, 2: 2]]
@@ -37,6 +41,7 @@ final class DnDClass {
         masteredStats: [String] = [],
         spellcastingAbility: String = "",
         masteredSkills: [String] = [],
+        hitDie: HitDie = .d8,
         spellSlots: [Int: [Int: Int]] = [:], // Nouveau paramètre
         classResources: [ClassResource] = [],
         equipmentOptions: [ClassEquipmentOption] = []
@@ -48,6 +53,7 @@ final class DnDClass {
         self.masteredStats = masteredStats
         self.spellcastingAbility = spellcastingAbility
         self.masteredSkills = masteredSkills
+        self.hitDie = hitDie
         self.spellSlots = spellSlots
         self.classResources = classResources
         self.equipmentOptions = equipmentOptions
