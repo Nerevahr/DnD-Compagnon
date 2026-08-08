@@ -51,6 +51,7 @@ struct MockData {
         descriptionClass: "Lanceur de sorts arcanique",
         masteredStats: ["Intelligence", "Sagesse"],
         spellcastingAbility: "Intelligence",
+        hitDie: .d6,
         spellSlots: [
             1: [1: 2],
             2: [1: 3],
@@ -63,7 +64,8 @@ struct MockData {
     static let fighterClass = DnDClass(
         name: "Guerrier",
         descriptionClass: "Maître des armes",
-        masteredStats: ["Force", "Constitution"]
+        masteredStats: ["Force", "Constitution"],
+        hitDie: .d10
     )
     
     // MARK: - Items (Armes)

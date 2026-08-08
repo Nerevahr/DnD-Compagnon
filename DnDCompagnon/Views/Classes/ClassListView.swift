@@ -69,6 +69,7 @@ struct AddClassView: View {
     @State private var name = ""
     @State private var descriptionClass = ""
     @State private var spellcastingAbility = ""
+    @State private var hitDie: HitDie = .d8
     @State private var masteredStats: Set<String> = []
     @State private var masteredSkills: Set<String> = []
     @State private var abilities: [ClassAbility] = []
@@ -95,8 +96,14 @@ struct AddClassView: View {
                             Text(ability).tag(ability)
                         }
                     }
+
+                    Picker("Dé de vie", selection: $hitDie) {
+                        ForEach(HitDie.allCases) { die in
+                            Text(die.label).tag(die)
+                        }
+                    }
                 }
-                
+
                 Section(header: Text("Statistiques Maîtrisées")) {
                     ForEach(availableStats, id: \.self) { stat in
                         HStack {
@@ -235,7 +242,8 @@ struct AddClassView: View {
             abilities: abilities,
             masteredStats: Array(masteredStats).sorted(),
             spellcastingAbility: spellcastingAbility,
-            masteredSkills: Array(masteredSkills).sorted()
+            masteredSkills: Array(masteredSkills).sorted(),
+            hitDie: hitDie
         )
         modelContext.insert(newClass)
     }
@@ -278,9 +286,15 @@ struct ClassDetailView: View {
                             Text(ability).tag(ability)
                         }
                     }
+                    Picker("Dé de vie", selection: $dndClass.hitDie) {
+                        ForEach(HitDie.allCases) { die in
+                            Text(die.label).tag(die)
+                        }
+                    }
                 } else {
                     LabeledContent("Nom", value: dndClass.name)
                     LabeledContent("Incantation", value: dndClass.spellcastingAbility.isEmpty ? "Aucune" : dndClass.spellcastingAbility)
+                    LabeledContent("Dé de vie", value: dndClass.hitDie.label)
                 }
             }
             

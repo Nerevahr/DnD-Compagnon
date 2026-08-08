@@ -474,10 +474,14 @@ extension Character {
         
         // Sauvegarder l'ancien niveau pour la validation
         let previousLevel = level
-        
+
+        // Le résultat du dé ne peut pas dépasser le dé de vie de la classe
+        let maxDieRoll = dndClass?.hitDie.rawValue ?? HitDie.d8.rawValue
+        let clampedDieRoll = min(max(dieRoll, 1), maxDieRoll)
+
         // Calculer le gain de PV : dé + modificateur de Constitution (+1 si Ténacité naine), minimum 1
         let racialBonus = hasDwarvenToughness ? 1 : 0
-        let hpGain = max(1, dieRoll + constitutionModifier + racialBonus)
+        let hpGain = max(1, clampedDieRoll + constitutionModifier + racialBonus)
         
         // Augmenter le niveau
         level += 1
