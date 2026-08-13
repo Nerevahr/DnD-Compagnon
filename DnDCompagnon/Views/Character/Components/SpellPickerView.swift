@@ -15,8 +15,9 @@ struct SpellPickerView: View {
     let availableSpells: [Spell]
     
     @State private var searchText = ""
-    @State private var selectedLevel: Int? = nil
     @State private var showAllClasses = false
+    @State private var includeCantrips = false
+    @State private var includeAllLevels = false
     
     @Query private var allSpells: [Spell]
     
@@ -45,15 +46,20 @@ struct SpellPickerView: View {
     
     var filteredSpells: [Spell] {
         var spells = spellsToDisplay
-        
+
         if !searchText.isEmpty {
             spells = spells.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
-        
-        if let level = selectedLevel {
-            spells = spells.filter { $0.niveau == level }
+
+        if !includeCantrips {
+            spells = spells.filter { $0.niveau > 0 }
         }
-        
+
+        if !includeAllLevels {
+            let maxLevel = character.maxAvailableSpellLevel
+            spells = spells.filter { $0.niveau == 0 || $0.niveau <= maxLevel }
+        }
+
         return spells.sorted { $0.name < $1.name }
     }
     
@@ -64,12 +70,16 @@ struct SpellPickerView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Toggle pour afficher toutes les classes
-                HStack {
-                    Toggle("Afficher tous les sorts", isOn: $showAllClasses)
+                // Toggles de filtrage
+                VStack(alignment: .leading, spacing: 8) {
+                    Toggle("Afficher tous les sorts (toutes classes)", isOn: $showAllClasses)
                         .toggleStyle(SwitchToggleStyle(tint: .purple))
-                    
-                    Spacer()
+
+                    Toggle("Inclure les tours de magie", isOn: $includeCantrips)
+                        .toggleStyle(SwitchToggleStyle(tint: .purple))
+
+                    Toggle("Inclure tous les niveaux de sort", isOn: $includeAllLevels)
+                        .toggleStyle(SwitchToggleStyle(tint: .purple))
                 }
                 .padding()
                 .background(Color.gray.opacity(0.1))
