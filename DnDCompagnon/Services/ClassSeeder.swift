@@ -19,12 +19,18 @@ enum ClassSeeder {
         let spellcastingAbility: String
         let masteredSkills: [String]
         let spellSlots: [String: [String: Int]]? // ⬅️ AJOUT
+        let classResources: [ClassResourceData]?
         let equipmentOptions: [EquipmentOptionData]?
 
         struct AbilityData: Codable {
             let level: Int
             let name: String
             let description: String?
+        }
+
+        struct ClassResourceData: Codable {
+            let name: String
+            let amountsByLevel: [String: Int]
         }
 
         struct EquipmentOptionData: Codable {
@@ -73,6 +79,17 @@ enum ClassSeeder {
                 }
             }
             
+            // Convertir les ressources de classe : clés String -> Int pour amountsByLevel
+            let classResources: [ClassResource] = (classData.classResources ?? []).map { resourceData in
+                var amountsByLevel: [Int: Int] = [:]
+                for (levelStr, amount) in resourceData.amountsByLevel {
+                    if let level = Int(levelStr) {
+                        amountsByLevel[level] = amount
+                    }
+                }
+                return ClassResource(name: resourceData.name, amountsByLevel: amountsByLevel)
+            }
+
             // Résoudre les options d'équipement (objets du catalogue par nom)
             var equipmentOptions: [ClassEquipmentOption] = []
             for optionData in classData.equipmentOptions ?? [] {
@@ -104,13 +121,14 @@ enum ClassSeeder {
                 spellcastingAbility: classData.spellcastingAbility,
                 masteredSkills: classData.masteredSkills,
                 spellSlots: spellSlots, // ⬅️ AJOUT
+                classResources: classResources,
                 equipmentOptions: equipmentOptions
             )
             context.insert(dndClass)
         }
 
         try? context.save()
-        print("✅ Classes chargées avec succès (dont spell slots)")
+        print("✅ Classes chargées avec succès (dont spell slots et ressources de classe)")
     }
 
     // MARK: - Chargement depuis JSON

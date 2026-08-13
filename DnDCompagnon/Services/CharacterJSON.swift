@@ -42,6 +42,10 @@ struct CharacterJSON: Codable {
     
     // Emplacements de sorts utilisés
     var usedSpellSlots: [String: Int] // Utilise String comme clé pour JSON
+
+    // Ressources de classe utilisées, par nom de ressource
+    // Optionnel pour rester compatible avec les exports antérieurs à ce champ
+    var usedClassResources: [String: Int]?
     
     // Sorts préparés (juste les noms)
     var preparedSpellNames: [String]
@@ -126,6 +130,7 @@ enum CharacterImportExportService {
             className: character.dndClass?.name,
             proficientSkills: character.proficientSkills,
             usedSpellSlots: usedSpellSlotsStringKeys,
+            usedClassResources: character.usedClassResources,
             preparedSpellNames: character.preparedSpells.compactMap { $0.baseSpell?.name },
             alwaysPreparedSpellNames: character.preparedSpells.filter { $0.isAlwaysPrepared }.compactMap { $0.baseSpell?.name },
             preparedSpellSourceByName: Dictionary(uniqueKeysWithValues: character.preparedSpells.compactMap { ps in
@@ -235,9 +240,10 @@ enum CharacterImportExportService {
             currentHitPoints: characterJSON.currentHitPoints,
             maximumHitPoints: characterJSON.maximumHitPoints,
             usedSpellSlots: usedSpellSlots,
+            usedClassResources: characterJSON.usedClassResources ?? [:],
             gold: characterJSON.gold
         )
-        
+
         character.profileImageData = profileImageData
         character.hpLevelHistory = hpLevelHistory
         
