@@ -123,6 +123,12 @@
       { "itemNames": ["Chemise de maille", "Symbole sacré", "Bouclier", "Bâton de combat"], "goldPieces": 7 },
       { "itemNames": [], "goldPieces": 75 }
     ],
+    "classResources": [
+      {
+        "name": "Canalisation d'énergie divine",
+        "amountsByLevel": { "2": 2, "11": 3 }
+      }
+    ],
     "spellSlots": {
         "1": {"1": 2},
         "2": {"1": 3},

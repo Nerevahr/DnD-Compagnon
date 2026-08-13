@@ -49,6 +49,9 @@ final class Character {
     
     // Emplacements de sorts utilisés par niveau
     var usedSpellSlots: [Int: Int] = [:]
+
+    // Ressources de classe utilisées, par nom de ressource (ex: "Canalisation d'énergie divine")
+    var usedClassResources: [String: Int] = [:]
     
     // Sorts préparés (relation vers les sorts)
     @Relationship(deleteRule: .nullify) var preparedSpells: [PreparedSpell]
@@ -269,6 +272,7 @@ final class Character {
         currentHitPoints: Int? = nil,
         maximumHitPoints: Int? = nil,
         usedSpellSlots: [Int: Int] = [:],
+        usedClassResources: [String: Int] = [:],
         gold: Double = 0.0
     ) {
         self.timestamp = timestamp
@@ -300,6 +304,7 @@ final class Character {
         self.maximumHitPoints = finalMaxHP
         self.currentHitPoints = currentHitPoints ?? finalMaxHP
         self.usedSpellSlots = usedSpellSlots // ✅ Initialisation
+        self.usedClassResources = usedClassResources
         self.gold = gold
     }
 }
@@ -359,6 +364,54 @@ extension Character {
     /// Restaure tous les emplacements de sorts (repos long)
     func restoreAllSpellSlots() {
         usedSpellSlots = [:]
+    }
+}
+
+// MARK: - Class Resources Management
+
+extension Character {
+    /// Retourne les ressources de classe disponibles pour ce personnage, avec leur quantité maximale au niveau actuel
+    var availableClassResources: [(resource: ClassResource, maxAmount: Int)] {
+        (dndClass?.classResources ?? []).map { ($0, $0.amount(at: level)) }
+    }
+
+    /// Retourne la quantité totale pour une ressource de classe donnée
+    func classResourceCount(named resourceName: String) -> Int {
+        dndClass?.classResourceAmount(named: resourceName, characterLevel: level) ?? 0
+    }
+
+    /// Retourne le nombre d'utilisations consommées pour une ressource de classe donnée
+    func usedClassResourceCount(named resourceName: String) -> Int {
+        usedClassResources[resourceName] ?? 0
+    }
+
+    /// Retourne le nombre d'utilisations restantes pour une ressource de classe donnée
+    func remainingClassResource(named resourceName: String) -> Int {
+        let total = classResourceCount(named: resourceName)
+        let used = usedClassResourceCount(named: resourceName)
+        return max(0, total - used)
+    }
+
+    /// Consomme une utilisation d'une ressource de classe
+    func useClassResource(named resourceName: String) {
+        let current = usedClassResources[resourceName] ?? 0
+        let max = classResourceCount(named: resourceName)
+        if current < max {
+            usedClassResources[resourceName] = current + 1
+        }
+    }
+
+    /// Restaure une utilisation d'une ressource de classe
+    func restoreClassResource(named resourceName: String) {
+        let current = usedClassResources[resourceName] ?? 0
+        if current > 0 {
+            usedClassResources[resourceName] = current - 1
+        }
+    }
+
+    /// Restaure toutes les ressources de classe (repos long)
+    func restoreAllClassResources() {
+        usedClassResources = [:]
     }
 }
 

@@ -40,7 +40,12 @@ struct AbilitiesPage: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                
+
+                // Ressources de classe
+                if let dndClass = character.dndClass, !dndClass.classResources.isEmpty {
+                    ClassResourcesCard(character: character)
+                }
+
                 // Section Aptitudes Raciales
                 if !raceAbilities.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {

@@ -23,6 +23,9 @@ final class DnDClass {
     // Exemple: [1: [1: 2], 2: [1: 3], 3: [1: 4, 2: 2]]
     var spellSlots: [Int: [Int: Int]]
 
+    // Ressources de classe (ex: Canalisation d'énergie divine pour le Clerc)
+    var classResources: [ClassResource] = []
+
     @Relationship(deleteRule: .cascade, inverse: \ClassEquipmentOption.dndClass)
     var equipmentOptions: [ClassEquipmentOption] = []
 
@@ -35,6 +38,7 @@ final class DnDClass {
         spellcastingAbility: String = "",
         masteredSkills: [String] = [],
         spellSlots: [Int: [Int: Int]] = [:], // Nouveau paramètre
+        classResources: [ClassResource] = [],
         equipmentOptions: [ClassEquipmentOption] = []
     ) {
         self.timestamp = timestamp
@@ -45,6 +49,7 @@ final class DnDClass {
         self.spellcastingAbility = spellcastingAbility
         self.masteredSkills = masteredSkills
         self.spellSlots = spellSlots
+        self.classResources = classResources
         self.equipmentOptions = equipmentOptions
     }
 }
@@ -86,5 +91,10 @@ extension DnDClass {
     /// - Returns: Le nombre d'emplacements disponibles
     func spellSlotCount(characterLevel: Int, spellLevel: Int) -> Int {
         return spellSlots[characterLevel]?[spellLevel] ?? 0
+    }
+
+    /// Retourne la quantité disponible pour une ressource de classe donnée, à un niveau de personnage
+    func classResourceAmount(named resourceName: String, characterLevel: Int) -> Int {
+        classResources.first { $0.name == resourceName }?.amount(at: characterLevel) ?? 0
     }
 }
