@@ -72,7 +72,7 @@
       },
       {
         "level": 2,
-        "name": "Canalisation d'énergie divine",
+        "name": "Conduit divin",
         "description": "Vous pouvez canaliser l'énergie divine des plans Extérieurs pour produire des effets magiques, deux fois entre vos repos (une utilisation récupérée à la fin d'un Repos court, toutes à la fin d'un Repos long, et davantage d'utilisations aux niveaux supérieurs). Vous commencez avec deux effets. Étincelle divine : par une action Magie, vous lancez 1d8 + votre modificateur de Sagesse sur une créature visible dans un rayon de 9 mètres, pour soit lui rendre autant de points de vie, soit l'obliger à effectuer un jet de sauvegarde de Constitution et lui infliger ces dégâts nécrotiques ou radiants (moitié en cas de réussite) ; un d8 supplémentaire est ajouté aux niveaux 7, 13 et 18. Renvoi des morts-vivants : par une action Magie, chaque Mort-vivant dans un rayon de 9 mètres doit réussir un jet de sauvegarde de Sagesse ou subir les états Effrayé et Incapable d'agir pendant 1 minute."
       },
       {
@@ -125,8 +125,8 @@
     ],
     "classResources": [
       {
-        "name": "Canalisation d'énergie divine",
-        "amountsByLevel": { "2": 2, "11": 3 }
+        "name": "Conduit divin",
+        "amountsByLevel": { "2": 2, "6": 3, "18": 4 }
       }
     ],
     "spellSlots": {
