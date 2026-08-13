@@ -326,6 +326,11 @@ extension Character {
     var availableSpellSlots: [Int: Int] {
         return dndClass?.spellSlots(at: level) ?? [:]
     }
+
+    /// Retourne le niveau de sort le plus élevé pour lequel ce personnage dispose d'au moins un emplacement
+    var maxAvailableSpellLevel: Int {
+        return availableSpellSlots.filter { $0.value > 0 }.keys.max() ?? 0
+    }
     
     /// Retourne le nombre d'emplacements totaux pour un niveau de sort donné
     func spellSlotCount(for spellLevel: Int) -> Int {
