@@ -173,7 +173,7 @@
       "savingThrowStat":"",
       "damageAmount":"",
       "alternateDamageAmount":"",
-      "descriptionSort":"Vous bannissez une créature que vous voyez à portée dans un demi- plan labyrinthique. La cible y reste pour toute la durée, à moins qu'elle n'en trouve la sortie. La cible peut entreprendre l'action Étude pour tenter de s'évader. Ce faisant, elle effectue un jet d'Intelligence (Investigation) DD 20. En cas de réussite, elle s'évade et le sort prend fin. Lorsque le sort prend fin, la cible réapparaît dans l'espace qu'elle avait quitté ou, si celui-ci n'est plus libre, dans l'espace inoccupé le plus proche."
+      "descriptionSort":"Vous bannissez une créature que vous voyez à portée dans un demi-plan labyrinthique. La cible y reste pour toute la durée, à moins qu'elle n'en trouve la sortie. La cible peut entreprendre l'action Étude pour tenter de s'évader. Ce faisant, elle effectue un jet d'Intelligence (Investigation) DD 20. En cas de réussite, elle s'évade et le sort prend fin. Lorsque le sort prend fin, la cible réapparaît dans l'espace qu'elle avait quitté ou, si celui-ci n'est plus libre, dans l'espace inoccupé le plus proche."
    },
    {
       "name":"Demi-plan",
