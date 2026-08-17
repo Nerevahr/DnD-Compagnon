@@ -217,7 +217,7 @@
       "savingThrowStat":"Dextérité",
       "damageAmount":"",
       "alternateDamageAmount":"",
-      "descriptionSort":"Choisissez une créature que vous voyez à portée ; elle effectue un jet de sauvegarde de Sagesse. En cas de réussite, la cible entame une danse grotesque sur place en y consacrant tout son déplacement jusqu'à la fin de son tour suivant. En cas d'échec, la cible subit l'état Charmé pour toute la durée. Ainsi charmée, la cible danse grotesquement en y consacrant tout son déplacement sans quitter son espace, et elle a un Désavantage aux jets de sauvegarde de Dextérité et aux jets d'attaque, tandis que les autres créatures ont un Avantage aux jets d'attaque contre elle. À chacun de ses tours, la cible peut consacrer une action à tenter de retrouver ses esprits et réitérer le JdS ; elle met fin au sort sur elle- même en cas de réussite."
+      "descriptionSort":"Choisissez une créature que vous voyez à portée ; elle effectue un jet de sauvegarde de Sagesse. En cas de réussite, la cible entame une danse grotesque sur place en y consacrant tout son déplacement jusqu'à la fin de son tour suivant. En cas d'échec, la cible subit l'état Charmé pour toute la durée. Ainsi charmée, la cible danse grotesquement en y consacrant tout son déplacement sans quitter son espace, et elle a un Désavantage aux jets de sauvegarde de Dextérité et aux jets d'attaque, tandis que les autres créatures ont un Avantage aux jets d'attaque contre elle. À chacun de ses tours, la cible peut consacrer une action à tenter de retrouver ses esprits et réitérer le JdS ; elle met fin au sort sur elle-même en cas de réussite."
    },
    {
       "name":"Désintégration",
