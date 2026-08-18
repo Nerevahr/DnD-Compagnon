@@ -38,18 +38,32 @@ struct FeatDetailView: View {
                 }
                 
                 Divider()
-                
+
+                // Prérequis
+                if !feat.prerequisites.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Prérequis")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+
+                        Text(feat.prerequisites.map(\.displayText).joined(separator: ", "))
+                            .font(.body)
+                    }
+
+                    Divider()
+                }
+
                 // Description
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Description")
                         .font(.headline)
                         .foregroundColor(.secondary)
-                    
+
                     Text(feat.featDescription)
                         .font(.body)
                         .lineSpacing(4)
                 }
-                
+
                 Spacer()
             }
             .padding()
@@ -64,7 +78,8 @@ struct FeatDetailView: View {
         FeatDetailView(feat: Feat(
             name: "Alerte",
             type: .general,
-            featDescription: "Vous gagnez +5 à l'initiative. Les créatures n'obtiennent pas d'avantage aux jets d'attaque contre vous due à être invisibles."
+            featDescription: "Vous gagnez +5 à l'initiative. Les créatures n'obtiennent pas d'avantage aux jets d'attaque contre vous due à être invisibles.",
+            prerequisites: [FeatPrerequisite(type: .niveau, value: "4")]
         ))
     }
 }

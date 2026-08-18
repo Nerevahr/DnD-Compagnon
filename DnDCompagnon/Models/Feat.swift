@@ -15,16 +15,19 @@ final class Feat: Identifiable {
     var name: String
     var type: FeatType
     var featDescription: String
-    
+    var prerequisites: [FeatPrerequisite]
+
     init(
         id: UUID = UUID(),
         name: String,
         type: FeatType,
         featDescription: String,
+        prerequisites: [FeatPrerequisite] = [],
     ) {
         self.id = id
         self.name = name
         self.type = type
         self.featDescription = featDescription
+        self.prerequisites = prerequisites
     }
 }

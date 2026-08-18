@@ -246,6 +246,19 @@ final class Character {
         default: return 0
         }
     }
+
+    /// Méthode pour obtenir le score brut d'une caractéristique par nom
+    func getScore(for stat: String) -> Int {
+        switch stat {
+        case "Force": return strength
+        case "Dextérité": return dexterity
+        case "Constitution": return constitution
+        case "Intelligence": return intelligence
+        case "Sagesse": return wisdom
+        case "Charisme": return charisma
+        default: return 0
+        }
+    }
     
     // MARK: - Initializer
     
@@ -501,6 +514,11 @@ extension Character {
     /// Vérifie si un don est déjà attribué au personnage
     func hasFeat(_ feat: Feat) -> Bool {
         feats.contains { $0.id == feat.id }
+    }
+
+    /// Vérifie si le personnage remplit tous les prérequis d'un don
+    func meetsPrerequisites(for feat: Feat) -> Bool {
+        feat.prerequisites.allSatisfy { $0.isMet(by: self) }
     }
     
     /// Assigne une nouvelle origine et synchronise son don d'origine
