@@ -14,6 +14,7 @@ enum FeatSeeder {
     private struct FeatData: Codable {
         let name: String
         let type: FeatType
+        let prerequisites: [FeatPrerequisite]
         let featDescription: String
     }
     
@@ -34,7 +35,8 @@ enum FeatSeeder {
             let feat = Feat(
                 name: featData.name,
                 type: featData.type,
-                featDescription: featData.featDescription
+                featDescription: featData.featDescription,
+                prerequisites: featData.prerequisites
             )
             context.insert(feat)
         }

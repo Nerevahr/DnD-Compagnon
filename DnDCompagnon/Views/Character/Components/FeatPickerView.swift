@@ -35,6 +35,7 @@ struct FeatPickerView: View {
                     )
                 } else {
                     ForEach(availableFeats) { feat in
+                        let prerequisitesMet = character.meetsPrerequisites(for: feat)
                         Button {
                             addFeatToCharacter(feat)
                         } label: {
@@ -49,19 +50,30 @@ struct FeatPickerView: View {
                                             .fontWeight(.semibold)
                                             .foregroundColor(.primary)
                                     }
-                                    
+
                                     Text(feat.featDescription)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                         .lineLimit(2)
+
+                                    if !prerequisitesMet {
+                                        Label(
+                                            "Prérequis : \(feat.prerequisites.map(\.displayText).joined(separator: ", "))",
+                                            systemImage: "exclamationmark.triangle.fill"
+                                        )
+                                        .font(.caption2)
+                                        .foregroundColor(.orange)
+                                    }
                                 }
-                                
+
                                 Spacer()
-                                
+
                                 Image(systemName: "plus.circle")
                                     .foregroundColor(.blue)
                             }
                         }
+                        .opacity(prerequisitesMet ? 1.0 : 0.6)
+                        .disabled(!prerequisitesMet)
                     }
                 }
             }

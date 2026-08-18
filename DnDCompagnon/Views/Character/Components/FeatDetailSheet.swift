@@ -40,18 +40,32 @@ struct FeatDetailSheet: View {
                     }
                     
                     Divider()
-                    
+
+                    // Prérequis
+                    if !feat.prerequisites.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Prérequis")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+
+                            Text(feat.prerequisites.map(\.displayText).joined(separator: ", "))
+                                .font(.body)
+                        }
+
+                        Divider()
+                    }
+
                     // Description
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Description")
                             .font(.headline)
                             .foregroundColor(.secondary)
-                        
+
                         Text(feat.featDescription)
                             .font(.body)
                             .lineSpacing(4)
                     }
-                    
+
                     Spacer()
                 }
                 .padding()
